@@ -15,4 +15,4 @@ class Muestra(models.Model):
         verbose_name_plural='tMuestras'
 
     def __str__(self):
-        return  str(self.idtMuestra)
+        return   f"id:{self.idtMuestra}"

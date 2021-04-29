@@ -14,4 +14,4 @@ class Trampas(models.Model):
         verbose_name_plural='Trampas'
 
     def __str__(self):
-        return str(self.idcTrampas)
+        return f"id:{self.idcTrampas}, nombre:{self.nombre}"
