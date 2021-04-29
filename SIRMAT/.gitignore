@@ -11,6 +11,7 @@ data/
 etc/
 /src/
 yarn-error.log
+UsuarioDB.cnf
 
 # mobile/builds
 db/

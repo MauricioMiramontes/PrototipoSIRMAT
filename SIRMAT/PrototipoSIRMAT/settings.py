@@ -85,11 +85,9 @@ WSGI_APPLICATION = 'PrototipoSIRMAT.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'SIRMAT_DB',
-        'USER': 'eduardo',
-        'PASSWORD': 'cruzazul8',
-        'HOST':'localhost',
-        'PORT': '3306'
+        'OPTIONS': {
+            'read_default_file':'../SIRMAT/UsuarioDB.cnf'
+        },
     }
 }
 
