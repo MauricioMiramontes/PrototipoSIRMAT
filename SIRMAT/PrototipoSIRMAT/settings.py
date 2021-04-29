@@ -41,6 +41,11 @@ INSTALLED_APPS = [
     'Trampas',
     'Estereoscopios',
     'Camaras',
+    'Especies',
+    'DetallesMuestra',
+    'Etiquetado',
+    'Fotografias',
+    'Usuario',
 ]
 
 MIDDLEWARE = [

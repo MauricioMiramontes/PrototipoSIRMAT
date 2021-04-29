@@ -7,7 +7,7 @@ class Muestra(models.Model):
     idtMuestra=models.BigAutoField(primary_key=True)
     horaFechainicio=models.DateTimeField()
     horaFechaFin=models.DateTimeField()
-    idcTrampas = models.ForeignKey(Trampas,null=True,blank=True, on_delete=models.CASCADE)
+    idTrampas = models.ForeignKey(Trampas,null=True,blank=True, on_delete=models.CASCADE)
     
     class Meta:
         db_table = 'tMuestras'
