@@ -1898,3 +1898,17 @@ section {
   color: #fff;
   background-color:  #34b4fb;
 }
+.div_tabla_trampas{
+  margin-top: 70px;
+  padding: 20px
+}
+.div_tabla_trampas button{
+  margin-bottom:10px;
+}
+.modal-body {
+  margin:auto;
+}
+.agregar_trampa{
+  margin-top:10px;
+  float: right;
+}
