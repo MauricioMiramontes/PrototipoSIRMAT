@@ -1886,3 +1886,11 @@ section {
   color: #fff;
   text-decoration: none;
 }
+
+/*CAMBIOS EN ESTILOS*/
+
+/*tabla trampas*/
+.trampas_tabla th{
+  color: #fff;
+  background-color:  #34b4fb;
+}
