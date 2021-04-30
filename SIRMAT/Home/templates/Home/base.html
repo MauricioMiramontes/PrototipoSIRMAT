@@ -43,16 +43,16 @@
   <header id="header" class="fixed-top">
     <div class="container d-flex align-items-center justify-content-between">
 
-      <h1 class="logo"><a href="index.html"><img class="img-fluid"src="{% static 'assets/img/sirmatlogo.png' %}" alt=""></a></h1>
+      <h1 class="logo"><a href="/"><img class="img-fluid"src="{% static 'assets/img/sirmatlogo.png' %}" alt=""></a></h1>
       <!-- Uncomment below if you prefer to use an image logo -->
       <!-- <a href="index.html" class="logo"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
 
       <nav id="navbar" class="navbar">
         <ul>
-          <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
-          <li><a class="nav-link scrollto" href="#about">About</a></li>
+          <li><a class="nav-link scrollto" href="/">Inicio</a></li>
+          <li><a class="nav-link scrollto" href="/trampas/">Trampas</a></li>
           <li><a class="nav-link scrollto" href="#services">Services</a></li>
-          <li><a class="nav-link scrollto o" href="#portfolio">Portfolio</a></li>
+          <li><a class="nav-link scrollto" href="#portfolio">Portfolio</a></li>
           <li><a class="nav-link scrollto" href="#team">Team</a></li>
           <li><a class="nav-link scrollto" href="#pricing">Pricing</a></li>
           <li class="dropdown"><a href="#"><span>Drop Down</span> <i class="bi bi-chevron-down"></i></a>
@@ -85,7 +85,7 @@
   {% block content %}
   {% endblock %}
   <!-- ======= Footer ======= -->
-  <footer id="footer">
+  <footer id="footer fixed-bottom">
 
 
     <div class="container d-md-flex py-4">
