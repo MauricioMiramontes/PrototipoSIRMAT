@@ -1,11 +1,31 @@
 {% extends "Home/base.html" %}
 
-
 {% load static %}
 
 {% block content %}
 
+<script>
+  console.log('Hola')
+  function eliminarTrampas(id){
+    Swal.fire({
+       'title':'¿Deseas borrar esta trampa?',
+       'text': 'Esta acción es irreversible',
+       'icon':'question',
+       'showCancelButton': true,
+       'cancelButtonText':'Cancelar',
+       'confirmButtonText':'Si , Eliminar',
+       'reverseButtons':true,
+       'confirmButtonColor': '#dc3545',
 
+
+    })
+    .then(function(result){
+      if(result.isConfirmed){
+        window.location.href = '/trampas/eliminar-trampas/'+id+'/'
+      }
+    })
+  }
+</script>
 
 <div class="div_tabla_trampas" >
 <!-- Button trigger modal -->
@@ -69,7 +89,7 @@
         <td>
           
         <a class="btn btn-secondary" href="{% url 'editar_trampa' trampa.idcTrampas %}" >Editar</a>  
-        <a class="btn btn-danger" href="{% url 'eliminar_trampa' trampa.idcTrampas %}" >Eliminar</a>
+        <a class="btn btn-danger" href="#" onclick="eliminarTrampas({{ trampa.idcTrampas }})" >Eliminar</a>
         </td>     
       </tr>
     {% endfor %}

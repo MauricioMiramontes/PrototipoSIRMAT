@@ -39,6 +39,7 @@ def eliminarTrampa(request,id_trampas):
     trampa.delete()
     messages.success(request, 'Trampa eliminada correctamente')
     return redirect('Trampa')
+    
    
 
 
