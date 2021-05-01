@@ -1912,3 +1912,30 @@ section {
   margin-top:10px;
   float: right;
 }
+.opciones_trampa{
+  width: 180px;
+  
+}
+.editar_trampas {
+  margin-top: 85px ;
+  
+  padding: 20px;
+  
+}
+.editar_trampas input{
+  width: 100%;
+  color: grey;
+  
+  
+}
+.label_form{
+  margin: 10px 0px -15px 0px;
+}
+
+.container2{
+  width: 60%;
+  margin: auto;
+}
+#text{
+  padding: 20px;
+}

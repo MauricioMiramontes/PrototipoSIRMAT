@@ -1,5 +1,6 @@
 {% extends "Home/base.html" %}
 
+
 {% load static %}
 
 {% block content %}
@@ -23,13 +24,14 @@
       <div class="modal-body">
         <form class="formulario_trampas" method="POST">
           {% csrf_token %}
+          <!--Pintamos nuestro formulario-->
           {{ form.nombre.label }} <br>
           {{ form.nombre }} <br>
           {{ form.direccion.label }} <br>
           {{ form.direccion }} <br>
           {{ form.coordenadas.label }} <br>
           {{ form.coordenadas }} <br>
-
+          
           <button type="submit" class="btn btn-success agregar_trampa">Añadir</button>
           
         </form>
@@ -53,6 +55,7 @@
       <th scope="col">Nombre</th>
       <th scope="col">Direccion</th>
       <th scope="col">Coordenadas</th>
+      <th class='opciones_trampa'scope="col" >Opciones</th>
       
     </tr>
   </thead>
@@ -63,6 +66,11 @@
         <td>{{trampa.nombre}}</td>
         <td>{{trampa.direccion}}</td>
         <td>{{trampa.coordenadas}}</td>
+        <td>
+          
+        <a class="btn btn-secondary" href="{% url 'editar_trampa' trampa.idcTrampas %}" >Editar</a>  
+        <a class="btn btn-danger" href="{% url 'eliminar_trampa' trampa.idcTrampas %}" >Eliminar</a>
+        </td>     
       </tr>
     {% endfor %}
   </tbody>

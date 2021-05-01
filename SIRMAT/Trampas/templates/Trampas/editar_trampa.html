@@ -1,0 +1,23 @@
+{% extends "Home/base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="container2 ">
+    <form class="formulario_trampas editar_trampas " method="POST">
+        {% csrf_token %}
+        <!--Pintamos nuestro formulario-->
+        <p class="label_form">{{ form.nombre.label }}</p> <br>
+        {{ form.nombre }} <br>
+        <p class="label_form">{{ form.direccion.label }}</p> <br>
+        {{ form.direccion }} <br>
+        <p class="label_form">{{ form.coordenadas.label }}</p> <br>
+        {{ form.coordenadas }} <br>
+        
+        <button type="submit" class="btn btn-success agregar_trampa">Cambiar</button>
+        
+    </form>
+</div>
+
+{% endblock %}
