@@ -86,7 +86,7 @@
         <td>{{trampa.nombre}}</td>
         <td>{{trampa.direccion}}</td>
         <td>{{trampa.coordenadas}}</td>
-        <td>
+        <td class="botones_opciones">
           
         <a class="btn btn-secondary" href="{% url 'editar_trampa' trampa.idcTrampas %}" >Editar</a>  
         <a class="btn btn-danger" href="#" onclick="eliminarTrampas({{ trampa.idcTrampas }})" >Eliminar</a>

@@ -26,8 +26,6 @@ def editarTrampa(request,id_trampas):
             form.save()
             messages.success(request, 'Trampa editada correctamente')
             return redirect('Trampa')
-        
-
     else:
         form = TrampaForm(instance = trampa) 
     
@@ -40,7 +38,7 @@ def eliminarTrampa(request,id_trampas):
     messages.success(request, 'Trampa eliminada correctamente')
     return redirect('Trampa')
     
-   
+
 
 
     

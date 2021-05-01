@@ -1939,3 +1939,11 @@ section {
 #text{
   padding: 20px;
 }
+
+@media (max-width: 768px) {
+  .botones_opciones a{
+    width:100%;
+    margin-bottom: 5px;
+  }
+}
+
