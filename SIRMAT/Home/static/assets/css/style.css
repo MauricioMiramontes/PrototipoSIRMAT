@@ -392,6 +392,7 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
 }
 
+
 #hero:before {
   content: "";
   background: rgba(255, 255, 255, 0.8);
@@ -1893,57 +1894,81 @@ section {
 
 /*CAMBIOS EN ESTILOS*/
 
-/*tabla trampas*/
+/*tablas vistas*/
 .trampas_tabla th{
   color: #fff;
   background-color:  #34b4fb;
 }
-.div_tabla_trampas{
+.div_tablas{
   margin-top: 70px;
   padding: 20px
 }
-.div_tabla_trampas button{
+.div_tablas button{
   margin-bottom:10px;
 }
 .modal-body {
   margin:auto;
+  width: 65%;
 }
-.agregar_trampa{
+.agregar_boton{
+  margin-top:30px;
+  float: right;
+}
+.agregar_boton_modal{
   margin-top:10px;
   float: right;
 }
-.opciones_trampa{
-  width: 180px;
+
+.opciones_tabla{ 
+  width: 180px;   /*Tamaño de la columna opciones*/
   
 }
-.editar_trampas {
-  margin-top: 85px ;
-  
+.formulario_editar {
+
   padding: 20px;
   
 }
-.editar_trampas input{
+.formulario_editar input,
+.formulario_editar select
+{
   width: 100%;
   color: grey;
   
+} 
+.formulario_agregar input,
+.formulario_agregar select
+{
+  width: 100%;
+  color: grey;
+  margin: 5px 0 10px 0;
+} 
+
+
+.label_form{ /*margen en labels de editar*/
+  margin: 10px 0px -15px 0px;
   
 }
-.label_form{
-  margin: 10px 0px -15px 0px;
+
+.container_editar{
+  
+  width: 400px;
+  margin: 85px auto 0px auto;
+  border: solid 1px  #e6f2fb;
+  border-radius: 3px;
+  
 }
 
-.container2{
-  width: 60%;
-  margin: auto;
-}
-#text{
-  padding: 20px;
-}
 
 @media (max-width: 768px) {
   .botones_opciones a{
     width:100%;
     margin-bottom: 5px;
+  }
+}
+@media (max-width: 768px) {
+  .container_editar {
+    width:90%;
+    
   }
 }
 

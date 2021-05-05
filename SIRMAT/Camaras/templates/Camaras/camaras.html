@@ -4,9 +4,30 @@
 
 {% block content %}
 
+<script>
+  
+  function eliminarCamaras(id){
+    Swal.fire({
+       'title':'¿Deseas borrar esta cámara?',
+       'text': 'Esta acción es irreversible',
+       'icon':'question',
+       'showCancelButton': true,
+       'cancelButtonText':'Cancelar',
+       'confirmButtonText':'Si , Eliminar',
+       'reverseButtons':true,
+       'confirmButtonColor': '#dc3545',
 
 
-<div class="div_tabla_trampas" >
+    })
+    .then(function(result){
+      if(result.isConfirmed){
+        window.location.href = '/camaras/eliminar-camaras/'+id+'/'
+      }
+    })
+  }
+</script>
+
+<div class="div_tablas" >
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
   Añadir Cámara
@@ -21,7 +42,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form class="formulario_trampas" method="POST">
+        <form class="formulario_agregar"  method="POST">
           {% csrf_token %}
           <!--Pintamos nuestro formulario-->
           {{ form.marca.label }} <br>
@@ -34,7 +55,7 @@
           {{ form.idEstereoscopios }} <br>
 
           
-          <button type="submit" class="btn btn-success agregar_trampa">Añadir</button>
+          <button type="submit" class="btn btn-success agregar_boton_modal">Añadir</button>
           
         </form>
       </div>
@@ -59,7 +80,7 @@
       <th scope="col">Marca</th>
       <th scope="col">Foco</th>
       <th scope="col">Resolción</th>
-      <th class='opciones_trampa'scope="col" >Opciones</th>
+      <th class='opciones_tabla'scope="col" >Opciones</th>
       
     </tr>
   </thead>
@@ -72,8 +93,9 @@
         <td>{{camara.resolucion}}</td>
         <td class="botones_opciones">
           
-        <a class="btn btn-secondary" href="#" >Editar</a>  
-        <a class="btn btn-danger" href="#" " >Eliminar</a>
+            
+          <a class="btn btn-secondary" href="{% url 'editar_camara' camara.idcCamaras %}" >Editar</a>     
+          <a class="btn btn-danger" href="#" onclick="eliminarCamaras({{ camara.idcCamaras }})" >Eliminar</a>
         </td>     
       </tr>
     {% endfor %}

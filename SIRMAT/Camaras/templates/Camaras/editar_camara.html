@@ -3,27 +3,25 @@
 {% load static %}
 
 {% block content %}
-<div id="hero2">
+
 <div class="container_editar ">
     <form class=" formulario_editar " method="POST">
         {% csrf_token %}
         <p style=" text-align: center; font-size: 20px;">Edita los campos correpondientes</p>
         <!--Pintamos nuestro formulario-->
-        <p class="label_form">{{ form.nombre.label }}</p> <br>
-        {{ form.nombre }} <br>
-        <p class="label_form">{{ form.direccion.label }}</p> <br>
-        {{ form.direccion }} <br>
-        <p class="label_form">{{ form.coordenadas.label }}</p> <br>
-        {{ form.coordenadas }} <br>
-        
+        <p class="label_form">{{ form.marca.label }}</p> <br>
+        {{ form.marca }} <br>
+        <p class="label_form">{{ form.foco.label }}</p> <br>
+        {{ form.foco }} <br>
+        <p class="label_form">{{ form.resolucion.label }}</p> <br>
+        {{ form.resolucion }} <br>
+        <p class="label_form">{{ form.idEstereoscopios.label }}</p> <br>
+        {{ form.idEstereoscopios }} <br>
         
         
         <button type="submit" class="btn btn-success agregar_boton">Cambiar</button>
     </form>
-    
-   
-</div>
-</div>
 
+</div>
 
 {% endblock %}

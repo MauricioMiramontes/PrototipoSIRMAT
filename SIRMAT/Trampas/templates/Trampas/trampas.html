@@ -5,7 +5,7 @@
 {% block content %}
 
 <script>
-  console.log('Hola')
+  
   function eliminarTrampas(id){
     Swal.fire({
        'title':'¿Deseas borrar esta trampa?',
@@ -26,8 +26,8 @@
     })
   }
 </script>
-
-<div class="div_tabla_trampas" >
+<div id="hero2">
+<div class="div_tablas" >
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
   Añadir Trampa
@@ -42,7 +42,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form class="formulario_trampas" method="POST">
+        <form class=" formulario_agregar  method="POST">
           {% csrf_token %}
           <!--Pintamos nuestro formulario-->
           {{ form.nombre.label }} <br>
@@ -52,7 +52,7 @@
           {{ form.coordenadas.label }} <br>
           {{ form.coordenadas }} <br>
           
-          <button type="submit" class="btn btn-success agregar_trampa">Añadir</button>
+          <button type="submit" class="btn btn-success agregar_boton_modal">Añadir</button>
           
         </form>
       </div>
@@ -75,7 +75,7 @@
       <th scope="col">Nombre</th>
       <th scope="col">Direccion</th>
       <th scope="col">Coordenadas</th>
-      <th class='opciones_trampa'scope="col" >Opciones</th>
+      <th class='opciones_tabla'scope="col" >Opciones</th>
       
     </tr>
   </thead>
@@ -98,6 +98,6 @@
 
 </div>
 
- 
+</div>
 
 {% endblock %}
