@@ -15,7 +15,7 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 # Direccion de la carpeta de Label Studio
-LS_FILES_DIR = str(BASE_DIR) + '/Label_Studio_Data/media/upload/'
+LS_FILES_DIR = 'Label_Studio_Data/'
 os.makedirs(LS_FILES_DIR, exist_ok=True)
 print('=> Directorio para label-studio y media:', LS_FILES_DIR)
 

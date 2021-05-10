@@ -8,7 +8,7 @@ class Fotografia(models.Model):
     zoom =models.CharField(max_length=45)
     resolucion =models.CharField(max_length=45)
     idCamara = models.ForeignKey(Camara, on_delete=models.CASCADE)
-    fileFoto = models.FileField(upload_to= settings.LS_FILES_DIR, max_length=100)
+    fileFoto = models.FileField(upload_to= settings.LS_FILES_DIR + 'media/upload/', max_length=100)
     
     class Meta:
         db_table = 'fotografias'
