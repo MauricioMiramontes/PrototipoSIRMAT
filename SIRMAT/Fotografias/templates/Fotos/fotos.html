@@ -6,9 +6,9 @@
 
 <script>
   
-  function eliminarTrampas(id){
+  function eliminarFoto(id){
     Swal.fire({
-       'title':'¿Deseas borrar esta trampa?',
+       'title':'¿Deseas borrar esta foto?',
        'text': 'Esta acción es irreversible',
        'icon':'question',
        'showCancelButton': true,
@@ -21,16 +21,16 @@
     })
     .then(function(result){
       if(result.isConfirmed){
-        window.location.href = '/trampas/eliminar-trampas/'+id+'/'
+        window.location.href = '/fotografias/eliminar-fotografias/'+id+'/'
       }
     })
   }
 </script>
-<div id="hero2">
+
 <div class="div_tablas" >
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-  Añadir Trampa
+  Añadir foto
 </button>
 
 <!-- Modal -->
@@ -38,19 +38,22 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Agregar Trampa</h5>
+        <h5 class="modal-title" id="staticBackdropLabel">Agregar Cámara</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form class="formulario_agregar"  method="POST">
+        <form class="formulario_agregar" enctype="multipart/form-data" method="POST">
           {% csrf_token %}
           <!--Pintamos nuestro formulario-->
-          {{ form.nombre.label }} <br>
-          {{ form.nombre }} <br>
-          {{ form.direccion.label }} <br>
-          {{ form.direccion }} <br>
-          {{ form.coordenadas.label }} <br>
-          {{ form.coordenadas }} <br>
+          {{ form.zoom.label }} <br>
+          {{ form.zoom }} <br>
+          {{ form.resolucion.label }} <br>
+          {{ form.resolucion }} <br>
+          {{ form.fileFoto.label }} <br>
+          {{ form.fileFoto }} <br>
+          {{ form.idCamara.label }} <br>
+          {{ form.idCamara }} <br>
+
           
           <button type="submit" class="btn btn-success agregar_boton_modal">Añadir</button>
           
@@ -64,6 +67,8 @@
   </div>
 </div>
 
+
+
 <table class="table table-bordered table-hover" >
 
  
@@ -72,24 +77,22 @@
   <thead>
     <tr class="trampas_tabla">
       <th scope="col">ID</th>
-      <th scope="col">Nombre</th>
-      <th scope="col">Direccion</th>
-      <th scope="col">Coordenadas</th>
-      <th class='opciones_tabla'scope="col" >Opciones</th>
+      <th scope="col">Marca</th>
+      <th scope="col">Foto</th>
+      <th scope="col">opciones</th>
       
     </tr>
   </thead>
   <tbody>
-    {% for trampa in trampas %}
+    {% for foto in fotos %}
       <tr>
-        <th scope="row">{{trampa.idcTrampas}}</th>
-        <td>{{trampa.nombre}}</td>
-        <td>{{trampa.direccion}}</td>
-        <td>{{trampa.coordenadas}}</td>
+        <th scope="row">{{foto.idFotografias}}</th>
+        <td>{{foto.fileFoto.name}}</td>
+        <td><img src="../../../{{foto.fileFoto.url}}" alt="" border=3 height=100 width=100></img></td>
+        
         <td class="botones_opciones">
-          
-        <a class="btn btn-secondary" href="{% url 'editar_trampa' trampa.idcTrampas %}" >Editar</a>  
-        <a class="btn btn-danger" href="#" onclick="eliminarTrampas({{ trampa.idcTrampas }})" >Eliminar</a>
+             
+          <a class="btn btn-danger" href="#" onclick="eliminarFoto({{ foto.idFotografias }})" >Eliminar</a>
         </td>     
       </tr>
     {% endfor %}
@@ -98,6 +101,6 @@
 
 </div>
 
-</div>
+ 
 
 {% endblock %}
