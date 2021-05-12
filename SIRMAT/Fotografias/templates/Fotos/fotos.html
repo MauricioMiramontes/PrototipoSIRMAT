@@ -87,7 +87,14 @@
     {% for foto in fotos %}
       <tr>
         <th scope="row">{{foto.idFotografias}}</th>
-        <td>{{foto.fileFoto.name}}</td>
+        <td>
+          <a href="http://127.0.0.1:8080/projects/1/data/?task={{foto.idFotografias}}" target="_blank">
+            <div style="height:100%;width:100%">
+              {{foto.fileFoto.name}}
+            </div>
+          </a>
+        </td>
+
         <td><img src="../../../{{foto.fileFoto.url}}" alt="" border=3 height=100 width=100></img></td>
         
         <td class="botones_opciones">

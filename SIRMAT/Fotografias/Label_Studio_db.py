@@ -1,9 +1,11 @@
 import sqlite3
+from pathlib import Path
 
+DIR = Path(__file__).resolve().parent.parent
 
 
 def agregar_foto_ls(id_foto, nombre_foto, id_usuario, id_proyecto):
-    con = sqlite3.connect('C:/Users/ASUS/AppData/Local/label-studio/label-studio/label_studio.sqlite3')
+    con = sqlite3.connect(str(DIR) + '\Label_Studio_data\label_studio.sqlite3')
     cur = con.cursor()
 
     data_import_fileupload = [
@@ -24,6 +26,5 @@ def agregar_foto_ls(id_foto, nombre_foto, id_usuario, id_proyecto):
 
 
 
-##for row in cur.execute('SELECT * FROM task'):
-    ##print(type(row[0]))
+##for row in cur.execute('SELECT * FROM data_import_fileupload'):
     ##print(row)

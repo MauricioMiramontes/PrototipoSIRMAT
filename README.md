@@ -51,6 +51,18 @@
 4. Comprobar que se Django puede ingresar a la base de datos utilizando:
     ####
         python manage.py migrate
+####
+5. Es necesario descargar label studio desde el submodulo ya incluido en el repositorio:
+    - https://git-scm.com/book/en/v2/Git-Tools-Submodules
+    1.  Iniciamos el submodulo
+    ####
+        git submodule init
+    2.  Descargamos label studio 
+    ####
+        git submodule update --recursive --progress
+    3. Alternativamente se puede agregar '--recurse-submodules' al comando clone del paso 1 para descargar label studio directamente 
+    ####
+        git clone --recurse-submodules https://github.com/LEAI-IIMAS/projects.git
 
 # Comandos git 
 #### https://git-scm.com/docs
