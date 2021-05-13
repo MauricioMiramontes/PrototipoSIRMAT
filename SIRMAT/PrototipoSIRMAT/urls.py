@@ -22,7 +22,9 @@ urlpatterns = [
     path('trampas/', include('Trampas.urls')),
     path('camaras/', include('Camaras.urls')),
     path('fotografias/', include('Fotografias.urls')),
+    path('etiquetado/', include('Etiquetado.urls')),    
     path('',include('Home.urls')),
+    
     
    
 ]

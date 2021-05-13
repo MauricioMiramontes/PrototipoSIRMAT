@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from Trampas.models import Trampas
 from Trampas.forms import TrampaForm #importar el formulario basado en modelo
 from django.contrib import messages
+#Rest Framework
+from rest_framework import viewsets
+from .serializers import TrampaSerializer
 # Create your views here.
 
 
@@ -33,12 +36,14 @@ def editarTrampa(request,id_trampas):
     return render(request, 'Trampas/editar_trampa.html',context)
 
 def eliminarTrampa(request,id_trampas):
+
     trampa = Trampas.objects.get(idcTrampas = id_trampas)
     trampa.delete()
     messages.success(request, 'Trampa eliminada correctamente')
     return redirect('Trampa')
     
-
-
+class TrampaViewset(viewsets.ModelViewSet):
+    queryset = Trampas.objects.all() #llamo a todos los productos
+    serializer_class = TrampaSerializer #aplico el serializador que convierte los datos a json
 
     

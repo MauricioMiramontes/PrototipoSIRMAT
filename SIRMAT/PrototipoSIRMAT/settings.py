@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'Fotografias',
     'Usuario',
     'Home',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
