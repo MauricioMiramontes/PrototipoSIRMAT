@@ -29,6 +29,13 @@
         ######  
             pip install -U mysqlclient==2.0.3
 
+- Django Rest Framework 3.12.4
+    - Utilizando pip:
+        ######
+            pip install djangorestframework
+            pip install markdown
+            pip install django-filter
+            
 ### Instalacion para desarrollo
 
 1. Clonar el repositorio de git:
