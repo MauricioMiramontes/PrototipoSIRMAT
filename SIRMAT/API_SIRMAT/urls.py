@@ -24,7 +24,8 @@ urlpatterns = [
     path('muestras/', include('Muestra.urls')),
     path('camaras/', include('Camaras.urls')),
     path('fotografias/', include('Fotografias.urls')),
-    path('etiquetado/', include('Etiquetado.urls')),    
+    path('etiquetado/', include('Etiquetado.urls')),
+    path('estereoscopios/', include('Estereoscopios.urls')),      
     path('', include('Home.urls')),    
     path('api_generate_token/',views.obtain_auth_token),
     
