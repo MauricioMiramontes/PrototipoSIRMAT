@@ -5,9 +5,9 @@ from Trampas.models import Trampas
 
 class Muestra(models.Model):
     idtMuestra=models.BigAutoField(primary_key=True)
-    horaFechainicio=models.DateTimeField()
-    horaFechaFin=models.DateTimeField()
-    idTrampas = models.ForeignKey(Trampas,null=True,blank=True, on_delete=models.CASCADE)
+    horaFechainicio=models.DateTimeField(auto_now_add=True)
+    horaFechaFin=models.DateTimeField(auto_now_add=True)
+    idTrampas = models.ForeignKey(Trampas, on_delete=models.CASCADE)
     
     class Meta:
         db_table = 'tMuestras'
