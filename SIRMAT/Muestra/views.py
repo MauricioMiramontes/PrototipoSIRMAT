@@ -92,7 +92,7 @@ class MuestraAPI(APIView):
         if request.query_params: #Revisamos si hay o no parametros dentro de la peticion HTTP
 
             # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id' y lo eliminamos
-            try: Muestra.objects.filter(idtMuestra = request.query_params['id']).delete()
+            try: muestra = Muestra.objects.get(idtMuestra = request.query_params['id']) 
             # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
             except: 
                 return Response({
@@ -100,6 +100,7 @@ class MuestraAPI(APIView):
                 },  status = status.HTTP_404_NOT_FOUND) 
           
             # Si el try no falla entonces respondemos un mensaje de exito
+            muestra.delete()
             return Response({
                 'message' : 'Muestra eliminada correctamente'
             }, status = status.HTTP_200_OK)
