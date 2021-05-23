@@ -23,7 +23,7 @@ class UsuariosAPI(APIView):
                     'message' : 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
                 },  status = status.HTTP_404_NOT_FOUND) 
 
-            # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'estereoscopio'
+            # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'usuario'
             serializer = UsuarioSerializer(usuario)   
         else:
             # Si no hay parameteros tomamos todos los objetos en la base de datos y los serializamos
@@ -54,8 +54,8 @@ class UsuariosAPI(APIView):
 
     def put(self, request):
         #Logica para peticiones tipo PUT
-        # Es necesario proporcionar un parametro llamado 'id' con el valor del idtMuestra que se desea actualizar 
-        # ejmpl: muestras/?id=1
+        # Es necesario proporcionar un parametro llamado 'id' con el valor del idcUsuario que se desea actualizar 
+        # ejmpl: usuarios/?id=1
 
         if request.query_params: #Revisamos si hay o no parametros dentro de la peticion HTTP
             # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id'
@@ -66,7 +66,7 @@ class UsuariosAPI(APIView):
                     'message' : 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
                 },  status = status.HTTP_404_NOT_FOUND)
 
-            # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'muestra'
+            # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'usuario'
             serializer = UsuarioSerializer(usuario, data = request.data)
 
             if serializer.is_valid():# Si la peticion es valida 
@@ -86,8 +86,8 @@ class UsuariosAPI(APIView):
 
     def delete(self, request):
         # Logica para una peticion DELETE
-        # Es necesario proporcionar un parametro llamado 'id' con el valor del idtMuestra que se desea eliminar 
-        # ejmpl: muestras/?id=1
+        # Es necesario proporcionar un parametro llamado 'id' con el valor del idcUsuario que se desea eliminar 
+        # ejmpl: usuarios/?id=1
         
         if request.query_params: #Revisamos si hay o no parametros dentro de la peticion HTTP
 
