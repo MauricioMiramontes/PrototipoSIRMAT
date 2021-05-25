@@ -1,5 +1,5 @@
 from django.http.response import JsonResponse
-from .models import Usuario
+from .models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -16,7 +16,7 @@ class UsuariosAPI(APIView):
         if request.query_params: #Revisamos si hay o no parametros dentro de la peticion HTTP
 
             # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id'
-            try: usuario = Usuario.objects.get(idcUsuario = request.query_params['id'])
+            try: usuario = User.objects.get(idcUsuario = request.query_params['id'])
             # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
             except: 
                 return Response({
@@ -27,7 +27,7 @@ class UsuariosAPI(APIView):
             serializer = UsuarioSerializer(usuario)   
         else:
             # Si no hay parameteros tomamos todos los objetos en la base de datos y los serializamos
-            usuarios = Usuario.objects.all()
+            usuarios = User.objects.all()
             serializer = UsuarioSerializer(usuarios, many = True)
 
         # Respondemos con los datos que se hayan guardado en el serializador 'serializer'
@@ -59,7 +59,7 @@ class UsuariosAPI(APIView):
 
         if request.query_params: #Revisamos si hay o no parametros dentro de la peticion HTTP
             # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id'
-            try: usuario = Usuario.objects.get(idcUsuario = request.query_params['id']) 
+            try: usuario = User.objects.get(idcUsuario = request.query_params['id']) 
             # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
             except: 
                 return Response({
@@ -92,7 +92,7 @@ class UsuariosAPI(APIView):
         if request.query_params: #Revisamos si hay o no parametros dentro de la peticion HTTP
 
             # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id' y lo eliminamos
-            try: usuario = Usuario.objects.get(idcUsuario = request.query_params['id']) 
+            try: usuario = User.objects.get(idcUsuario = request.query_params['id']) 
                  
             # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
             except: 

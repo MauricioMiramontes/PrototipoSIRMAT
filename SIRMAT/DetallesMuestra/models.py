@@ -2,7 +2,7 @@ from django.db import models
 from Especies.models import Especie 
 from Fotografias.models import Fotografia
 from Muestra.models import Muestra 
-from Usuario.models import Usuario
+from Usuario.models import User
 # Create your models here.
 class DetallesMuestra(models.Model):
     idtDetallesMuestra=models.BigAutoField(primary_key=True)
@@ -12,7 +12,7 @@ class DetallesMuestra(models.Model):
     cantidad =models.IntegerField()
     idfotografias = models.ForeignKey(Fotografia, on_delete=models.CASCADE)
     idMuestra = models.ForeignKey(Muestra, on_delete=models.CASCADE)
-    idUsuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    idUsuario = models.ForeignKey(User, on_delete=models.CASCADE)
     
     class Meta:
         db_table = 'tDetallesMuestra'
