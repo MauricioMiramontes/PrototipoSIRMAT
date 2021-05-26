@@ -28,7 +28,6 @@ urlpatterns = [
     path('estereoscopios/', include('Estereoscopios.urls')),
     path('usuarios/', include('Usuario.urls')),
     path('especies/', include('Especies.urls')),
-    path('trampas/', include('Trampas.urls')),
     path('', include('Home.urls')),
     path('api_generate_token/', views.obtain_auth_token),
 
