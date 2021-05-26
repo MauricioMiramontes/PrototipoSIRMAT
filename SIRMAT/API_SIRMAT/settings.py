@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'Usuario',
     'Home',
     'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
