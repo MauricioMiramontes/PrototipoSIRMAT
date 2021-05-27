@@ -6,6 +6,8 @@ from rest_framework import status
 # Importamos el serializador del modelo Especie
 from .serializers import DetallesMuestraSerializer
 
+## To do: Agregar archivo para interaccion con label studio que agregue descripcion al proyecto de la muestra
+
 
 class DetallesMuestraAPI(APIView):
     # Vistas de la API para la tabla 'Detalles Muestra' de la base de datos

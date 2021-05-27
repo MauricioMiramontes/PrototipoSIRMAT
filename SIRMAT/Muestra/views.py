@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import MuestraSerializer #Importamos el serializador del modelo Muestra
+from .Label_Studio_db import editar_muestra_ls, eliminar_muestra_ls, agregar_muestra_ls
 
 class MuestraAPI(APIView):
     # Vistas de la API para la tabla 'muestra' de la base de datos
@@ -43,6 +44,14 @@ class MuestraAPI(APIView):
         
         if serializer.is_valid(): #Si la peticion es valida 
             serializer.save() # Guardamos los datos del serializador en la base de datos
+
+            muestra_guardada = Muestra.objects.latest('idtMuestra') # Tomamos los datos de la muestra nueva
+            agregar_muestra_ls( # Creamos un nuevo proyecto en label studio con los datos de la muestra nueva
+                muestra_guardada.idtMuestra, 
+                str(muestra_guardada.idUsuario), 
+                muestra_guardada.NombreMuestra
+            ) 
+
             return Response(serializer.data) # Y respondemos con los datos del nuevo objeto creado
         else: # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
             return Response(
@@ -71,6 +80,7 @@ class MuestraAPI(APIView):
 
             if serializer.is_valid():# Si la peticion es valida 
                 serializer.save() #Actualizamos el serializador en la base de datos
+                editar_muestra_ls(muestra.idtMuestra, muestra.NombreMuestra) # Pasamos los datos actualizados de la muestra a label_studio
                 return Response(serializer.data)  # Y respondemos con los datos del nuevo objeto creado
             else: # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
                 return Response(
@@ -99,8 +109,10 @@ class MuestraAPI(APIView):
                     'message' : 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
                 },  status = status.HTTP_404_NOT_FOUND) 
           
-            # Si el try no falla entonces respondemos un mensaje de exito
+            # Si el try no falla entonces eliminamos la muestra de la base de datos y de label studio
+            eliminar_muestra_ls(muestra.idtMuestra) 
             muestra.delete()
+            
             return Response({
                 'message' : 'Muestra eliminada correctamente'
             }, status = status.HTTP_200_OK)
