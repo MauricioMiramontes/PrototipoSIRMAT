@@ -1,6 +1,7 @@
 import sqlite3
 from pathlib import Path
 import datetime
+import os
 
 DIR = Path(__file__).resolve().parent.parent
 
@@ -24,9 +25,21 @@ def agregar_muestra_ls(id_muestra, id_usuario, title):
 
     """
 
-    # Se crea conexion a base de datos
-    con = sqlite3.connect(str(DIR) + '\Label_Studio_data\label_studio.sqlite3')
-    cur = con.cursor()
+    # Se revisa primero si existe el archivo de la base de datos de label studio 
+    # Este archivo lo genera automaticamente label studio cuando se inicia por primera vez
+
+    if os.path.exists(str(DIR) + '\Label_Studio_data\label_studio.sqlite3'):
+         # Se crea conexion a base de datos
+        try: 
+            con = sqlite3.connect(str(DIR) + '\Label_Studio_data\label_studio.sqlite3')
+            cur = con.cursor()
+        except:
+            print('Error: No fue posible crear la conexion a la base de datos de label studio')
+            return()
+    else: 
+        print('Error: No existe el archivo label_studio.sqlite3 dentro de Label_Studio_data')
+        return()
+    
 
     # Se define la hora y fecha actual
     now = datetime.datetime.now()
@@ -60,10 +73,17 @@ def agregar_muestra_ls(id_muestra, id_usuario, title):
     )]
 
     # Se ejecuta el Query de SQL con los datos guardados en data y se usa commit para guardar los cambios
-    cur.executemany("insert into project(id, label_config, show_instruction, data_types, is_published, created_at, updated_at, created_by_id, show_skip_button, show_collab_predictions, sampling, overlap_cohort_percentage, show_overlap_first, control_weights, result_count, organization_id, is_draft, color, enable_empty_annotation, maximum_annotations, min_annotations_to_start_training, show_annotation_history, show_ground_truth_first, title ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", data)
+    try: cur.executemany("insert into project(id, label_config, show_instruction, data_types, is_published, created_at, updated_at, created_by_id, show_skip_button, show_collab_predictions, sampling, overlap_cohort_percentage, show_overlap_first, control_weights, result_count, organization_id, is_draft, color, enable_empty_annotation, maximum_annotations, min_annotations_to_start_training, show_annotation_history, show_ground_truth_first, title ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", data)
+    except:
+        con.close()
+        print('Error: No fue posible agregar la muestra de label studio')
+        return()
+    
     con.commit()
     con.close()
-    print('Muestra agregada a label studio')
+    print('Muestra agregada correctamente a label studio')
+
+#------------------------------------------------------------------------------------------------------------------    
 
 def eliminar_muestra_ls(id):
 
@@ -76,12 +96,19 @@ def eliminar_muestra_ls(id):
 
     """
 
-    # Se crea conexion a base de datos
-    try: 
-        con = sqlite3.connect(str(DIR) + '\Label_Studio_data\label_studio.sqlite3')
-        cur = con.cursor()
-    except:
-        print('No se pudo conectar a la base de datos de label studio')
+    # Se revisa primero si existe el archivo de la base de datos de label studio 
+    # Este archivo lo genera automaticamente label studio cuando se inicia por primera vez
+
+    if os.path.exists(str(DIR) + '\Label_Studio_data\label_studio.sqlite3'):
+         # Se crea conexion a base de datos
+        try: 
+            con = sqlite3.connect(str(DIR) + '\Label_Studio_data\label_studio.sqlite3')
+            cur = con.cursor()
+        except:
+            print('Error: No fue posible crear la conexion a la base de datos de label studio')
+            return()
+    else: 
+        print('Error: No existe el archivo label_studio.sqlite3 dentro de Label_Studio_data')
         return()
 
     # Se crea el Query SQL para llevar a cabo la accion
@@ -91,7 +118,7 @@ def eliminar_muestra_ls(id):
     try: cur.execute(sql, (id,))
     except:
         con.close()
-        print('No se pudo eliminar la muestra de label studio')
+        print('Error: No fue posible eliminar la muestra de la base de datos de label studio')
         return()
         
     # Se guardan los cambios en la base de datos
@@ -111,12 +138,19 @@ def editar_muestra_ls(id, title):
 
     """
 
-    # Se crea conexion a base de datos
-    try: 
-        con = sqlite3.connect(str(DIR) + '\Label_Studio_data\label_studio.sqlite3')
-        cur = con.cursor()
-    except:
-        print('No se pudo conectar a la base de datos de label studio')
+    # Se revisa primero si existe el archivo de la base de datos de label studio 
+    # Este archivo lo genera automaticamente label studio cuando se inicia por primera vez
+
+    if os.path.exists(str(DIR) + '\Label_Studio_data\label_studio.sqlite3'):
+         # Se crea conexion a base de datos
+        try: 
+            con = sqlite3.connect(str(DIR) + '\Label_Studio_data\label_studio.sqlite3')
+            cur = con.cursor()
+        except:
+            print('Error: No fue posible crear la conexion a la base de datos de label studio')
+            return()
+    else: 
+        print('Error: No existe el archivo label_studio.sqlite3 dentro de Label_Studio_data')
         return()
 
     # Se guardan los datos nuevos en una sola variable
@@ -134,7 +168,7 @@ def editar_muestra_ls(id, title):
     try: cur.execute(sql, new_data)
     except:
         con.close()
-        print('No se pudo editar la muestra de label studio')
+        print('Error: No fue posible editar la muestra de la base de datos de label studio')
         return()
 
     # Se guardan los cambios en la tabla
