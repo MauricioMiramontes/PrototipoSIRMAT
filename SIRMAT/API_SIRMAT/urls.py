@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('trampas/', include('Trampas.urls')),
     path('muestras/', include('Muestra.urls')),
+    path('detallesmuestra/', include('DetallesMuestra.urls')),
     path('camaras/', include('Camaras.urls')),
     path('fotografias/', include('Fotografias.urls')),
     path('etiquetado/', include('Etiquetado.urls')),
