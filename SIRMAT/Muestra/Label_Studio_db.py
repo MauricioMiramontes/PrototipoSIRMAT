@@ -126,6 +126,8 @@ def eliminar_muestra_ls(id):
     con.close()
     print('Muestra Eliminada en label studio')
 
+#-------------------------------------------------------------------------------------------------------------------
+
 def editar_muestra_ls(id, title):
     """
     Funcion para editar un nuevo registro en la tabla de project de label studio, 
