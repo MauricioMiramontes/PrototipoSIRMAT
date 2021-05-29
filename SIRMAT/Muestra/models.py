@@ -18,4 +18,4 @@ class Muestra(models.Model):
         verbose_name_plural='tMuestras'
 
     def __str__(self):
-        return  self.NombreMuestra
+        return  str(self.idtMuestra)
