@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
 ]
 
+TOKEN_EXPIRED_AFTER_SECONDS = 10
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

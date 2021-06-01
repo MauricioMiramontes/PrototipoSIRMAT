@@ -134,6 +134,7 @@ class Login(ObtainAuthToken):
                         'message':'Inicio de sesión exitoso'
                     },status= status.HTTP_201_CREATED)
                 else: #si el token ya fue creado
+                    """
                     all_sessions = Session.objects.filter(expire_date__gte = datetime.now())#todas las sesiones con tiempo de expiracion mayor o igual a la hora actual
                     if all_sessions.exists(): # si hay sesiones
                         #busca en las sesiones aquella que corresponda con el usuario actual
@@ -148,9 +149,44 @@ class Login(ObtainAuthToken):
                         'user': user_serializer.data,
                         'message':'Inicio de sesión exitoso'
                     },status= status.HTTP_201_CREATED)
+                    """
+                    token.delete()
+                    return Response({
+                        'error': 'Ya se ha iniciado sesión con este usuario' 
+                    },status=status.HTTP_409_CONFLICT)
             else:
                 return Response({'error':'Este usuario no puede iniciar sesión'},status = status.HTTP_401_UNAUTHORIZED)
         else: #si el usuario no es valido
-            return Response({'errir':'Nombre de usuario o contraseña incorrectos.'},status = status.HTTP_400_BAD_REQUEST)
+            return Response({'error':'Nombre de usuario o contraseña incorrectos.'},status = status.HTTP_400_BAD_REQUEST)
 
         return Response({'mensaje':'Hola desde Response'}, status = status.HTTP_200_OK)
+
+class Logout(APIView):
+
+    def get(self, request, *args, **kwargs):
+        try:
+            token = request.GET.get('token') #traemos el token 
+            token = Token.objects.filter(key = token).first()
+
+            if token:
+                user = token.user
+
+                all_sessions = Session.objects.filter(expire_date__gte = datetime.now())#todas las sesiones con tiempo de expiracion mayor o igual a la hora actual
+                if all_sessions.exists(): # si hay sesiones
+                    #busca en las sesiones aquella que corresponda con el usuario actual
+                    for session in all_sessions: 
+                        session_data = session.get_decoded()
+                        if user.id == int(session_data.get('_auth_user_id')): #si hay más de una
+                            session.delete() #borra la sesión
+                token.delete()
+                session_message = 'Sesiones de usuario eliminadas'
+                token_message ='Token eliminado'
+                return Response({'token_message': token_message, 'session_message':session_message},
+                                    status= status.HTTP_200_OK)
+
+            return Response({'error':'No se ha encontrado n usuario con estas credenciales'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'error':'No se ha encontrado token en la peticion'},
+                                    status=status.HTTP_409_CONFLICT)
+            
