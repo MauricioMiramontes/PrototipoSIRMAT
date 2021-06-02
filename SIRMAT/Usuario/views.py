@@ -190,3 +190,11 @@ class Logout(APIView):
             return Response({'error':'No se ha encontrado token en la peticion'},
                                     status=status.HTTP_409_CONFLICT)
             
+class UserToken(APIView):
+    def get(self,request,*args,**kwargs):
+        username = request.GET.get('username')
+        try:
+            user_token = Token.objects.get(user = UsuarioTokenSerializer().Meta.model.objects.filter(username = username).first())
+            return Response({'token':user_token.key})
+        except:
+            return Response({'error':'credenciales enviadas incorrectas'},status=status.HTTP_400_BAD_REQUEST)

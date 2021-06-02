@@ -6,6 +6,7 @@ from django.conf import settings
 
 
 class ExpiringTokenAuthentication(TokenAuthentication):
+    expired = False
     #Calcular tiempo de expiracion
     def expires_in(self, token):
         time_elapsed = timezone.now() - token.created
@@ -18,23 +19,31 @@ class ExpiringTokenAuthentication(TokenAuthentication):
     def token_expire_handler(self, token):
         is_expire = self.is_token_expired(token)
         if is_expire:
-            print('TOKEN EXPIRADO')
-        return is_expire 
+            self.expired = True
+            user = token.user
+            token.delete()
+            token = self.get_model().objects.create(user = user) #refrescando token de forma automatica
 
-    def authenticate_credential(self,key):
+        return is_expire,token
+
+    def authenticate_credentials(self,key):
+        message,token,user = None,None,None
         try:
             token = self.get_model().objects.select_related('user').get(key = key)
-        except: self.get_model().DoesNotExist:
-            raise AuthenticationFailed('Token invalido')
+            user = token.user
+        except self.get_model().DoesNotExist:
+            message = 'Token inválido'
+            self.expired = True
 
-        if not token.user.is_active:
-            raise AuthenticationFailed('Usuario no activo o eliminado')
+        if token is not None:        
+            if not token.user.is_active:
+                message = 'Usuario no activo o eliminado'
 
-        is_expired = token_expire_handler(token)
-        if is_expired:
-            raise AuthenticationFailed('Su token ha expirado')
+            is_expired = self.token_expire_handler(token)
+            if is_expired:
+                message = 'Su token ha expirado'
 
-        return (token.user,token)
+        return (user,token,message,self.expired)
 
     
 
