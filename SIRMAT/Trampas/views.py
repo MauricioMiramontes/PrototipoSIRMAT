@@ -6,9 +6,9 @@ from rest_framework import status
 # Importamos el serializador del modelo Especie
 from .serializers import TrampaSerializer
 #impportar clase Authentication
-from Usuario.authentication_mixins import Authentication
 
-class TrampasAPI(Authentication, APIView):
+
+class TrampasAPI(APIView):
     # Vistas de la API para la tabla 'Trampas' de la base de datos
 
     def get(self, request, format=JsonResponse):

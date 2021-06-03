@@ -3,14 +3,9 @@ from .models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import UsuarioSerializer, UsuarioTokenSerializer #Importamos el serializador del modelo Estereoscopio
+from .serializers import UsuarioSerializer #Importamos el serializador del modelo Estereoscopio
 
 from .Label_Studio_db import agregar_usuario_ls, eliminar_usuario_ls, editar_usuario_ls
-
-from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.authtoken.models import Token
-from django.contrib.sessions.models import Session #clase que maneja las sesiónes
-from datetime import datetime
 
 class UsuariosAPI(APIView):
     # Vistas de la API para la tabla 'estereoscopio' de la base de datos
@@ -122,85 +117,3 @@ class UsuariosAPI(APIView):
             return Response({
                     'message' : 'DELETE debe proporcionar parametro "id"'
                 },  status = status.HTTP_400_BAD_REQUEST)
-
-class Login(ObtainAuthToken):
-   
-    def post(self,request,*args,**kwargs):
-        #el request va a recibir el username y el password
-        login_serializer = self.serializer_class(data= request.data, context = {'request':request}) # la clase ObtainAuthToken ya tiene definido el serilizer(contiene campos username y password)
-        if login_serializer.is_valid(): #si existe el usuario y contraseña en la base de datos
-            user = login_serializer.validated_data['user'] #usuario
-            if user.is_active: #si el usuario está activo
-                token,created = Token.objects.get_or_create(user = user) #trae el token para ese usuario y si no existe lo crea
-                user_serializer = UsuarioTokenSerializer(user) 
-                if created: #si se crea el token
-                    return Response({
-                        'token': token.key,
-                        'user': user_serializer.data,
-                        'message':'Inicio de sesión exitoso'
-                    },status= status.HTTP_201_CREATED)
-                else: #si el token ya fue creado
-                    """
-                    all_sessions = Session.objects.filter(expire_date__gte = datetime.now())#todas las sesiones con tiempo de expiracion mayor o igual a la hora actual
-                    if all_sessions.exists(): # si hay sesiones
-                        #busca en las sesiones aquella que corresponda con el usuario actual
-                        for session in all_sessions: 
-                            session_data = session.get_decoded()
-                            if user.id == int(session_data.get('_auth_user_id')): #si hay más de una
-                                session.delete() #borra la sesión
-                    token.delete() #borramos el token
-                    token = Token.objects.create(user = user)# y creamos un nuevo token
-                    return Response({
-                        'token': token.key,
-                        'user': user_serializer.data,
-                        'message':'Inicio de sesión exitoso'
-                    },status= status.HTTP_201_CREATED)
-                    """
-                    token.delete()
-                    return Response({
-                        'error': 'Ya se ha iniciado sesión con este usuario' 
-                    },status=status.HTTP_409_CONFLICT)
-            else:
-                return Response({'error':'Este usuario no puede iniciar sesión'},status = status.HTTP_401_UNAUTHORIZED)
-        else: #si el usuario no es valido
-            return Response({'error':'Nombre de usuario o contraseña incorrectos.'},status = status.HTTP_400_BAD_REQUEST)
-
-        return Response({'mensaje':'Hola desde Response'}, status = status.HTTP_200_OK)
-
-class Logout(APIView):
-
-    def get(self, request, *args, **kwargs):
-        try:
-            token = request.GET.get('token') #traemos el token 
-            token = Token.objects.filter(key = token).first()
-
-            if token:
-                user = token.user
-
-                all_sessions = Session.objects.filter(expire_date__gte = datetime.now())#todas las sesiones con tiempo de expiracion mayor o igual a la hora actual
-                if all_sessions.exists(): # si hay sesiones
-                    #busca en las sesiones aquella que corresponda con el usuario actual
-                    for session in all_sessions: 
-                        session_data = session.get_decoded()
-                        if user.id == int(session_data.get('_auth_user_id')): #si hay más de una
-                            session.delete() #borra la sesión
-                token.delete()
-                session_message = 'Sesiones de usuario eliminadas'
-                token_message ='Token eliminado'
-                return Response({'token_message': token_message, 'session_message':session_message},
-                                    status= status.HTTP_200_OK)
-
-            return Response({'error':'No se ha encontrado n usuario con estas credenciales'},
-                                    status=status.HTTP_400_BAD_REQUEST)
-        except:
-            return Response({'error':'No se ha encontrado token en la peticion'},
-                                    status=status.HTTP_409_CONFLICT)
-            
-class UserToken(APIView):
-    def get(self,request,*args,**kwargs):
-        email = request.GET.get('email')
-        try:
-            user_token = Token.objects.get(user = UsuarioTokenSerializer().Meta.model.objects.filter(email = email).first())
-            return Response({'token':user_token.key})
-        except:
-            return Response({'error':'credenciales enviadas incorrectas'},status=status.HTTP_400_BAD_REQUEST)
