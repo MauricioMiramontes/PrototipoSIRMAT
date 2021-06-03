@@ -6,7 +6,10 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
     telefono = models.CharField(max_length=10)
-    USERNAME_FIELD = 'id'
+    email = models.EmailField(max_length=50, unique=True)
+    USERNAME_FIELD = 'email'
+
+    REQUIRED_FIELDS = ()
 
     def __str__(self):
         return str(self.id)
