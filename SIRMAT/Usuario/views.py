@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UsuarioSerializer #Importamos el serializador del modelo Estereoscopio
+from rest_framework.authtoken.models import Token
 
 from .Label_Studio_db import agregar_usuario_ls, eliminar_usuario_ls, editar_usuario_ls
 
@@ -42,11 +43,27 @@ class UsuariosAPI(APIView):
         #Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
         serializer = UsuarioSerializer(data=request.data) 
         
-        if serializer.is_valid(): #Si la peticion es valida 
-            serializer.save() # Guardamos los datos del serializador en la base de datos
-            usuario_guardado = User.objects.latest('id')
-            agregar_usuario_ls(usuario_guardado.email, request.data['password'])
-            return Response(serializer.data) # Y respondemos con los datos del nuevo objeto creado
+        datos_respuesta = {}
+
+        if serializer.is_valid(): #Si la peticion es valida
+            nuevo_usuario = serializer.save() # Guardamos los datos del serializador en la base de datos
+            token = Token.objects.get(user=nuevo_usuario).key # Obtenemos el token de ese usuario
+
+            datos_respuesta['response'] = 'Usuario registrado de forma exitosa'
+            datos_respuesta['user_data'] = {
+                "id"         : nuevo_usuario.id,
+                "email"      : nuevo_usuario.email,
+                "username"   : nuevo_usuario.username, 
+                "first_name" : nuevo_usuario.first_name,
+                "last_name"  : nuevo_usuario.last_name
+            }
+            datos_respuesta['token'] = token
+
+            # Agregamos un nuevo usuario a Label Studio con los mismos datos
+            agregar_usuario_ls(nuevo_usuario.email, request.data['password'])
+
+            return Response(datos_respuesta) # Y respondemos con los datos del nuevo objeto creado
+
         else: # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
             return Response(
                 serializer.errors, 

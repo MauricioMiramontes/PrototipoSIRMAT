@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Apps Propias
     'Muestra',
     'Trampas',
     'Estereoscopios',
@@ -53,11 +55,17 @@ INSTALLED_APPS = [
     'Fotografias',
     'Usuario',
     'Home',
+
+    # Apps rest_framework
     'rest_framework',
     'rest_framework.authtoken',
 ]
 
-TOKEN_EXPIRED_AFTER_SECONDS = 900
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
