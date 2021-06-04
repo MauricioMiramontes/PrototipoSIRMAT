@@ -6,10 +6,14 @@ from rest_framework import status
 # Importamos el serializador del modelo Especie
 from .serializers import TrampaSerializer
 #impportar clase Authentication
-from Usuario.authentication_mixins import Authentication
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 
-class TrampasAPI(Authentication, APIView):
+
+class TrampasAPI(APIView):
     # Vistas de la API para la tabla 'Trampas' de la base de datos
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, format=JsonResponse):
         # Logica para una peticion tipo GET

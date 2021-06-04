@@ -25,7 +25,11 @@ def agregar_usuario_ls(email, password):
         "password" : password
     }
 
-    respuesta = requests.post(urlLS, data)
+    try: respuesta = requests.post(urlLS, data)
+    except:
+        print('Error: No se recibio respuesta de API label studio, ¿Esta activo el servidor de Label Studio?')
+        return()
+
     if respuesta.status_code == 200:
         print('Usuario agregado correctamente a label studio')
         print(respuesta.status_code)
