@@ -6,6 +6,9 @@ from rest_framework import status
 # Importamos el serializador del modelo Estereoscopio
 from .serializers import UsuarioSerializer
 from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
+from django.contrib.auth import logout
+
 
 from .Label_Studio_db import agregar_usuario_ls, eliminar_usuario_ls, editar_usuario_ls
 
@@ -46,8 +49,13 @@ class UsuariosAPI(APIView):
         # Respondemos con los datos que se hayan guardado en el serializador 'serializer'
         return Response(serializer.data)
 
+<<<<<<< HEAD
     # ------------------------------------------------------------------------------------
 
+=======
+    #------------------------------------------------------------------------------------
+    '''
+>>>>>>> d3502c7d9893148a4988ee959ecc4346e9fc7692
     def post(self, request):
         # Logica para una peticion tipo POST
 
@@ -83,8 +91,13 @@ class UsuariosAPI(APIView):
                 serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST
             )
+<<<<<<< HEAD
 
     # ----------------------------------------------------------------------------------------------------------------
+=======
+    '''
+    #----------------------------------------------------------------------------------------------------------------
+>>>>>>> d3502c7d9893148a4988ee959ecc4346e9fc7692
 
     def put(self, request):
         # Logica para peticiones tipo PUT
@@ -150,5 +163,97 @@ class UsuariosAPI(APIView):
 
         else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
             return Response({
+<<<<<<< HEAD
                 'message': 'DELETE debe proporcionar parametro "id"'
             },  status=status.HTTP_400_BAD_REQUEST)
+=======
+                    'message' : 'DELETE debe proporcionar parametro "id"'
+                },  status = status.HTTP_400_BAD_REQUEST)
+
+
+class UsuariosSingUp(APIView):
+
+      def post(self, request , format=JsonResponse):
+        #Logica para una peticion tipo POST 
+        
+        #Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
+        serializer = UsuarioSerializer(data=request.data) 
+        
+        datos_respuesta = {}
+
+        if serializer.is_valid(): #Si la peticion es valida
+            nuevo_usuario = serializer.save() # Guardamos los datos del serializador en la base de datos
+            token = Token.objects.get(user=nuevo_usuario).key # Obtenemos el token de ese usuario
+
+            datos_respuesta['response'] = 'Usuario registrado de forma exitosa'
+            datos_respuesta['user_data'] = {
+                "id"         : nuevo_usuario.id,
+                "email"      : nuevo_usuario.email,
+                "username"   : nuevo_usuario.username, 
+                "first_name" : nuevo_usuario.first_name,
+                "last_name"  : nuevo_usuario.last_name
+            }
+            datos_respuesta['token'] = token
+
+            # Agregamos un nuevo usuario a Label Studio con los mismos datos
+            agregar_usuario_ls(nuevo_usuario.email, request.data['password'])
+
+            return Response(datos_respuesta) # Y respondemos con los datos del nuevo objeto creado
+
+        else: # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
+            return Response(
+                serializer.errors, 
+                status = status.HTTP_400_BAD_REQUEST  
+            )
+
+
+class CustomAuthToken(ObtainAuthToken):
+    
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        datos_respuesta = {}
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+
+        datos_respuesta['response'] = 'Inicio de Sesión Exitoso'
+        datos_respuesta['token'] = token.key
+        datos_respuesta['user_data'] = {
+            "id"         : user.pk,
+            "email"      : user.email,
+            "username"   : user.username, 
+            "first_name" : user.first_name,
+            "last_name"  : user.last_name
+        }
+        
+
+        return Response(datos_respuesta)
+
+class Logout(APIView):
+
+    def get(self, request, *args, **kwargs):
+        try:
+            token = request.GET.get('token') #traemos el token 
+            print(token)
+            token = Token.objects.filter(key = token).first()
+
+            if token: # si el token es valido
+                print(token)
+                token.delete()
+                
+                session_message = 'Sesión Finalizada'
+                token_message ='Token eliminado'
+                return Response({'token_message': token_message, 'session_message':session_message},
+                                    status= status.HTTP_200_OK)
+            else:
+                return Response({'error':'No se ha encontrado un usuario con estas credenciales'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'error':'No se ha encontrado token en la peticion'},
+                                    status=status.HTTP_409_CONFLICT)
+
+
+
+     
+>>>>>>> d3502c7d9893148a4988ee959ecc4346e9fc7692
