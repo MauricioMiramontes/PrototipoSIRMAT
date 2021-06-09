@@ -8,6 +8,8 @@ from .serializers import UsuarioSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from django.contrib.auth import logout
+from django.utils import timezone
+from django.contrib.auth.signals import user_logged_in
 
 
 from .Label_Studio_db import agregar_usuario_ls, eliminar_usuario_ls, editar_usuario_ls
@@ -164,7 +166,10 @@ class CustomAuthToken(ObtainAuthToken):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
-
+        #Actualizamos el registro last_login
+        user.last_login  = timezone.now()
+        user.save(update_fields = ['last_login'])
+    
         datos_respuesta['response'] = 'Inicio de Sesión Exitoso'
         datos_respuesta['token'] = token.key
         datos_respuesta['user_data'] = {
@@ -172,11 +177,14 @@ class CustomAuthToken(ObtainAuthToken):
             "email"      : user.email,
             "username"   : user.username, 
             "first_name" : user.first_name,
-            "last_name"  : user.last_name
+            "last_name"  : user.last_name,
+            "last_login" : user.last_login,
         }
         
 
         return Response(datos_respuesta)
+
+ 
 
 class Logout(APIView):
 
