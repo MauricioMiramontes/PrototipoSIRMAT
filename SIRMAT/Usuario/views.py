@@ -3,134 +3,152 @@ from .models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import UsuarioSerializer #Importamos el serializador del modelo Estereoscopio
+# Importamos el serializador del modelo Estereoscopio
+from .serializers import UsuarioSerializer
 from rest_framework.authtoken.models import Token
 
 from .Label_Studio_db import agregar_usuario_ls, eliminar_usuario_ls, editar_usuario_ls
 
+# importar clase Authentication (LMRG)
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+
 class UsuariosAPI(APIView):
     # Vistas de la API para la tabla 'estereoscopio' de la base de datos
+
+    # Pedimos autenticacion por Token (LMRG)
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, format=JsonResponse):
         # Logica para una peticion tipo GET
         # Si se quiere ver un solo objeto es necesario proporcionar un parametro llamado 'id' con el valor
         # del idcUsuario que se desea ver, ejmpl: usuarios/?id=1
 
-        if request.query_params: #Revisamos si hay o no parametros dentro de la peticion HTTP
+        if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
 
             # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id'
-            try: usuario = User.objects.get(id = request.query_params['id'])
+            try:
+                usuario = User.objects.get(id=request.query_params['id'])
             # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
-            except: 
+            except:
                 return Response({
-                    'message' : 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
-                },  status = status.HTTP_404_NOT_FOUND) 
+                    'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
+                },  status=status.HTTP_404_NOT_FOUND)
             # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'usuario'
-            serializer = UsuarioSerializer(usuario)   
+            serializer = UsuarioSerializer(usuario)
         else:
             # Si no hay parameteros tomamos todos los objetos en la base de datos y los serializamos
             usuarios = User.objects.all()
-            serializer = UsuarioSerializer(usuarios, many = True)
+            serializer = UsuarioSerializer(usuarios, many=True)
 
         # Respondemos con los datos que se hayan guardado en el serializador 'serializer'
         return Response(serializer.data)
 
-    #------------------------------------------------------------------------------------
-    
+    # ------------------------------------------------------------------------------------
+
     def post(self, request):
-        #Logica para una peticion tipo POST 
-        
-        #Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
-        serializer = UsuarioSerializer(data=request.data) 
-        
+        # Logica para una peticion tipo POST
+
+        # Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
+        serializer = UsuarioSerializer(data=request.data)
+
         datos_respuesta = {}
 
-        if serializer.is_valid(): #Si la peticion es valida
-            nuevo_usuario = serializer.save() # Guardamos los datos del serializador en la base de datos
-            token = Token.objects.get(user=nuevo_usuario).key # Obtenemos el token de ese usuario
+        if serializer.is_valid():  # Si la peticion es valida
+            # Guardamos los datos del serializador en la base de datos
+            nuevo_usuario = serializer.save()
+            # Obtenemos el token de ese usuario
+            token = Token.objects.get(user=nuevo_usuario).key
 
             datos_respuesta['response'] = 'Usuario registrado de forma exitosa'
             datos_respuesta['user_data'] = {
-                "id"         : nuevo_usuario.id,
-                "email"      : nuevo_usuario.email,
-                "username"   : nuevo_usuario.username, 
-                "first_name" : nuevo_usuario.first_name,
-                "last_name"  : nuevo_usuario.last_name
+                "id": nuevo_usuario.id,
+                "email": nuevo_usuario.email,
+                "username": nuevo_usuario.username,
+                "first_name": nuevo_usuario.first_name,
+                "last_name": nuevo_usuario.last_name
             }
             datos_respuesta['token'] = token
 
             # Agregamos un nuevo usuario a Label Studio con los mismos datos
             agregar_usuario_ls(nuevo_usuario.email, request.data['password'])
 
-            return Response(datos_respuesta) # Y respondemos con los datos del nuevo objeto creado
+            # Y respondemos con los datos del nuevo objeto creado
+            return Response(datos_respuesta)
 
-        else: # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
+        else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
             return Response(
-                serializer.errors, 
-                status = status.HTTP_400_BAD_REQUEST  
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
             )
 
-    #----------------------------------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------------------------------
 
     def put(self, request):
-        #Logica para peticiones tipo PUT
-        # Es necesario proporcionar un parametro llamado 'id' con el valor del idcUsuario que se desea actualizar 
+        # Logica para peticiones tipo PUT
+        # Es necesario proporcionar un parametro llamado 'id' con el valor del idcUsuario que se desea actualizar
         # ejmpl: usuarios/?id=1
 
-        if request.query_params: #Revisamos si hay o no parametros dentro de la peticion HTTP
+        if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
             # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id'
-            try: usuario = User.objects.get(id = request.query_params['id'])
+            try:
+                usuario = User.objects.get(id=request.query_params['id'])
             # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
-            except: 
+            except:
                 return Response({
-                    'message' : 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
-                },  status = status.HTTP_404_NOT_FOUND)
+                    'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
+                },  status=status.HTTP_404_NOT_FOUND)
 
             # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'usuario'
-            serializer = UsuarioSerializer(usuario, data = request.data)
+            serializer = UsuarioSerializer(usuario, data=request.data)
 
-            if serializer.is_valid():# Si la peticion es valida 
+            if serializer.is_valid():  # Si la peticion es valida
                 # Actualizamos el serializador en la base de datos y en label studio
-                serializer.save() 
-                editar_usuario_ls(usuario.id, usuario.email, request.data['password'] )
-                return Response(serializer.data)  # Y respondemos con los datos del nuevo objeto creado
-            else: # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
+                serializer.save()
+                editar_usuario_ls(usuario.id, usuario.email,
+                                  request.data['password'])
+                # Y respondemos con los datos del nuevo objeto creado
+                return Response(serializer.data)
+            else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
                 return Response(
-                    serializer.errors, 
-                    status = status.HTTP_400_BAD_REQUEST
-                ) 
-        else: # El parametro es requerido por lo que si no se proporciona se respondera un error
+                    serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
             return Response({
-                    'message' : 'PUT debe proporcionar parametro "id"'
-                },  status = status.HTTP_400_BAD_REQUEST)
+                'message': 'PUT debe proporcionar parametro "id"'
+            },  status=status.HTTP_400_BAD_REQUEST)
 
-    #--------------------------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------------------------------------
 
     def delete(self, request):
         # Logica para una peticion DELETE
-        # Es necesario proporcionar un parametro llamado 'id' con el valor del idcUsuario que se desea eliminar 
+        # Es necesario proporcionar un parametro llamado 'id' con el valor del idcUsuario que se desea eliminar
         # ejmpl: usuarios/?id=1
-        
-        if request.query_params: #Revisamos si hay o no parametros dentro de la peticion HTTP
+
+        if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
 
             # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id' y lo eliminamos
-            try: usuario = User.objects.get(id = request.query_params['id']) 
-                 
+            try:
+                usuario = User.objects.get(id=request.query_params['id'])
+
             # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
-            except: 
-                
+            except:
+
                 return Response({
-                    'message' : 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
-                },  status = status.HTTP_404_NOT_FOUND) 
-          
+                    'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
+                },  status=status.HTTP_404_NOT_FOUND)
+
             # Si el try no falla entonces respondemos un mensaje de exito
             eliminar_usuario_ls(usuario.id)
             usuario.delete()
             return Response({
-                'message' : 'Usuario eliminado correctamente'
-            }, status = status.HTTP_200_OK)
+                'message': 'Usuario eliminado correctamente'
+            }, status=status.HTTP_200_OK)
 
-        else: # El parametro es requerido por lo que si no se proporciona se respondera un error
+        else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
             return Response({
-                    'message' : 'DELETE debe proporcionar parametro "id"'
-                },  status = status.HTTP_400_BAD_REQUEST)
+                'message': 'DELETE debe proporcionar parametro "id"'
+            },  status=status.HTTP_400_BAD_REQUEST)

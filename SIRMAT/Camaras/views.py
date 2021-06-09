@@ -6,9 +6,17 @@ from rest_framework import status
 # Importamos el serializador del modelo Especie
 from .serializers import CamaraSerializer
 
+# importar clase Authentication (LMRG)
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
 
 class CamarasAPI(APIView):
     # Vistas de la API para la tabla 'especie' de la base de datos
+
+    # Pedimos autenticacion por Token (LMRG)
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, format=JsonResponse):
         # Logica para una peticion tipo GET
