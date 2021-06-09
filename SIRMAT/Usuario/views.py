@@ -48,57 +48,9 @@ class UsuariosAPI(APIView):
 
         # Respondemos con los datos que se hayan guardado en el serializador 'serializer'
         return Response(serializer.data)
-
-<<<<<<< HEAD
-    # ------------------------------------------------------------------------------------
-
-=======
-    #------------------------------------------------------------------------------------
-    '''
->>>>>>> d3502c7d9893148a4988ee959ecc4346e9fc7692
-    def post(self, request):
-        # Logica para una peticion tipo POST
-
-        # Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
-        serializer = UsuarioSerializer(data=request.data)
-
-        datos_respuesta = {}
-
-        if serializer.is_valid():  # Si la peticion es valida
-            # Guardamos los datos del serializador en la base de datos
-            nuevo_usuario = serializer.save()
-            # Obtenemos el token de ese usuario
-            token = Token.objects.get(user=nuevo_usuario).key
-
-            datos_respuesta['response'] = 'Usuario registrado de forma exitosa'
-            datos_respuesta['user_data'] = {
-                "id": nuevo_usuario.id,
-                "email": nuevo_usuario.email,
-                "username": nuevo_usuario.username,
-                "first_name": nuevo_usuario.first_name,
-                "last_name": nuevo_usuario.last_name
-            }
-            datos_respuesta['token'] = token
-
-            # Agregamos un nuevo usuario a Label Studio con los mismos datos
-            agregar_usuario_ls(nuevo_usuario.email, request.data['password'])
-
-            # Y respondemos con los datos del nuevo objeto creado
-            return Response(datos_respuesta)
-
-        else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
-            )
-<<<<<<< HEAD
-
-    # ----------------------------------------------------------------------------------------------------------------
-=======
-    '''
+        
     #----------------------------------------------------------------------------------------------------------------
->>>>>>> d3502c7d9893148a4988ee959ecc4346e9fc7692
-
+    
     def put(self, request):
         # Logica para peticiones tipo PUT
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idcUsuario que se desea actualizar
@@ -121,7 +73,7 @@ class UsuariosAPI(APIView):
                 # Actualizamos el serializador en la base de datos y en label studio
                 serializer.save()
                 editar_usuario_ls(usuario.id, usuario.email,
-                                  request.data['password'])
+                                    request.data['password'])
                 # Y respondemos con los datos del nuevo objeto creado
                 return Response(serializer.data)
             else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
@@ -163,12 +115,8 @@ class UsuariosAPI(APIView):
 
         else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
             return Response({
-<<<<<<< HEAD
-                'message': 'DELETE debe proporcionar parametro "id"'
-            },  status=status.HTTP_400_BAD_REQUEST)
-=======
                     'message' : 'DELETE debe proporcionar parametro "id"'
-                },  status = status.HTTP_400_BAD_REQUEST)
+            },  status = status.HTTP_400_BAD_REQUEST)
 
 
 class UsuariosSingUp(APIView):
@@ -256,4 +204,4 @@ class Logout(APIView):
 
 
      
->>>>>>> d3502c7d9893148a4988ee959ecc4346e9fc7692
+
