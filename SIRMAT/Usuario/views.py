@@ -188,28 +188,37 @@ class CustomAuthToken(ObtainAuthToken):
 
 class Logout(APIView):
 
-    def get(self, request, *args, **kwargs):
-        try:
-            token = request.GET.get('token') #traemos el token 
-            print(token)
-            token = Token.objects.filter(key = token).first()
+    def post(self, request, *args, **kwargs):
 
-            if token: # si el token es valido
-                print(token)
-                token.delete()
-                
-                session_message = 'Sesión Finalizada'
-                token_message ='Token eliminado'
-                return Response({'token_message': token_message, 'session_message':session_message},
-                                    status= status.HTTP_200_OK)
-            else:
-                return Response({'error':'No se ha encontrado un usuario con estas credenciales'},
-                                    status=status.HTTP_400_BAD_REQUEST)
-        except:
-            return Response({'error':'No se ha encontrado token en la peticion'},
-                                    status=status.HTTP_409_CONFLICT)
+        # Logica para una peticion POST de LOGOUT
+        # Es necesario proporcionar en el body una variable llamada 'id' con el valor del idcUsuario con el que se desea cerrar la sesion
+        
+        #Se intenta encontrar un usuario que coincida con ese id 
+        try: usuario = User.objects.get(id=request.data['id'])
+        except: # Si no se encuentra se manda mensaje de error
+            return Response(
+                {
+                    'error':'No se ha encontrado un usuario con estas credenciales'
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
 
+        # Se intenta encontrar un token que este relacionado con ese usuario
+        try: token = Token.objects.get(user=request.data['id'])
+        except: # Si no se encuentra se manda un mensaje de error
+            return Response(
+                {
+                    'error':'No hay token registrado para ese usuario'
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
 
-
-     
+        # Si se encontro el usuario y este tiene un token a su nombre entonces se elimina el token y se manda mensaje de exito 
+        token.delete()
+        return Response(
+            {
+                'message':'Sesion y token eliminados con exito'
+            },
+            status=status.HTTP_404_NOT_FOUND
+        )
 
