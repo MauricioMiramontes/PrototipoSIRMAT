@@ -1,0 +1,1 @@
+SELECT * FROM `SIRMAT_DB`.`Usuario_user` LIMIT 1000;

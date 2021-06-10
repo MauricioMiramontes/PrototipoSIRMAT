@@ -13,19 +13,15 @@ class UsuarioSerializer(serializers.ModelSerializer):
     
     # Esta funcion se llama cuando save() del serializador va a crear un nuevo registro en la BD (POST)
     def create(self, validated_data):
-        try:
-            user = User( # Los 5 campos obligatorios que deben estar en una peticion de POST 
-                email = validated_data['email'],
-                username = validated_data['username'],
-                telefono = validated_data['telefono'],
-                first_name = validated_data['first_name'],
-                last_name = validated_data['last_name']
-            )
-        except: # En caso de que alguno falte debemos enviar un error 
-            raise serializers.ValidationError({
-                'Error': 'Missing fields',
-                'field required': ['email','username', 'telefono', 'first_name', 'last_name']
-            })
+        # Se guarda el nuevo usuario con los 5 campos obligatorios
+        user = User( # Los 5 campos obligatorios que deben estar en una peticion de POST 
+            email = validated_data['email'],
+            username = validated_data['username'],
+            telefono = validated_data['telefono'],
+            first_name = validated_data['first_name'],
+            last_name = validated_data['last_name']
+        )
+        
         user.set_password(validated_data['password'])
         user.save()
         return user

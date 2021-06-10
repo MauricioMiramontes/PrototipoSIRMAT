@@ -11,9 +11,11 @@ from rest_framework.authtoken.models import Token
 class User(AbstractUser):
     telefono = models.CharField(max_length=10)
     email = models.EmailField(max_length=50, unique=True)
+    first_name = models.CharField(max_length=15, blank=False)
+    last_name = models.CharField(max_length= 20, blank=False)
     USERNAME_FIELD = 'email'
 
-    REQUIRED_FIELDS = ()
+    REQUIRED_FIELDS = ['first_name','last_name']
 
     def __str__(self):
         return str(self.id)
