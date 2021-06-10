@@ -33,14 +33,20 @@ class UsuariosAPI(APIView):
 
         if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
 
-            # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id'
-            try:
-                usuario = User.objects.get(id=request.query_params['id'])
-            # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
+            # Se verifica que exista el parametro con llave 'id'
+            try: request.query_params['id']
             except:
                 return Response({
-                    'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
+                    "message": "Solo se acepta un parametro con llave 'id'"
+                },  status=status.HTTP_400_BAD_REQUEST)
+
+            # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id'
+            try: usuario = User.objects.get(id=request.query_params['id'])
+            except:  # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
+                return Response({
+                    'message': 'No se encontro ningun elemento que coincida con ese id'
                 },  status=status.HTTP_404_NOT_FOUND)
+
             # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'usuario'
             serializer = UsuarioSerializer(usuario)
         else:
@@ -185,7 +191,6 @@ class CustomAuthToken(ObtainAuthToken):
         return Response(datos_respuesta)
 
  
-
 class Logout(APIView):
 
     def post(self, request, *args, **kwargs):
@@ -219,6 +224,6 @@ class Logout(APIView):
             {
                 'message':'Sesion y token eliminados con exito'
             },
-            status=status.HTTP_404_NOT_FOUND
+            status=status.HTTP_200_OK
         )
 
