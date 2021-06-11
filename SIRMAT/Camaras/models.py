@@ -9,7 +9,8 @@ class Camara(models.Model):
     foco = models.CharField(max_length=45)
     resolucion = models.CharField(max_length=45)
     idEstereoscopios = models.ForeignKey(
-        Estereoscopio, on_delete=models.CASCADE)
+    Estereoscopio, on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'cCamaras'

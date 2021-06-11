@@ -12,6 +12,7 @@ class Muestra(models.Model):
     idTrampas = models.ForeignKey(Trampas, on_delete=models.CASCADE)
     idUsuario = models.ForeignKey(User, on_delete=models.CASCADE)
     NombreMuestra = models.CharField(max_length=50)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'tMuestras'

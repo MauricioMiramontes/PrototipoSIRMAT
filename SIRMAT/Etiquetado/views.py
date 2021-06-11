@@ -121,8 +121,11 @@ class EtiquetadoAPI(APIView):
                     'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
                 },  status=status.HTTP_404_NOT_FOUND)
 
-            # Si el try no falla entonces respondemos un mensaje de exito
-            etiquetado.delete()
+            # Si el try no falla entonces cambiamos el registro is_active de la BD
+
+            etiquetado.is_active = False #cambiamos is_active a False
+            etiquetado.save(update_fields = ['is_active']) #guardamos los cambios
+            # Enviamos mensaje de éxito
             return Response({
                 'message': 'Etiquetado eliminado correctamente'
             }, status=status.HTTP_200_OK)

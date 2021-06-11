@@ -6,6 +6,7 @@ from django.db import models
 class Especie(models.Model):
     idcEspecie = models.BigAutoField(primary_key=True)
     especie = models.CharField(max_length=45)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'cEspecies'

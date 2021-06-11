@@ -15,6 +15,7 @@ class Fotografia(models.Model):
     idMuestra = models.ForeignKey(Muestra, on_delete=models.CASCADE)
     fileFoto = models.ImageField(
         upload_to=settings.LS_FILES_DIR + 'media/upload/', max_length=100)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'fotografias'

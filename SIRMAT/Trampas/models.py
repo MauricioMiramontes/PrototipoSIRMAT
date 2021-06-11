@@ -8,6 +8,8 @@ class Trampas(models.Model):
     nombre = models.CharField(max_length=45)
     direccion = models.CharField(max_length=45)
     coordenadas = models.CharField(max_length=45)
+    is_active = models.BooleanField(default=True)
+
 
     class Meta:
         db_table = 'cTrampas'

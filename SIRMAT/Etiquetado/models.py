@@ -12,8 +12,9 @@ class Etiquetado(models.Model):
     hora_fecha = models.DateTimeField()
     poligono = models.CharField(max_length=45)
     idDetallesMuestra = models.ForeignKey(
-        DetallesMuestra, on_delete=models.CASCADE)
+    DetallesMuestra, on_delete=models.CASCADE)
     id_especie = models.ForeignKey(Especie, on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'etiquetado'

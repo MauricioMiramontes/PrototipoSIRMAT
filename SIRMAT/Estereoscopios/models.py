@@ -7,6 +7,7 @@ class Estereoscopio(models.Model):
     idcEstereoscopios = models.BigAutoField(primary_key=True)
     marca = models.CharField(max_length=45)
     caracteristicas = models.CharField(max_length=45)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'cEstereoscopios'

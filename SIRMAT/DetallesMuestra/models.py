@@ -13,6 +13,7 @@ class DetallesMuestra(models.Model):
     cantidad = models.IntegerField()
     idMuestra = models.ForeignKey(Muestra, on_delete=models.CASCADE)
 
+
     class Meta:
         db_table = 'tDetallesMuestra'
         verbose_name = 'Detalles Muestra'

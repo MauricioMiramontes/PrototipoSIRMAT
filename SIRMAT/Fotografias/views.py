@@ -134,9 +134,13 @@ class FotografiaAPI(APIView):
                     'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
                 },  status=status.HTTP_404_NOT_FOUND)
 
-            # Si el try no falla entonces eliminamos la muestra de la base de datos y de label studio
+            # Si el try no falla entonces eliminamos la muestra de label studio
             eliminar_foto_ls(fotografia.idFotografias)
-            fotografia.delete()
+            #Cambiamos el registro is_active de la BD
+
+            fotografia.is_active = False #cambiamos is_active a False
+            fotografia.save(update_fields = ['is_active']) #guardamos los cambios
+            # Enviamos mensaje de éxito
 
             return Response({
                 'message': 'Fotografia eliminada correctamente'

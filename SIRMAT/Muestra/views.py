@@ -136,9 +136,13 @@ class MuestraAPI(APIView):
                     'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
                 },  status=status.HTTP_404_NOT_FOUND)
 
-            # Si el try no falla entonces eliminamos la muestra de la base de datos y de label studio
+            # Si el try no falla entonces eliminamos la muestra de label studio
             eliminar_muestra_ls(muestra.idtMuestra)
-            muestra.delete()
+            # cambiamos el registro is_active de la BD
+
+            muestra.is_active = False #cambiamos is_active a False
+            muestra.save(update_fields = ['is_active']) #guardamos los cambios
+            # Enviamos mensaje de éxito
 
             return Response({
                 'message': 'Muestra eliminada correctamente'
