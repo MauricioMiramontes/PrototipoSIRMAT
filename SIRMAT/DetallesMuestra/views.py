@@ -28,7 +28,8 @@ class DetallesMuestraAPI(APIView):
         if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
 
             # Se verifica que exista el parametro con llave 'id'
-            try: request.query_params['id']
+            try:
+                request.query_params['id']
             except:
                 return Response({
                     "message": "Solo se acepta un parametro con llave 'id'"
@@ -44,7 +45,7 @@ class DetallesMuestraAPI(APIView):
                     'message': 'No se encontro ningun elemento que coincida con ese id'
                 },  status=status.HTTP_404_NOT_FOUND)
 
-            # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'estereoscopio'
+            # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'detallemuestra'
             serializer = DetallesMuestraSerializer(detallesmuestra)
         else:
             # Si no hay parameteros tomamos todos los objetos en la base de datos y los serializamos
@@ -55,3 +56,86 @@ class DetallesMuestraAPI(APIView):
         return Response(serializer.data)
 
     # ------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------
+    def post(self, request):
+        # Logica para una peticion tipo POST
+
+        # Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
+        serializer = DetallesMuestraSerializer(data=request.data)
+
+        if serializer.is_valid():  # Si la peticion es valida
+            serializer.save()  # Guardamos los datos del serializador en la base de datos
+            # Y respondemos con los datos del nuevo objeto creado
+            return Response(serializer.data)
+        else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            # ----------------------------------------------------------------------------------------------------------------
+
+    def put(self, request):
+        # Logica para peticiones tipo PUT
+        # Es necesario proporcionar un parametro llamado 'id' con el valor del idtDetallesMuestra que se desea actualizar
+        # ejmpl: detallesmuestra/?id=1
+
+        if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
+            # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id'
+            try:
+                detallemuestra = DetallesMuestra.objects.get(
+                    idtDetallesMuestra=request.query_params['id'])
+            # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
+            except:
+                return Response({
+                    'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
+                },  status=status.HTTP_404_NOT_FOUND)
+
+            # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'especie'
+            serializer = DetallesMuestraSerializer(
+                detallemuestra, data=request.data)
+
+            if serializer.is_valid():  # Si la peticion es valida
+                serializer.save()  # Actualizamos el serializador en la base de datos
+                # Y respondemos con los datos del nuevo objeto creado
+                return Response(serializer.data)
+            else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
+                return Response(
+                    serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
+            return Response({
+                'message': 'PUT debe proporcionar parametro "id"'
+            },  status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        # Logica para una peticion DELETE
+        # Es necesario proporcionar un parametro llamado 'id' con el valor del idtDetallesMuestra que se desea eliminar
+        # ejmpl: detallesmuestra/?id=1
+
+        if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
+
+            # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id' y lo eliminamos
+            try:
+                detallemuestra = DetallesMuestra.objects.get(
+                    idtDetallesMuestra=request.query_params['id'])
+            # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
+            except:
+                return Response({
+                    'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
+                },  status=status.HTTP_404_NOT_FOUND)
+
+            # Si el try no falla entonces cambiamos el registro is_active de la BD
+
+            detallemuestra.is_active = False  # cambiamos is_active a False
+            # guardamos los cambios
+            detallemuestra.save(update_fields=['is_active'])
+            # Enviamos mensaje de éxito
+            return Response({
+                'message': 'Detalle Muestra eliminada correctamente'
+            }, status=status.HTTP_200_OK)
+
+        else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
+            return Response({
+                'message': 'DELETE debe proporcionar parametro "id"'
+            },  status=status.HTTP_400_BAD_REQUEST)
