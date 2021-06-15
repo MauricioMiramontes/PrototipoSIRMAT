@@ -35,6 +35,11 @@
             pip install djangorestframework
             pip install markdown
             pip install django-filter
+
+- Requests 
+    - Utilizando pip:
+        ######
+            pip install -U requests
             
 ### Instalacion para desarrollo
 
@@ -70,6 +75,17 @@
     3. Alternativamente se puede agregar '--recurse-submodules' al comando clone del paso 1 para descargar label studio directamente 
     ####
         git clone --recurse-submodules https://github.com/LEAI-IIMAS/projects.git
+    4. Una vez instalado Label Studio se debe modificar una linea de su codigo para indicarle cual es la carpeta que utilizara para guardar tanto las imagenes como su base de datos:
+        - El archivo se encuentra en:
+        ###
+            label-studio/label_studio/core/settings/base.py
+        - Se que se debe cambiar es: 
+        ###
+            BASE_DATA_DIR = get_env('BASE_DATA_DIR', get_data_dir())
+        - Se debe de cambiar por el valor: 
+        ###
+            BASE_DATA_DIR = os.path.join(BASE_DIR,"../../../SIRMAT/Label_Studio_Data")
+
 
 # Comandos git 
 #### https://git-scm.com/docs
