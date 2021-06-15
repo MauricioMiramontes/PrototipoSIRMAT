@@ -16,7 +16,6 @@ class UsuarioSerializer(serializers.ModelSerializer):
         # Se guarda el nuevo usuario con los 5 campos obligatorios
         user = User( # Los 5 campos obligatorios que deben estar en una peticion de POST 
             email = validated_data['email'],
-            username = validated_data['username'],
             telefono = validated_data['telefono'],
             first_name = validated_data['first_name'],
             last_name = validated_data['last_name']
