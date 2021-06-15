@@ -79,7 +79,7 @@
         - El archivo se encuentra en:
         ###
             label-studio/label_studio/core/settings/base.py
-        - Se que se debe cambiar es: 
+        - La linea que se que se debe cambiar es: 
         ###
             BASE_DATA_DIR = get_env('BASE_DATA_DIR', get_data_dir())
         - Se debe de cambiar por el valor: 
