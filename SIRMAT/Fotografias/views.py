@@ -68,7 +68,7 @@ class FotografiaAPI(APIView):
             agregar_foto_ls(
                 fotografia_guardada.idFotografias,
                 request.data['fileFoto']._get_name(),
-                request.user,
+                request.user.id,
                 str(fotografia_guardada.idMuestra)
             )
 
