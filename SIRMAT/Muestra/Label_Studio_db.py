@@ -28,10 +28,10 @@ def agregar_muestra_ls(id_muestra, id_usuario, title):
     # Se revisa primero si existe el archivo de la base de datos de label studio 
     # Este archivo lo genera automaticamente label studio cuando se inicia por primera vez
 
-    if os.path.exists(str(DIR) + '/Label_Studio_data/label_studio.sqlite3'):
+    if os.path.exists(str(DIR) + '/Label_Studio_Data/label_studio.sqlite3'):
          # Se crea conexion a base de datos
         try: 
-            con = sqlite3.connect(str(DIR) + '/Label_Studio_data/label_studio.sqlite3')
+            con = sqlite3.connect(str(DIR) + '/Label_Studio_Data/label_studio.sqlite3')
             cur = con.cursor()
         except:
             print('Error: No fue posible crear la conexion a la base de datos de label studio')
@@ -99,10 +99,10 @@ def eliminar_muestra_ls(id):
     # Se revisa primero si existe el archivo de la base de datos de label studio 
     # Este archivo lo genera automaticamente label studio cuando se inicia por primera vez
 
-    if os.path.exists(str(DIR) + '/Label_Studio_data/label_studio.sqlite3'):
+    if os.path.exists(str(DIR) + '/Label_Studio_Data/label_studio.sqlite3'):
          # Se crea conexion a base de datos
         try: 
-            con = sqlite3.connect(str(DIR) + '/Label_Studio_data/label_studio.sqlite3')
+            con = sqlite3.connect(str(DIR) + '/Label_Studio_Data/label_studio.sqlite3')
             cur = con.cursor()
         except:
             print('Error: No fue posible crear la conexion a la base de datos de label studio')
@@ -143,10 +143,10 @@ def editar_muestra_ls(id, title):
     # Se revisa primero si existe el archivo de la base de datos de label studio 
     # Este archivo lo genera automaticamente label studio cuando se inicia por primera vez
 
-    if os.path.exists(str(DIR) + '/Label_Studio_data/label_studio.sqlite3'):
+    if os.path.exists(str(DIR) + '/Label_Studio_Data/label_studio.sqlite3'):
          # Se crea conexion a base de datos
         try: 
-            con = sqlite3.connect(str(DIR) + '/Label_Studio_data/label_studio.sqlite3')
+            con = sqlite3.connect(str(DIR) + '/Label_Studio_Data/label_studio.sqlite3')
             cur = con.cursor()
         except:
             print('Error: No fue posible crear la conexion a la base de datos de label studio')
@@ -178,7 +178,7 @@ def editar_muestra_ls(id, title):
     con.close()
     print('Muestra editada en label studio')
 
-if os.path.exists(str(DIR) + '/Label_Studio_data/label_studio.sqlite3'):
+if os.path.exists(str(DIR) + '/Label_Studio_Data/label_studio.sqlite3'):
          # Se crea conexion a base de datos
     print("Si existe")
 else: 
