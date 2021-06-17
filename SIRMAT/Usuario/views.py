@@ -121,9 +121,12 @@ class UsuariosAPI(APIView):
                     'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
                 },  status=status.HTTP_404_NOT_FOUND)
 
-            # Si el try no falla entonces respondemos un mensaje de exito
-            eliminar_usuario_ls(usuario.id)
-            usuario.delete()
+            # Si el try no falla entonces cambiamos el registro is_active de la BD
+
+            usuario.is_active = False #cambiamos is_active a False
+            usuario.save(update_fields = ['is_active']) #guardamos los cambios
+            eliminar_usuario_ls(usuario.id) #eliminamos usuario de LabelStudio
+            # Enviamos mensaje de éxito
             return Response({
                 'message': 'Usuario eliminado correctamente'
             }, status=status.HTTP_200_OK)
