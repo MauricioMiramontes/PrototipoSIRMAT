@@ -101,31 +101,9 @@ class UsuariosAPI(APIView):
                     )
             else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
                 return Response({
-<<<<<<< HEAD
                     'message': 'PUT debe proporcionar parametro "id"'
                 },  status=status.HTTP_400_BAD_REQUEST)
         else:   
-=======
-                    'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
-                },  status=status.HTTP_404_NOT_FOUND)
-
-            # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'usuario'
-            serializer = UsuarioSerializer(usuario, data=request.data)
-
-            if serializer.is_valid():  # Si la peticion es valida
-                # Actualizamos el serializador en la base de datos y en label studio
-                serializer.save()
-                editar_usuario_ls(usuario.id, usuario.email,
-                                  request.data['password'])
-                # Y respondemos con los datos del nuevo objeto creado
-                return Response(serializer.data)
-            else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
-                return Response(
-                    serializer.errors,
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-        else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
->>>>>>> c9d46998b4fca9bc443de8b14c4f014133139fa6
             return Response({
                 "error" : "El usuario no tiene permisos para realizar esta accion"
             },  status=status.HTTP_403_FORBIDDEN)
@@ -169,13 +147,8 @@ class UsuariosAPI(APIView):
                 },  status = status.HTTP_400_BAD_REQUEST)
         else:   
             return Response({
-<<<<<<< HEAD
                 "error" : "El usuario no tiene permisos para realizar esta accion"
             },  status=status.HTTP_403_FORBIDDEN)
-=======
-                'message': 'DELETE debe proporcionar parametro "id"'
-            },  status=status.HTTP_400_BAD_REQUEST)
->>>>>>> c9d46998b4fca9bc443de8b14c4f014133139fa6
 
 
 class UsuariosSingUp(APIView):
