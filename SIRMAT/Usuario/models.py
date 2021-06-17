@@ -26,9 +26,9 @@ class UserManager(BaseUserManager):
         user.first_name = first_name
         user.last_name = last_name
         user.set_password(password)
-        user.admin = True
-        user.staff = True
-        user.active = True
+        user.is_superuser = True
+        user.is_staff = True
+        user.is_active = True
         user.save(using=self._db)
         return user
 
