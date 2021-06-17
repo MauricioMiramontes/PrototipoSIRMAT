@@ -1,5 +1,6 @@
+from .Label_Studio_db import agregar_detallesMuestra_ls, editar_detallesMuestra_ls
 from django.http.response import JsonResponse
-from .models import DetallesMuestra
+from .models import DetallesMuestra, Muestra
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -65,6 +66,13 @@ class DetallesMuestraAPI(APIView):
 
         if serializer.is_valid():  # Si la peticion es valida
             serializer.save()  # Guardamos los datos del serializador en la base de datos
+            # Tomamos los datos de los detalles de la muestra 
+            detalles_guardados = DetallesMuestra.objects.latest('idtDetallesMuestra')
+            agregar_detallesMuestra_ls(  # Creamos un nuevo proyecto en label studio con los datos de de los detalles de la muestra
+                str(detalles_guardados.idMuestra),
+                detalles_guardados.observaciones
+            )
+
             # Y respondemos con los datos del nuevo objeto creado
             return Response(serializer.data)
         else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
@@ -96,6 +104,8 @@ class DetallesMuestraAPI(APIView):
 
             if serializer.is_valid():  # Si la peticion es valida
                 serializer.save()  # Actualizamos el serializador en la base de datos
+                # Pasamos los datos actualizados de los detalles de la muestra a label_studio
+                editar_detallesMuestra_ls(str(detallemuestra.idMuestra), detallemuestra.observaciones)
                 # Y respondemos con los datos del nuevo objeto creado
                 return Response(serializer.data)
             else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
