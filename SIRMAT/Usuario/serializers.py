@@ -30,7 +30,6 @@ class UsuarioSerializer(serializers.ModelSerializer):
         
         
         instance.email = validated_data['email']
-        instance.username = validated_data['username']
         instance.telefono = validated_data['telefono']
         instance.first_name = validated_data['first_name']
         instance.last_name = validated_data['last_name']
