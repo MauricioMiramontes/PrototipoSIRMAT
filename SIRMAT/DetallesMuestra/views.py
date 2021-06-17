@@ -53,6 +53,11 @@ class DetallesMuestraAPI(APIView):
             detallesmuestras = DetallesMuestra.objects.all()
             serializer = DetallesMuestraSerializer(detallesmuestras, many=True)
 
+        if not serializer.data:
+            # Si aun no hay registros mandamos una respuesta con el error y un mensaje con detalles
+            return Response({
+                'message': 'Aun no se tiene ningún registro en la base de datos'
+            },  status=status.HTTP_204_NO_CONTENT)
         # Respondemos con los datos que se hayan guardado en el serializador 'serializer'
         return Response(serializer.data)
 

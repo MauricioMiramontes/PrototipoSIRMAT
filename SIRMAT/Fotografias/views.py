@@ -27,7 +27,8 @@ class FotografiaAPI(APIView):
         if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
 
             # Se verifica que exista el parametro con llave 'id'
-            try: request.query_params['id']
+            try:
+                request.query_params['id']
             except:
                 return Response({
                     "message": "Solo se acepta un parametro con llave 'id'"
@@ -50,6 +51,11 @@ class FotografiaAPI(APIView):
             fotografias = Fotografia.objects.all()
             serializer = FotografiaSerializer(fotografias, many=True)
 
+        if not serializer.data:
+            # Si aun no hay registros mandamos una respuesta con el error y un mensaje con detalles
+            return Response({
+                'message': 'Aun no se tiene ningún registro en la base de datos'
+            },  status=status.HTTP_204_NO_CONTENT)
         # Respondemos con los datos que se hayan guardado en el serializador 'serializer'
         return Response(serializer.data)
 
@@ -136,10 +142,11 @@ class FotografiaAPI(APIView):
 
             # Si el try no falla entonces eliminamos la muestra de label studio
             eliminar_foto_ls(fotografia.idFotografias)
-            #Cambiamos el registro is_active de la BD
+            # Cambiamos el registro is_active de la BD
 
-            fotografia.is_active = False #cambiamos is_active a False
-            fotografia.save(update_fields = ['is_active']) #guardamos los cambios
+            fotografia.is_active = False  # cambiamos is_active a False
+            # guardamos los cambios
+            fotografia.save(update_fields=['is_active'])
             # Enviamos mensaje de éxito
 
             return Response({

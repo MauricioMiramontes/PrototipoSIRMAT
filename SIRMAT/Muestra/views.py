@@ -27,7 +27,8 @@ class MuestraAPI(APIView):
         if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
 
             # Se verifica que exista el parametro con llave 'id'
-            try: request.query_params['id']
+            try:
+                request.query_params['id']
             except:
                 return Response({
                     "message": "Solo se acepta un parametro con llave 'id'"
@@ -50,6 +51,11 @@ class MuestraAPI(APIView):
             muestras = Muestra.objects.all()
             serializer = MuestraSerializer(muestras, many=True)
 
+        if not serializer.data:
+            # Si aun no hay registros mandamos una respuesta con el error y un mensaje con detalles
+            return Response({
+                'message': 'Aun no se tiene ningún registro en la base de datos'
+            },  status=status.HTTP_204_NO_CONTENT)
         # Respondemos con los datos que se hayan guardado en el serializador 'serializer'
         return Response(serializer.data)
 
@@ -140,8 +146,8 @@ class MuestraAPI(APIView):
             eliminar_muestra_ls(muestra.idtMuestra)
             # cambiamos el registro is_active de la BD
 
-            muestra.is_active = False #cambiamos is_active a False
-            muestra.save(update_fields = ['is_active']) #guardamos los cambios
+            muestra.is_active = False  # cambiamos is_active a False
+            muestra.save(update_fields=['is_active'])  # guardamos los cambios
             # Enviamos mensaje de éxito
 
             return Response({
