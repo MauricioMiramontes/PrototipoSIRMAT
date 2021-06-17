@@ -26,7 +26,8 @@ class CamarasAPI(APIView):
         if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
 
             # Se verifica que exista el parametro con llave 'id'
-            try: request.query_params['id']
+            try:
+                request.query_params['id']
             except:
                 return Response({
                     "message": "Solo se acepta un parametro con llave 'id'"
@@ -49,10 +50,16 @@ class CamarasAPI(APIView):
             camaras = Camara.objects.all()
             serializer = CamaraSerializer(camaras, many=True)
 
+        if not serializer.data:
+            # Si aun no hay registros mandamos una respuesta con el error y un mensaje con detalles
+            return Response({
+                'message': 'Aun no se tiene ningún registro en la base de datos'
+            },  status=status.HTTP_204_NO_CONTENT)
         # Respondemos con los datos que se hayan guardado en el serializador 'serializer'
         return Response(serializer.data)
 
     # ------------------------------------------------------------------------------------
+
     def post(self, request):
         # Logica para una peticion tipo POST
 
@@ -123,11 +130,10 @@ class CamarasAPI(APIView):
                     'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
                 },  status=status.HTTP_404_NOT_FOUND)
 
-            
             # Si el try no falla entonces cambiamos el registro is_active de la BD
 
-            camara.is_active = False #cambiamos is_active a False
-            camara.save(update_fields = ['is_active']) #guardamos los cambios
+            camara.is_active = False  # cambiamos is_active a False
+            camara.save(update_fields=['is_active'])  # guardamos los cambios
             # Enviamos mensaje de éxito
             return Response({
                 'message': 'Camara eliminada correctamente'

@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 # Importamos el serializador del modelo Especie
 from .serializers import TrampaSerializer
-#impportar clase Authentication
+# impportar clase Authentication
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
@@ -23,7 +23,8 @@ class TrampasAPI(APIView):
         if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
 
             # Se verifica que exista el parametro con llave 'id'
-            try: request.query_params['id']
+            try:
+                request.query_params['id']
             except:
                 return Response({
                     "message": "Solo se acepta un parametro con llave 'id'"
@@ -46,6 +47,11 @@ class TrampasAPI(APIView):
             trampas = Trampas.objects.all()
             serializer = TrampaSerializer(trampas, many=True)
 
+        if not serializer.data:
+            # Si aun no hay registros mandamos una respuesta con el error y un mensaje con detalles
+            return Response({
+                'message': 'Aun no se tiene ningún registro en la base de datos'
+            },  status=status.HTTP_204_NO_CONTENT)
         # Respondemos con los datos que se hayan guardado en el serializador 'serializer'
         return Response(serializer.data)
 
@@ -121,8 +127,8 @@ class TrampasAPI(APIView):
 
             # Si el try no falla entonces cambiamos el registro is_active de la BD
 
-            trampa.is_active = False #cambiamos is_active a False
-            trampa.save(update_fields = ['is_active']) #guardamos los cambios
+            trampa.is_active = False  # cambiamos is_active a False
+            trampa.save(update_fields=['is_active'])  # guardamos los cambios
             # Enviamos mensaje de éxito
             return Response({
                 'message': 'Trampa eliminada correctamente'
