@@ -1,5 +1,6 @@
 from .models import User
 from rest_framework import serializers
+import django.contrib.auth.password_validation as validation
 
 class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
@@ -36,3 +37,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
         instance.set_password(validated_data['password'])
         instance.save()
         return instance
+
+    def validate_password(self, data):
+            validation.validate_password(password=data, user=User)
+            return data
