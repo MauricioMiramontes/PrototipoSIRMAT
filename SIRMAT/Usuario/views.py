@@ -155,7 +155,7 @@ class UsuariosSingUp(APIView):
 
     def post(self, request, format=JsonResponse):
         # Logica para una peticion tipo POST
-
+        
         # Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
         serializer = UsuarioSerializer(data=request.data)
 
@@ -163,7 +163,10 @@ class UsuariosSingUp(APIView):
 
         if serializer.is_valid():  # Si la peticion es valida
             # Guardamos los datos del serializador en la base de datos
+            
             nuevo_usuario = serializer.save()
+            
+            
             # Obtenemos el token de ese usuario
             token = Token.objects.get(user=nuevo_usuario).key
 
@@ -174,6 +177,7 @@ class UsuariosSingUp(APIView):
                 "username": nuevo_usuario.username,
                 "first_name": nuevo_usuario.first_name,
                 "last_name": nuevo_usuario.last_name
+                
             }
             datos_respuesta['token'] = token
 
@@ -254,3 +258,98 @@ class Logout(APIView):
             },
             status=status.HTTP_200_OK
         )
+
+class UsuariosSignUpAdmin(APIView):
+
+    def post(self, request, format=JsonResponse):
+        # Logica para una peticion tipo POST
+
+        # Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
+        serializer = UsuarioSerializer(data=request.data)
+        #Verificamos que el usuario sea administrador
+        if not request.user.is_superuser == True:
+             return Response({
+                "error" : "El usuario no tiene permisos para realizar esta accion"
+            },  status=status.HTTP_403_FORBIDDEN)
+            
+        datos_respuesta = {}
+
+        if serializer.is_valid():  # Si la peticion es valida
+            # Guardamos los datos del serializador en la base de datos
+            nuevo_usuario = serializer.save()
+            # Cambiamos las variables del usuario 
+            nuevo_usuario.is_superuser = True
+            nuevo_usuario.is_staff = True
+            # Obtenemos el token de ese usuario
+            token = Token.objects.get(user=nuevo_usuario).key
+
+            datos_respuesta['response'] = 'Administrador registrado de forma exitosa'
+            datos_respuesta['user_data'] = {
+                "id": nuevo_usuario.id,
+                "email": nuevo_usuario.email,
+                "username": nuevo_usuario.username,
+                "first_name": nuevo_usuario.first_name,
+                "last_name": nuevo_usuario.last_name,
+                "is_superuser": nuevo_usuario.is_superuser,
+                "is_staff": nuevo_usuario.is_staff,
+            }
+            datos_respuesta['token'] = token
+
+            # Agregamos un nuevo usuario a Label Studio con los mismos datos
+            agregar_usuario_ls(nuevo_usuario.email, request.data['password'])
+
+            # Y respondemos con los datos del nuevo objeto creado
+            return Response(datos_respuesta)
+
+        else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+class UsuariosSignUpStaff(APIView):
+
+    def post(self, request, format=JsonResponse):
+        # Logica para una peticion tipo POST
+
+        # Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
+        serializer = UsuarioSerializer(data=request.data)
+        #Verificamos que el usuario sea administrador
+        if not request.user.is_superuser == True:
+             return Response({
+                "error" : "El usuario no tiene permisos para realizar esta accion"
+            },  status=status.HTTP_403_FORBIDDEN)
+            
+        datos_respuesta = {}
+
+        if serializer.is_valid():  # Si la peticion es valida
+            # Guardamos los datos del serializador en la base de datos
+            nuevo_usuario = serializer.save()
+            # Cambiamos las variables del usuario 
+            nuevo_usuario.is_staff = True
+            # Obtenemos el token de ese usuario
+            token = Token.objects.get(user=nuevo_usuario).key
+
+            datos_respuesta['response'] = 'Empleado registrado de forma exitosa'
+            datos_respuesta['user_data'] = {
+                "id": nuevo_usuario.id,
+                "email": nuevo_usuario.email,
+                "username": nuevo_usuario.username,
+                "first_name": nuevo_usuario.first_name,
+                "last_name": nuevo_usuario.last_name,
+                "is_superuser": nuevo_usuario.is_superuser,
+                "is_staff": nuevo_usuario.is_staff,
+            }
+            datos_respuesta['token'] = token
+
+            # Agregamos un nuevo usuario a Label Studio con los mismos datos
+            agregar_usuario_ls(nuevo_usuario.email, request.data['password'])
+
+            # Y respondemos con los datos del nuevo objeto creado
+            return Response(datos_respuesta)
+
+        else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
