@@ -31,6 +31,11 @@ class UsuariosAPI(APIView):
         # Si se quiere ver un solo objeto es necesario proporcionar un parametro llamado 'id' con el valor
         # del idcUsuario que se desea ver, ejmpl: usuarios/?id=1
 
+        if not request.user.is_superuser:
+             return Response({
+                "error" : "El usuario no tiene permisos para realizar esta accion"
+            },  status=status.HTTP_403_FORBIDDEN)
+
         if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
 
             # Se verifica que exista el parametro con llave 'id'

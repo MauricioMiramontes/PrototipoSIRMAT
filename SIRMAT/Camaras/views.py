@@ -63,18 +63,26 @@ class CamarasAPI(APIView):
     def post(self, request):
         # Logica para una peticion tipo POST
 
-        # Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
-        serializer = CamaraSerializer(data=request.data)
+        # Solo se puede hacer si el token es de un superusuario (LMRG)
+        # Revisamos si el usuario no es un superusuario
+        if not request.user.is_superuser:
+            return Response({
+                "error": "El usuario no tiene permisos para realizar esta accion"
+            },  status=status.HTTP_403_FORBIDDEN)
+        else:
 
-        if serializer.is_valid():  # Si la peticion es valida
-            serializer.save()  # Guardamos los datos del serializador en la base de datos
-            # Y respondemos con los datos del nuevo objeto creado
-            return Response(serializer.data)
-        else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            # Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
+            serializer = CamaraSerializer(data=request.data)
+
+            if serializer.is_valid():  # Si la peticion es valida
+                serializer.save()  # Guardamos los datos del serializador en la base de datos
+                # Y respondemos con los datos del nuevo objeto creado
+                return Response(serializer.data)
+            else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
+                return Response(
+                    serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
     # ----------------------------------------------------------------------------------------------------------------
 
@@ -83,33 +91,41 @@ class CamarasAPI(APIView):
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idcEspecie que se desea actualizar
         # ejmpl: camara/?id=1
 
-        if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
-            # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id'
-            try:
-                camara = Camara.objects.get(
-                    idcCamaras=request.query_params['id'])
-            # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
-            except:
-                return Response({
-                    'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
-                },  status=status.HTTP_404_NOT_FOUND)
-
-            # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'especie'
-            serializer = CamaraSerializer(camara, data=request.data)
-
-            if serializer.is_valid():  # Si la peticion es valida
-                serializer.save()  # Actualizamos el serializador en la base de datos
-                # Y respondemos con los datos del nuevo objeto creado
-                return Response(serializer.data)
-            else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
-                return Response(
-                    serializer.errors,
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-        else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
+        # Solo se puede hacer si el token es de un superusuario (LMRG)
+        # Revisamos si el usuario no es un superusuario
+        if not request.user.is_superuser:
             return Response({
-                'message': 'PUT debe proporcionar parametro "id"'
-            },  status=status.HTTP_400_BAD_REQUEST)
+                "error": "El usuario no tiene permisos para realizar esta accion"
+            },  status=status.HTTP_403_FORBIDDEN)
+        else:
+
+            if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
+                # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id'
+                try:
+                    camara = Camara.objects.get(
+                        idcCamaras=request.query_params['id'])
+                # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
+                except:
+                    return Response({
+                        'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
+                    },  status=status.HTTP_404_NOT_FOUND)
+
+                # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'especie'
+                serializer = CamaraSerializer(camara, data=request.data)
+
+                if serializer.is_valid():  # Si la peticion es valida
+                    serializer.save()  # Actualizamos el serializador en la base de datos
+                    # Y respondemos con los datos del nuevo objeto creado
+                    return Response(serializer.data)
+                else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
+                    return Response(
+                        serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+            else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
+                return Response({
+                    'message': 'PUT debe proporcionar parametro "id"'
+                },  status=status.HTTP_400_BAD_REQUEST)
 
     # --------------------------------------------------------------------------------------------------------------
 
@@ -118,28 +134,37 @@ class CamarasAPI(APIView):
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idcEspecie que se desea eliminar
         # ejmpl: camara/?id=1
 
-        if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
+        # Solo se puede hacer si el token es de un superusuario (LMRG)
+        # Revisamos si el usuario no es un superusuario
+        if not request.user.is_superuser:
+            return Response({
+                "error": "El usuario no tiene permisos para realizar esta accion"
+            },  status=status.HTTP_403_FORBIDDEN)
+        else:
 
-            # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id' y lo eliminamos
-            try:
-                camara = Camara.objects.get(
-                    idcCamaras=request.query_params['id'])
-            # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
-            except:
+            if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
+
+                # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id' y lo eliminamos
+                try:
+                    camara = Camara.objects.get(
+                        idcCamaras=request.query_params['id'])
+                # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
+                except:
+                    return Response({
+                        'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
+                    },  status=status.HTTP_404_NOT_FOUND)
+
+                # Si el try no falla entonces cambiamos el registro is_active de la BD
+
+                camara.is_active = False  # cambiamos is_active a False
+                # guardamos los cambios
+                camara.save(update_fields=['is_active'])
+                # Enviamos mensaje de éxito
                 return Response({
-                    'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
-                },  status=status.HTTP_404_NOT_FOUND)
+                    'message': 'Camara eliminada correctamente'
+                }, status=status.HTTP_200_OK)
 
-            # Si el try no falla entonces cambiamos el registro is_active de la BD
-
-            camara.is_active = False  # cambiamos is_active a False
-            camara.save(update_fields=['is_active'])  # guardamos los cambios
-            # Enviamos mensaje de éxito
-            return Response({
-                'message': 'Camara eliminada correctamente'
-            }, status=status.HTTP_200_OK)
-
-        else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
-            return Response({
-                'message': 'DELETE debe proporcionar parametro "id"'
-            },  status=status.HTTP_400_BAD_REQUEST)
+            else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
+                return Response({
+                    'message': 'DELETE debe proporcionar parametro "id"'
+                },  status=status.HTTP_400_BAD_REQUEST)
