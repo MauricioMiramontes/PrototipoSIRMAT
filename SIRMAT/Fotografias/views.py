@@ -94,6 +94,15 @@ class FotografiaAPI(APIView):
         # ejmpl: fotografias/?id=1
 
         if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
+
+            # Se verifica que exista el parametro con llave 'id'
+            try:
+                request.query_params['id']
+            except:
+                return Response({
+                    "message": "Solo se acepta un parametro con llave 'id'"
+                },  status=status.HTTP_400_BAD_REQUEST)
+
             # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id'
             try:
                 fotografia = Fotografia.objects.get(
@@ -101,7 +110,7 @@ class FotografiaAPI(APIView):
             # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
             except:
                 return Response({
-                    'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
+                    'message': 'No se encontro ningun elemento que coincida con ese id'
                 },  status=status.HTTP_404_NOT_FOUND)
 
             # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'muestra'
@@ -128,7 +137,15 @@ class FotografiaAPI(APIView):
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idFotografias que se desea eliminar
         # ejmpl: fotografias/?id=1
 
-        if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
+        if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion 
+            
+            # Se verifica que exista el parametro con llave 'id'
+            try:
+                request.query_params['id']
+            except:
+                return Response({
+                    "message": "Solo se acepta un parametro con llave 'id'"
+                },  status=status.HTTP_400_BAD_REQUEST)
 
             # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id' y lo eliminamos
             try:
@@ -137,7 +154,7 @@ class FotografiaAPI(APIView):
             # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
             except:
                 return Response({
-                    'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
+                    'message': 'No se encontro ningun elemento que coincida con ese id'
                 },  status=status.HTTP_404_NOT_FOUND)
 
             # Si el try no falla entonces eliminamos la muestra de label studio

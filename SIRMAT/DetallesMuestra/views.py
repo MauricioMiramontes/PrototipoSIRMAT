@@ -93,6 +93,15 @@ class DetallesMuestraAPI(APIView):
         # ejmpl: detallesmuestra/?id=1
 
         if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
+
+            # Se verifica que exista el parametro con llave 'id'
+            try:
+                request.query_params['id']
+            except:
+                return Response({
+                    "message": "Solo se acepta un parametro con llave 'id'"
+                },  status=status.HTTP_400_BAD_REQUEST)
+
             # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id'
             try:
                 detallemuestra = DetallesMuestra.objects.get(
@@ -100,7 +109,7 @@ class DetallesMuestraAPI(APIView):
             # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
             except:
                 return Response({
-                    'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
+                    'message': 'No se encontro ningun elemento que coincida con ese id'
                 },  status=status.HTTP_404_NOT_FOUND)
 
             # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'especie'
@@ -130,6 +139,14 @@ class DetallesMuestraAPI(APIView):
 
         if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
 
+            # Se verifica que exista el parametro con llave 'id'
+            try:
+                request.query_params['id']
+            except:
+                return Response({
+                    "message": "Solo se acepta un parametro con llave 'id'"
+                },  status=status.HTTP_400_BAD_REQUEST)
+
             # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id' y lo eliminamos
             try:
                 detallemuestra = DetallesMuestra.objects.get(
@@ -137,7 +154,7 @@ class DetallesMuestraAPI(APIView):
             # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
             except:
                 return Response({
-                    'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
+                    'message': 'No se encontro ningun elemento que coincida con ese id'
                 },  status=status.HTTP_404_NOT_FOUND)
 
             # Si el try no falla entonces cambiamos el registro is_active de la BD

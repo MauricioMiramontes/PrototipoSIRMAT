@@ -80,13 +80,22 @@ class UsuariosAPI(APIView):
         if request.user.is_superuser or str(request.user.id) == request.query_params['id']:
                   
             if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
+                
+                # Se verifica que exista el parametro con llave 'id'
+                try:
+                    request.query_params['id']
+                except:
+                    return Response({
+                        "message": "La unica llave de parametros aceptada 'id'"
+                    },  status=status.HTTP_400_BAD_REQUEST)
+
                 # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id'
                 try:
                     usuario = User.objects.get(id=request.query_params['id'])
                 # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
                 except:
                     return Response({
-                        'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
+                        'message': 'No se encontro ningun elemento que coincida con ese id'
                     },  status=status.HTTP_404_NOT_FOUND)
 
                 # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'usuario'
@@ -125,6 +134,14 @@ class UsuariosAPI(APIView):
 
             if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
 
+                # Se verifica que exista el parametro con llave 'id'
+                try:
+                    request.query_params['id']
+                except:
+                    return Response({
+                        "message": "Solo se acepta un parametro con llave 'id'"
+                    },  status=status.HTTP_400_BAD_REQUEST)
+
                 # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id' y lo eliminamos
                 try:
                     usuario = User.objects.get(id=request.query_params['id'])
@@ -133,7 +150,7 @@ class UsuariosAPI(APIView):
                 except:
 
                     return Response({
-                        'message': 'No hay parametro con nombre "id" o No se encontro ningun elemento que coincida con ese id'
+                        'message': 'No se encontro ningun elemento que coincida con ese id'
                     },  status=status.HTTP_404_NOT_FOUND)
 
                 # Si el try no falla entonces cambiamos el registro is_active de la BD
