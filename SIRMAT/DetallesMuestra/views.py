@@ -66,26 +66,34 @@ class DetallesMuestraAPI(APIView):
     def post(self, request):
         # Logica para una peticion tipo POST
 
-        # Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
-        serializer = DetallesMuestraSerializer(data=request.data)
+        # Se definen los permisos para peticiones tipo POST
+        if request.user.is_superuser or request.user.is_staff:
 
-        if serializer.is_valid():  # Si la peticion es valida
-            serializer.save()  # Guardamos los datos del serializador en la base de datos
-            # Tomamos los datos de los detalles de la muestra 
-            detalles_guardados = DetallesMuestra.objects.latest('idtDetallesMuestra')
-            agregar_detallesMuestra_ls(  # Creamos un nuevo proyecto en label studio con los datos de de los detalles de la muestra
-                str(detalles_guardados.idMuestra),
-                detalles_guardados.observaciones
-            )
+            # Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
+            serializer = DetallesMuestraSerializer(data=request.data)
 
-            # Y respondemos con los datos del nuevo objeto creado
-            return Response(serializer.data)
-        else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
-            )
-            # ----------------------------------------------------------------------------------------------------------------
+            if serializer.is_valid():  # Si la peticion es valida
+                serializer.save()  # Guardamos los datos del serializador en la base de datos
+                # Tomamos los datos de los detalles de la muestra 
+                detalles_guardados = DetallesMuestra.objects.latest('idtDetallesMuestra')
+                agregar_detallesMuestra_ls(  # Creamos un nuevo proyecto en label studio con los datos de de los detalles de la muestra
+                    str(detalles_guardados.idMuestra),
+                    detalles_guardados.observaciones
+                )
+                print(detalles_guardados.idMuestra.idUsuario.email)
+                # Y respondemos con los datos del nuevo objeto creado
+                return Response(serializer.data)
+            else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
+                return Response(
+                    serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        else:
+            return Response({
+                        "error" : "El usuario no tiene permisos para realizar esta accion"
+                    },  status=status.HTTP_403_FORBIDDEN)
+
+# ----------------------------------------------------------------------------------------------------------------
 
     def put(self, request):
         # Logica para peticiones tipo PUT
@@ -111,6 +119,18 @@ class DetallesMuestraAPI(APIView):
                 return Response({
                     'message': 'No se encontro ningun elemento que coincida con ese id'
                 },  status=status.HTTP_404_NOT_FOUND)
+
+            # Se definen los permisos para peticiones tipo PUT 
+            if request.user.is_superuser or request.user.is_staff:
+                if not request.user.is_superuser and request.user.id != detallemuestra.idMuestra.idUsuario.id:
+                    return Response({
+                            "error" : "Solo puede realizar esta operación el dueño este registro"
+                        },  status=status.HTTP_403_FORBIDDEN)
+            else:
+                return Response({
+                            "error" : "El usuario no tiene permisos para realizar esta accion"
+                        },  status=status.HTTP_403_FORBIDDEN)
+
 
             # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'especie'
             serializer = DetallesMuestraSerializer(
@@ -156,6 +176,17 @@ class DetallesMuestraAPI(APIView):
                 return Response({
                     'message': 'No se encontro ningun elemento que coincida con ese id'
                 },  status=status.HTTP_404_NOT_FOUND)
+
+             # Se definen los permisos para peticiones tipo PUT 
+            if request.user.is_superuser or request.user.is_staff:
+                if not request.user.is_superuser and request.user.id != detallemuestra.idMuestra.idUsuario.id:
+                    return Response({
+                            "error" : "Solo puede realizar esta operación el dueño este registro"
+                        },  status=status.HTTP_403_FORBIDDEN)
+            else:
+                return Response({
+                            "error" : "El usuario no tiene permisos para realizar esta accion"
+                        },  status=status.HTTP_403_FORBIDDEN)
 
             # Si el try no falla entonces cambiamos el registro is_active de la BD
 

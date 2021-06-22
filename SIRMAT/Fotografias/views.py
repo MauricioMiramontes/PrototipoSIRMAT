@@ -64,27 +64,36 @@ class FotografiaAPI(APIView):
     def post(self, request):
         # Logica para una peticion tipo POST
 
-        # Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
-        serializer = FotografiaSerializer(data=request.data)
+        # Se definen los permisos para peticiones tipo POST
+        if request.user.is_superuser or request.user.is_staff:
 
-        if serializer.is_valid():  # Si la peticion es valida
-            serializer.save()  # Guardamos los datos del serializador en la base de datos y label studio
-            fotografia_guardada = Fotografia.objects.latest('idFotografias')
+            # Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
+            serializer = FotografiaSerializer(data=request.data)
 
-            agregar_foto_ls(
-                fotografia_guardada.idFotografias,
-                request.data['fileFoto']._get_name(),
-                request.user.id,
-                str(fotografia_guardada.idMuestra)
-            )
+            if serializer.is_valid():  # Si la peticion es valida
+                serializer.save()  # Guardamos los datos del serializador en la base de datos y label studio
+                fotografia_guardada = Fotografia.objects.latest('idFotografias')
 
-            # Y respondemos con los datos del nuevo objeto creado
-            return Response(serializer.data)
-        else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
-            )
+                agregar_foto_ls(
+                    fotografia_guardada.idFotografias,
+                    request.data['fileFoto']._get_name(),
+                    request.user.id,
+                    str(fotografia_guardada.idMuestra)
+                )
+
+                # Y respondemos con los datos del nuevo objeto creado
+                return Response(serializer.data)
+            else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
+                return Response(
+                    serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        else:
+            return Response({
+                        "error" : "El usuario no tiene permisos para realizar esta accion"
+                    },  status=status.HTTP_403_FORBIDDEN)
+
+       
 
     # ----------------------------------------------------------------------------------------------------------------
 
@@ -112,6 +121,17 @@ class FotografiaAPI(APIView):
                 return Response({
                     'message': 'No se encontro ningun elemento que coincida con ese id'
                 },  status=status.HTTP_404_NOT_FOUND)
+
+            # Se definen los permisos para peticiones tipo PUT 
+            if request.user.is_superuser or request.user.is_staff:
+                if not request.user.is_superuser and request.user.id != fotografia.idUsuario.id:
+                    return Response({
+                            "error" : "Solo puede realizar esta operación el dueño este registro"
+                        },  status=status.HTTP_403_FORBIDDEN)
+            else:
+                return Response({
+                            "error" : "El usuario no tiene permisos para realizar esta accion"
+                        },  status=status.HTTP_403_FORBIDDEN)
 
             # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'muestra'
             serializer = FotografiaSerializer(fotografia, data=request.data)
@@ -156,6 +176,17 @@ class FotografiaAPI(APIView):
                 return Response({
                     'message': 'No se encontro ningun elemento que coincida con ese id'
                 },  status=status.HTTP_404_NOT_FOUND)
+
+            # Se definen los permisos para peticiones tipo PUT 
+            if request.user.is_superuser or request.user.is_staff:
+                if not request.user.is_superuser and request.user.id != fotografia.idUsuario.id:
+                    return Response({
+                            "error" : "Solo puede realizar esta operación el dueño este registro"
+                        },  status=status.HTTP_403_FORBIDDEN)
+            else:
+                return Response({
+                            "error" : "El usuario no tiene permisos para realizar esta accion"
+                        },  status=status.HTTP_403_FORBIDDEN)
 
             # Si el try no falla entonces eliminamos la muestra de label studio
             eliminar_foto_ls(fotografia.idFotografias)
