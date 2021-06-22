@@ -302,6 +302,7 @@ class UsuariosSignUpAdmin(APIView):
             # Cambiamos las variables del usuario 
             nuevo_usuario.is_superuser = True
             nuevo_usuario.is_staff = True
+            nuevo_usuario.save()
             # Obtenemos el token de ese usuario
             token = Token.objects.get(user=nuevo_usuario).key
 
@@ -349,6 +350,7 @@ class UsuariosSignUpStaff(APIView):
             nuevo_usuario = serializer.save()
             # Cambiamos las variables del usuario 
             nuevo_usuario.is_staff = True
+            nuevo_usuario.save()
             # Obtenemos el token de ese usuario
             token = Token.objects.get(user=nuevo_usuario).key
 
