@@ -31,7 +31,4 @@ urlpatterns = [
     path('especies/', include('Especies.urls')),
     path('', include('Home.urls')),
     path('api_generate_token/', views.obtain_auth_token),
-
-
-
 ]
