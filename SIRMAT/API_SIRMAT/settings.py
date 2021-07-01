@@ -59,12 +59,26 @@ INSTALLED_APPS = [
     # Apps rest_framework
     'rest_framework',
     'rest_framework.authtoken',
+
+    # App Documentacion API
+    'drf_yasg',
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ]
+}
+
+# Se define la forma que se esta usando como autenticacion, para nuestro caso usamos Token
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'Token': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+      }
+   }
 }
 
 MIDDLEWARE = [
