@@ -1,9 +1,9 @@
 from drf_yasg import openapi
-from .serializers import CamaraSerializer
+from .serializers import DetallesMuestraSerializer
 
 
 class docs_get():
-    # Detalles de la documentacion para GET de Camaras
+    # Detalles de la documentacion para GET de DetallesMuestras
 
     # Los parametros que se aceptan en la operacion GET
     params = openapi.Parameter(
@@ -16,7 +16,7 @@ class docs_get():
     # Posibles respuestas para POST una vez pasada la autenticacion
     respuestas = {
         "200": openapi.Response(
-            schema = CamaraSerializer(),
+            schema = DetallesMuestraSerializer(),
             description="Respuesta si la operacion GET fue exitosa",
         ),
         "404": openapi.Response(
@@ -48,12 +48,12 @@ class docs_get():
 #----------------------------------------------------------------------------------------
 
 class docs_post():
-    # Detalles de la documentacion para POST de Camaras
+    # Detalles de la documentacion para POST de DetallesMuestras
     
     # Posibles respuestas para POST una vez pasada la autenticacion
     respuestas = {
         "200": openapi.Response(
-            schema = CamaraSerializer(),
+            schema = DetallesMuestraSerializer(),
             description="Respuesta si la operacion POST fue exitosa"
         ),
         "403": openapi.Response(
@@ -68,35 +68,40 @@ class docs_post():
             description="Posibles respuestas si la peticion no fue valida",
             examples={
                 "json: Algun campo faltante":{
-                    "marca": [
+                    "observaciones": [
                         "This field is required."
                     ],
-                    "foco": [
+                    "cantidad": [
                         "This field is required."
                     ],
-                    "resolucion": [
+                    "idEspecie": [
                         "This field is required."
                     ],
-                    "idEstereoscopios": [
+                    "idMuestra": [
                         "This field is required."
                     ]
                 },  
-                'json: Si no se encuentra un Estereoscopios con ese id':{
-                    "idEstereoscopios": [
+                'json: Si no se encuentra una Muestra con ese id':{
+                    "idMuestra": [
                         "Invalid pk \"0\" - object does not exist."
                     ]
-                }, 
+                },
+                 'json: Si no se encuentra una Especie con ese id':{
+                    "idEspecie": [
+                        "Invalid pk \"0\" - object does not exist."
+                    ]
+                },  
             }
         ),
     }
 
     # Como debe de ser el body de la peticion para ser valido
-    body_valid = CamaraSerializer
+    body_valid = DetallesMuestraSerializer
 
 #----------------------------------------------------------------------------------------
 
 class docs_put():
-    # Detalles de la documentacion para PUT de Camaras
+    # Detalles de la documentacion para PUT de DetallesMuestras
 
 
     # Los parametros que se aceptan en la operacion PUT
@@ -111,7 +116,7 @@ class docs_put():
     # Posibles respuestas para PUT una vez pasada la autenticacion
     respuestas = {
         "200": openapi.Response(
-            schema = CamaraSerializer(),
+            schema = DetallesMuestraSerializer(),
             description="Respuesta si la operacion PUT fue exitosa"
         ),
         "404": openapi.Response(
@@ -129,21 +134,26 @@ class docs_put():
                     "message": "Solo se acepta un parametro con llave 'id'"
                 },
                 "json: Algun campo faltante":{
-                    "marca": [
+                    "observaciones": [
                         "This field is required."
                     ],
-                    "foco": [
+                    "cantidad": [
                         "This field is required."
                     ],
-                    "resolucion": [
+                    "idEspecie": [
                         "This field is required."
                     ],
-                    "idEstereoscopios": [
+                    "idMuestra": [
                         "This field is required."
                     ]
                 }, 
-                'json: Si no se encuentra un Estereoscopios con ese id':{
-                    "idEstereoscopios": [
+                'json: Si no se encuentra una Muestra con ese id':{
+                    "idMuestra": [
+                        "Invalid pk \"0\" - object does not exist."
+                    ]
+                }, 
+                'json: Si no se encuentra una Especie con ese id':{
+                    "idEspecie": [
                         "Invalid pk \"0\" - object does not exist."
                     ]
                 }, 
@@ -163,12 +173,12 @@ class docs_put():
     }
 
     # Como debe de ser el body de la peticion para ser valido
-    body_valid = CamaraSerializer
+    body_valid = DetallesMuestraSerializer
 
 #----------------------------------------------------------------------------------------
 
 class docs_delete():
-    # Detalles de la documentacion para DELETE de Camaras
+    # Detalles de la documentacion para DELETE de DetallesMuestras
 
 
     # Los parametros que se aceptan en la operacion DELETE
@@ -186,7 +196,7 @@ class docs_delete():
             description="Respuesta si la operacion DELETE fue exitosa",
             examples={
                 "json": {
-                   'message': 'Camara eliminada correctamente'
+                   'message': 'DetallesMuestra eliminada correctamente'
                 }
             }
         ),
@@ -220,4 +230,3 @@ class docs_delete():
     }
 
 #--------------------------------------------------------------------------------------------
-

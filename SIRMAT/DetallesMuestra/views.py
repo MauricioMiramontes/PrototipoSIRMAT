@@ -7,12 +7,13 @@ from rest_framework import status
 # Importamos el serializador del modelo Especie
 from .serializers import DetallesMuestraSerializer
 
-# To do: Agregar archivo para interaccion con label studio que agregue descripcion al proyecto de la muestra
-
 # importar clase Authentication (LMRG)
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
+# Importaciones de documentacion Swagger
+from drf_yasg.utils import swagger_auto_schema
+from .docs import * 
 
 class DetallesMuestraAPI(APIView):
     # Vistas de la API para la tabla 'Detalles Muestra' de la base de datos
@@ -21,6 +22,7 @@ class DetallesMuestraAPI(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(manual_parameters=[docs_get.params], responses=docs_get.respuestas)
     def get(self, request, format=JsonResponse):
         # Logica para una peticion tipo GET
         # Si se quiere ver un solo objeto es necesario proporcionar un parametro llamado 'id' con el valor
@@ -61,8 +63,9 @@ class DetallesMuestraAPI(APIView):
         # Respondemos con los datos que se hayan guardado en el serializador 'serializer'
         return Response(serializer.data)
 
-    # ------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------
+
+    @swagger_auto_schema(responses = docs_post.respuestas, request_body=docs_post.body_valid)
     def post(self, request):
         # Logica para una peticion tipo POST
 
@@ -95,6 +98,7 @@ class DetallesMuestraAPI(APIView):
 
 # ----------------------------------------------------------------------------------------------------------------
 
+    @swagger_auto_schema(manual_parameters=[docs_put.params],responses=docs_put.respuestas, request_body=docs_put.body_valid)
     def put(self, request):
         # Logica para peticiones tipo PUT
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idtDetallesMuestra que se desea actualizar
@@ -152,6 +156,9 @@ class DetallesMuestraAPI(APIView):
                 'message': 'PUT debe proporcionar parametro "id"'
             },  status=status.HTTP_400_BAD_REQUEST)
 
+# -----------------------------------------------------------------------------------------
+
+    @swagger_auto_schema(manual_parameters=[docs_delete.params],responses=docs_delete.respuestas)
     def delete(self, request):
         # Logica para una peticion DELETE
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idtDetallesMuestra que se desea eliminar

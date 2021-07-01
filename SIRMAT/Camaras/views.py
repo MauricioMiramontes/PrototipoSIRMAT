@@ -6,14 +6,13 @@ from rest_framework import status
 # Importamos el serializador del modelo Especie
 from .serializers import CamaraSerializer
 
-from .docs import * 
-
 # importar clase Authentication (LMRG)
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 # Importaciones de documentacion Swagger
 from drf_yasg.utils import swagger_auto_schema
+from .docs import * 
 
 class CamarasAPI(APIView):
     # Vistas de la API para la tabla 'especie' de la base de datos
