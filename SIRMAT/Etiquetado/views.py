@@ -10,6 +10,10 @@ from .serializers import EtiquetadoSerializer
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
+# Importaciones de documentacion Swagger
+from drf_yasg.utils import swagger_auto_schema
+from .docs import * 
+
 
 class EtiquetadoAPI(APIView):
     # Vistas de la API para la tabla 'Etiquetado' de la base de datos
@@ -18,6 +22,7 @@ class EtiquetadoAPI(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(manual_parameters=[docs_get.params], responses=docs_get.respuestas)
     def get(self, request, format=JsonResponse):
         # Logica para una peticion tipo GET
         # Si se quiere ver un solo objeto es necesario proporcionar un parametro llamado 'id' con el valor
@@ -59,6 +64,8 @@ class EtiquetadoAPI(APIView):
         return Response(serializer.data)
 
     # ------------------------------------------------------------------------------------
+
+    @swagger_auto_schema(responses = docs_post.respuestas, request_body=docs_post.body_valid)
     def post(self, request):
         # Logica para una peticion tipo POST
 
@@ -76,6 +83,8 @@ class EtiquetadoAPI(APIView):
             )
 
     # ----------------------------------------------------------------------------------------------------------------
+
+    @swagger_auto_schema(manual_parameters=[docs_put.params],responses=docs_put.respuestas, request_body=docs_put.body_valid)
     def put(self, request):
         # Logica para peticiones tipo PUT
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idEtiquetado que se desea actualizar
@@ -110,6 +119,8 @@ class EtiquetadoAPI(APIView):
             },  status=status.HTTP_400_BAD_REQUEST)
 
     # --------------------------------------------------------------------------------------------------------------
+
+    @swagger_auto_schema(manual_parameters=[docs_delete.params],responses=docs_delete.respuestas)
     def delete(self, request):
         # Logica para una peticion DELETE
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idcEspecie que se desea eliminar
