@@ -125,7 +125,7 @@ class docs_put():
             }
         ),
         "400": openapi.Response(
-            description="Respuesta si se proporciono un parametro distinto a 'id'",
+            description="Posibles respuestas si la peticion no fue valida",
             examples={
                 "json: Si se proporciono un parametro distinto a 'id'": {
                     "message": "Solo se acepta un parametro con llave 'id'"
@@ -203,7 +203,7 @@ class docs_delete():
             }
         ),
         "400": openapi.Response(
-            description="Respuesta si se proporciono un parametro distinto a 'id'",
+            description="Posibles respuestas si la peticion no fue valida",
             examples={
                 "json: Si se proporciono un parametro distinto a 'id'": {
                     "message": "Solo se acepta un parametro con llave 'id'"
