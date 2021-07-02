@@ -11,6 +11,9 @@ from .Label_Studio_db import editar_muestra_ls, eliminar_muestra_ls, agregar_mue
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
+# Importaciones de documentacion Swagger
+from drf_yasg.utils import swagger_auto_schema
+from .docs import * 
 
 class MuestraAPI(APIView):
     # Vistas de la API para la tabla 'muestra' de la base de datos
@@ -19,6 +22,7 @@ class MuestraAPI(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(manual_parameters=[docs_get.params], responses=docs_get.respuestas)
     def get(self, request, format=JsonResponse):
         # Logica para una peticion tipo GET
         # Si se quiere ver un solo objeto es necesario proporcionar un parametro llamado 'id' con el valor
@@ -61,6 +65,7 @@ class MuestraAPI(APIView):
 
     # --------------------------------------------------------------------------------------------------------------
 
+    @swagger_auto_schema(responses = docs_post.respuestas, request_body=docs_post.body_valid)
     def post(self, request):
         # Logica para una peticion tipo POST
 
@@ -92,10 +97,9 @@ class MuestraAPI(APIView):
                         "error" : "El usuario no tiene permisos para realizar esta accion"
                     },  status=status.HTTP_403_FORBIDDEN)
 
-        
-
     # ----------------------------------------------------------------------------------------------------------------
 
+    @swagger_auto_schema(manual_parameters=[docs_put.params],responses=docs_put.respuestas, request_body=docs_put.body_valid)
     def put(self, request):
         # Logica para peticiones tipo PUT
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idtMuestra que se desea actualizar
@@ -153,6 +157,7 @@ class MuestraAPI(APIView):
 
     # --------------------------------------------------------------------------------------------------------------
 
+    @swagger_auto_schema(manual_parameters=[docs_delete.params],responses=docs_delete.respuestas)
     def delete(self, request):
         # Logica para una peticion DELETE
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idtMuestra que se desea eliminar
