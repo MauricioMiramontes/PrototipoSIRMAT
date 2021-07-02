@@ -76,7 +76,12 @@ SWAGGER_SETTINGS = {
       'Token': {
             'type': 'apiKey',
             'name': 'Authorization',
-            'in': 'header'
+            'in': 'header',
+            'description': '''
+                El valor del header debera ser la palabra Token, un espacio en blanco seguido por el valor del token.
+
+                Ejemplo: "Token c2b8f9e76d4d189f3693337d3bdc4c5b0c4bfc14"
+                '''
       }
    }
 }
