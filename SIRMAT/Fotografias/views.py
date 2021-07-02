@@ -3,6 +3,7 @@ from .models import Fotografia
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.parsers import MultiPartParser
 # Importamos el serializador del modelo Fotografia
 from .serializers import FotografiaSerializer
 from .Label_Studio_db import eliminar_foto_ls, agregar_foto_ls
@@ -11,6 +12,9 @@ from .Label_Studio_db import eliminar_foto_ls, agregar_foto_ls
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
+# Importaciones de documentacion Swagger
+from drf_yasg.utils import swagger_auto_schema
+from .docs import * 
 
 class FotografiaAPI(APIView):
     # Vistas de la API para la tabla 'Fotografia' de la base de datos
@@ -19,6 +23,7 @@ class FotografiaAPI(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(manual_parameters=[docs_get.params], responses=docs_get.respuestas)
     def get(self, request, format=JsonResponse):
         # Logica para una peticion tipo GET
         # Si se quiere ver un solo objeto es necesario proporcionar un parametro llamado 'id' con el valor
@@ -61,6 +66,8 @@ class FotografiaAPI(APIView):
 
     # --------------------------------------------------------------------------------------------------------------
 
+    parser_classes = [MultiPartParser]
+    @swagger_auto_schema(responses = docs_post.respuestas, request_body=docs_put.body_valid)
     def post(self, request):
         # Logica para una peticion tipo POST
 
@@ -93,10 +100,9 @@ class FotografiaAPI(APIView):
                         "error" : "El usuario no tiene permisos para realizar esta accion"
                     },  status=status.HTTP_403_FORBIDDEN)
 
-       
-
     # ----------------------------------------------------------------------------------------------------------------
 
+    @swagger_auto_schema(manual_parameters=[docs_put.params],responses=docs_put.respuestas, request_body=docs_put.body_valid)
     def put(self, request):
         # Logica para peticiones tipo PUT
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idFotografias que se desea actualizar
@@ -152,6 +158,7 @@ class FotografiaAPI(APIView):
 
     # --------------------------------------------------------------------------------------------------------------
 
+    @swagger_auto_schema(manual_parameters=[docs_delete.params],responses=docs_delete.respuestas)
     def delete(self, request):
         # Logica para una peticion DELETE
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idFotografias que se desea eliminar
