@@ -3,6 +3,7 @@ from .models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
 # Importamos el serializador del modelo Estereoscopio
 from .serializers import UsuarioSerializer
 from rest_framework.authtoken.models import Token
@@ -18,6 +19,9 @@ from .Label_Studio_db import agregar_usuario_ls, eliminar_usuario_ls, editar_usu
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
+# Importaciones de documentacion Swagger
+from drf_yasg.utils import swagger_auto_schema
+from .docs import *
 
 class UsuariosAPI(APIView):
     # Vistas de la API para la tabla 'estereoscopio' de la base de datos
@@ -26,6 +30,7 @@ class UsuariosAPI(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(manual_parameters=[docs_get.params], responses=docs_get.respuestas)
     def get(self, request, format=JsonResponse):
         # Logica para una peticion tipo GET
         # Si se quiere ver un solo objeto es necesario proporcionar un parametro llamado 'id' con el valor
@@ -71,6 +76,7 @@ class UsuariosAPI(APIView):
 
     # ----------------------------------------------------------------------------------------------------------------
 
+    @swagger_auto_schema(manual_parameters=[docs_put.params], responses=docs_put.respuestas, request_body=docs_put.body_valid)
     def put(self, request):
         # Logica para peticiones tipo PUT
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idcUsuario que se desea actualizar
@@ -124,6 +130,7 @@ class UsuariosAPI(APIView):
 
     # --------------------------------------------------------------------------------------------------------------
 
+    @swagger_auto_schema(manual_parameters=[docs_delete.params],responses=docs_delete.respuestas)
     def delete(self, request):
         # Logica para una peticion DELETE
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idcUsuario que se desea eliminar
@@ -172,9 +179,9 @@ class UsuariosAPI(APIView):
                 "error" : "El usuario no tiene permisos para realizar esta accion"
             },  status=status.HTTP_403_FORBIDDEN)
 
-
 class UsuariosSingUp(APIView):
 
+    @swagger_auto_schema(responses=docs_signup.respuestas, request_body=docs_signup.body_valid)
     def post(self, request, format=JsonResponse):
         # Logica para una peticion tipo POST
         
@@ -188,21 +195,20 @@ class UsuariosSingUp(APIView):
             
             nuevo_usuario = serializer.save()
             
-            
             # Obtenemos el token de ese usuario
             token = Token.objects.get(user=nuevo_usuario).key
 
-            datos_respuesta['response'] = 'Usuario registrado de forma exitosa'
+            datos_respuesta['message'] = 'Usuario registrado de forma exitosa'
+            datos_respuesta['token'] = token
             datos_respuesta['user_data'] = {
                 "id": nuevo_usuario.id,
                 "email": nuevo_usuario.email,
-                "username": nuevo_usuario.username,
                 "first_name": nuevo_usuario.first_name,
-                "last_name": nuevo_usuario.last_name
-                
+                "last_name": nuevo_usuario.last_name,
+                "is_superuser" : nuevo_usuario.is_superuser,
+                "is_staff" : nuevo_usuario.is_staff,
             }
-            datos_respuesta['token'] = token
-
+            
             # Agregamos un nuevo usuario a Label Studio con los mismos datos
             agregar_usuario_ls(nuevo_usuario.email, request.data['password'])
 
@@ -215,9 +221,9 @@ class UsuariosSingUp(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-
 class CustomAuthToken(ObtainAuthToken):
 
+    @swagger_auto_schema(responses=docs_login.respuestas, request_body=docs_login.body_valid)
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
@@ -234,17 +240,19 @@ class CustomAuthToken(ObtainAuthToken):
         datos_respuesta['user_data'] = {
             "id": user.pk,
             "email": user.email,
-            "username": user.username,
             "first_name": user.first_name,
             "last_name": user.last_name,
             "last_login": user.last_login,
+            "is_superuser" : user.is_superuser,
+            "is_staff" : user.is_staff
         }
 
         return Response(datos_respuesta)
 
-
 class Logout(APIView):
 
+    # TODO: El logout esta mal hecho, debe de requerir autenticacion y debe utiliar 
+    # request.user para determinar el token que debe eliminar
     def post(self, request, *args, **kwargs):
 
         # Logica para una peticion POST de LOGOUT
@@ -283,6 +291,7 @@ class Logout(APIView):
 
 class UsuariosSignUpAdmin(APIView):
 
+    @swagger_auto_schema(responses=docs_signup_admin.respuestas, request_body=docs_signup_admin.body_valid)
     def post(self, request, format=JsonResponse):
         # Logica para una peticion tipo POST
 
@@ -306,17 +315,17 @@ class UsuariosSignUpAdmin(APIView):
             # Obtenemos el token de ese usuario
             token = Token.objects.get(user=nuevo_usuario).key
 
-            datos_respuesta['response'] = 'Administrador registrado de forma exitosa'
+            datos_respuesta['message'] = 'Administrador registrado de forma exitosa'
+            datos_respuesta['token'] = token
             datos_respuesta['user_data'] = {
                 "id": nuevo_usuario.id,
                 "email": nuevo_usuario.email,
-                "username": nuevo_usuario.username,
                 "first_name": nuevo_usuario.first_name,
                 "last_name": nuevo_usuario.last_name,
                 "is_superuser": nuevo_usuario.is_superuser,
                 "is_staff": nuevo_usuario.is_staff,
             }
-            datos_respuesta['token'] = token
+            
 
             # Agregamos un nuevo usuario a Label Studio con los mismos datos
             agregar_usuario_ls(nuevo_usuario.email, request.data['password'])
@@ -332,6 +341,7 @@ class UsuariosSignUpAdmin(APIView):
 
 class UsuariosSignUpStaff(APIView):
 
+    @swagger_auto_schema(responses=docs_signup_staff.respuestas, request_body=docs_signup_staff.body_valid)
     def post(self, request, format=JsonResponse):
         # Logica para una peticion tipo POST
 
@@ -354,17 +364,17 @@ class UsuariosSignUpStaff(APIView):
             # Obtenemos el token de ese usuario
             token = Token.objects.get(user=nuevo_usuario).key
 
-            datos_respuesta['response'] = 'Empleado registrado de forma exitosa'
+            datos_respuesta['message'] = 'Empleado registrado de forma exitosa'
+            datos_respuesta['token'] = token
             datos_respuesta['user_data'] = {
                 "id": nuevo_usuario.id,
                 "email": nuevo_usuario.email,
-                "username": nuevo_usuario.username,
                 "first_name": nuevo_usuario.first_name,
                 "last_name": nuevo_usuario.last_name,
                 "is_superuser": nuevo_usuario.is_superuser,
                 "is_staff": nuevo_usuario.is_staff,
             }
-            datos_respuesta['token'] = token
+            
 
             # Agregamos un nuevo usuario a Label Studio con los mismos datos
             agregar_usuario_ls(nuevo_usuario.email, request.data['password'])
