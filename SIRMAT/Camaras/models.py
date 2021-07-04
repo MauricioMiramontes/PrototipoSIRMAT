@@ -4,13 +4,22 @@ from Estereoscopios.models import Estereoscopio
 
 
 class Camara(models.Model):
-    idcCamaras = models.BigAutoField(primary_key=True)
-    marca = models.CharField(max_length=45)
-    foco = models.CharField(max_length=45)
-    resolucion = models.CharField(max_length=45)
+    idcCamaras = models.BigAutoField(
+        primary_key=True, help_text='Numero de identificacion del registro')
+
+    marca = models.CharField(
+        max_length=45, help_text='Marca del fabricante de la Camara')
+
+    foco = models.CharField(max_length=45, help_text='Foco de la camara')
+
+    resolucion = models.CharField(
+        max_length=45, help_text='Resolucion maxima de la Camara')
+
     idEstereoscopios = models.ForeignKey(
-    Estereoscopio, on_delete=models.CASCADE)
-    is_active = models.BooleanField(default=True)
+        Estereoscopio, on_delete=models.CASCADE, help_text='Estereoscopio al que pertenece la Camara')
+    
+    is_active = models.BooleanField(
+        default=True, help_text='Define si el registro esta o no dado de baja en el sistema, default: True')
 
     class Meta:
         db_table = 'cCamaras'

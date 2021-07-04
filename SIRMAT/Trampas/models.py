@@ -4,11 +4,25 @@ from django.db import models
 
 
 class Trampas(models.Model):
-    idcTrampas = models.BigAutoField(primary_key=True)
-    nombre = models.CharField(max_length=45)
-    direccion = models.CharField(max_length=45)
-    coordenadas = models.CharField(max_length=45)
-    is_active = models.BooleanField(default=True)
+    idcTrampas = models.BigAutoField(
+        primary_key=True, 
+        help_text='Numero de identificacion del registro')
+
+    nombre = models.CharField(
+        max_length=45, 
+        help_text='Nombre de la trampa')
+
+    direccion = models.CharField(
+        max_length=45, 
+        help_text='Direccion en la que se encuentra la trampa')
+
+    coordenadas = models.CharField(
+        max_length=45, 
+        help_text='Coordenadas en las que se encuentra la trampa')
+
+    is_active = models.BooleanField(
+        default=True, 
+        help_text='Define si el registro esta o no dado de baja en el sistema')
 
 
     class Meta:
