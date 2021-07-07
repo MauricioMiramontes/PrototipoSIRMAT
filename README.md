@@ -40,6 +40,11 @@
     - Utilizando pip:
         ######
             pip install -U requests
+
+- drf_yasg (Documentacion) 
+    - Utilizando pip:
+        ######
+            pip install -U drf-yasg
             
 ### Instalacion para desarrollo
 
