@@ -72,8 +72,8 @@ REST_FRAMEWORK = {
 
 # Se define la forma que se esta usando como autenticacion, para nuestro caso usamos Token
 SWAGGER_SETTINGS = {
-   'SECURITY_DEFINITIONS': {
-      'Token': {
+    'SECURITY_DEFINITIONS': {
+        'Token': {
             'type': 'apiKey',
             'name': 'Authorization',
             'in': 'header',
@@ -82,8 +82,8 @@ SWAGGER_SETTINGS = {
 
                 Ejemplo: "Token c2b8f9e76d4d189f3693337d3bdc4c5b0c4bfc14"
                 '''
-      }
-   }
+        }
+    }
 }
 
 MIDDLEWARE = [
@@ -124,7 +124,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'OPTIONS': {
-            'read_default_file':'../SIRMAT/UsuarioDB.cnf'
+            'read_default_file': '../SIRMAT/UsuarioDB.cnf'
         },
     }
 }
@@ -155,7 +155,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-mx'
 
 TIME_ZONE = 'America/Mexico_City'
 
@@ -172,7 +172,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'frontend', "build", "static"),  # update the STATICFILES_DIRS
+    # update the STATICFILES_DIRS
+    os.path.join(BASE_DIR, 'frontend', "build", "static"),
 )
 
 AUTH_USER_MODEL = 'Usuario.User'

@@ -23,6 +23,7 @@ from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 from .docs import *
 
+
 class UsuariosAPI(APIView):
     # Vistas de la API para la tabla 'estereoscopio' de la base de datos
 
@@ -37,8 +38,8 @@ class UsuariosAPI(APIView):
         # del idcUsuario que se desea ver, ejmpl: usuarios/?id=1
 
         if not request.user.is_superuser:
-             return Response({
-                "error" : "El usuario no tiene permisos para realizar esta accion"
+            return Response({
+                "error": "El usuario no tiene permisos para realizar esta accion"
             },  status=status.HTTP_403_FORBIDDEN)
 
         if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
@@ -81,12 +82,12 @@ class UsuariosAPI(APIView):
         # Logica para peticiones tipo PUT
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idcUsuario que se desea actualizar
         # ejmpl: usuarios/?id=1
-      
-        #Revisamos que la accion sea realizada por un super usuario o si el usuario se edita si mismo
+
+        # Revisamos que la accion sea realizada por un super usuario o si el usuario se edita si mismo
         if request.user.is_superuser or str(request.user.id) == request.query_params['id']:
-                  
+
             if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
-                
+
                 # Se verifica que exista el parametro con llave 'id'
                 try:
                     request.query_params['id']
@@ -111,7 +112,7 @@ class UsuariosAPI(APIView):
                     # Actualizamos el serializador en la base de datos y en label studio
                     serializer.save()
                     editar_usuario_ls(usuario.id, usuario.email,
-                                        request.data['password'])
+                                      request.data['password'])
                     # Y respondemos con los datos del nuevo objeto creado
                     return Response(serializer.data)
                 else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
@@ -123,20 +124,20 @@ class UsuariosAPI(APIView):
                 return Response({
                     'message': 'PUT debe proporcionar parametro "id"'
                 },  status=status.HTTP_400_BAD_REQUEST)
-        else:   
+        else:
             return Response({
-                "error" : "El usuario no tiene permisos para realizar esta accion"
+                "error": "El usuario no tiene permisos para realizar esta accion"
             },  status=status.HTTP_403_FORBIDDEN)
 
     # --------------------------------------------------------------------------------------------------------------
 
-    @swagger_auto_schema(manual_parameters=[docs_delete.params],responses=docs_delete.respuestas)
+    @swagger_auto_schema(manual_parameters=[docs_delete.params], responses=docs_delete.respuestas)
     def delete(self, request):
         # Logica para una peticion DELETE
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idcUsuario que se desea eliminar
         # ejmpl: usuarios/?id=1
 
-        #Revisamos que la accion sea realizada por un super usuario o si el usuario se edita si mismo
+        # Revisamos que la accion sea realizada por un super usuario o si el usuario se edita si mismo
         if request.user.is_superuser or str(request.user.id) == request.query_params['id']:
 
             if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
@@ -162,9 +163,11 @@ class UsuariosAPI(APIView):
 
                 # Si el try no falla entonces cambiamos el registro is_active de la BD
 
-                usuario.is_active = False #cambiamos is_active a False
-                usuario.save(update_fields = ['is_active']) #guardamos los cambios
-                eliminar_usuario_ls(usuario.id) #eliminamos usuario de LabelStudio
+                usuario.is_active = False  # cambiamos is_active a False
+                # guardamos los cambios
+                usuario.save(update_fields=['is_active'])
+                # eliminamos usuario de LabelStudio
+                eliminar_usuario_ls(usuario.id)
                 # Enviamos mensaje de éxito
                 return Response({
                     'message': 'Usuario eliminado correctamente'
@@ -172,19 +175,20 @@ class UsuariosAPI(APIView):
 
             else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
                 return Response({
-                        'message' : 'DELETE debe proporcionar parametro "id"'
-                },  status = status.HTTP_400_BAD_REQUEST)
-        else:   
+                    'message': 'DELETE debe proporcionar parametro "id"'
+                },  status=status.HTTP_400_BAD_REQUEST)
+        else:
             return Response({
-                "error" : "El usuario no tiene permisos para realizar esta accion"
+                "error": "El usuario no tiene permisos para realizar esta accion"
             },  status=status.HTTP_403_FORBIDDEN)
+
 
 class UsuariosSingUp(APIView):
 
     @swagger_auto_schema(responses=docs_signup.respuestas, request_body=docs_signup.body_valid)
     def post(self, request, format=JsonResponse):
         # Logica para una peticion tipo POST
-        
+
         # Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
         serializer = UsuarioSerializer(data=request.data)
 
@@ -192,9 +196,9 @@ class UsuariosSingUp(APIView):
 
         if serializer.is_valid():  # Si la peticion es valida
             # Guardamos los datos del serializador en la base de datos
-            
+
             nuevo_usuario = serializer.save()
-            
+
             # Obtenemos el token de ese usuario
             token = Token.objects.get(user=nuevo_usuario).key
 
@@ -205,10 +209,10 @@ class UsuariosSingUp(APIView):
                 "email": nuevo_usuario.email,
                 "first_name": nuevo_usuario.first_name,
                 "last_name": nuevo_usuario.last_name,
-                "is_superuser" : nuevo_usuario.is_superuser,
-                "is_staff" : nuevo_usuario.is_staff,
+                "is_superuser": nuevo_usuario.is_superuser,
+                "is_staff": nuevo_usuario.is_staff,
             }
-            
+
             # Agregamos un nuevo usuario a Label Studio con los mismos datos
             agregar_usuario_ls(nuevo_usuario.email, request.data['password'])
 
@@ -220,6 +224,7 @@ class UsuariosSingUp(APIView):
                 serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST
             )
+
 
 class CustomAuthToken(ObtainAuthToken):
 
@@ -243,15 +248,16 @@ class CustomAuthToken(ObtainAuthToken):
             "first_name": user.first_name,
             "last_name": user.last_name,
             "last_login": user.last_login,
-            "is_superuser" : user.is_superuser,
-            "is_staff" : user.is_staff
+            "is_superuser": user.is_superuser,
+            "is_staff": user.is_staff
         }
 
         return Response(datos_respuesta)
 
+
 class Logout(APIView):
 
-    # TODO: El logout esta mal hecho, debe de requerir autenticacion y debe utiliar 
+    # TODO: El logout esta mal hecho, debe de requerir autenticacion y debe utiliar
     # request.user para determinar el token que debe eliminar
     def post(self, request, *args, **kwargs):
 
@@ -289,6 +295,7 @@ class Logout(APIView):
             status=status.HTTP_200_OK
         )
 
+
 class UsuariosSignUpAdmin(APIView):
 
     @swagger_auto_schema(responses=docs_signup_admin.respuestas, request_body=docs_signup_admin.body_valid)
@@ -297,18 +304,18 @@ class UsuariosSignUpAdmin(APIView):
 
         # Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
         serializer = UsuarioSerializer(data=request.data)
-        #Verificamos que el usuario sea administrador
+        # Verificamos que el usuario sea administrador
         if not request.user.is_superuser == True:
-             return Response({
-                "error" : "El usuario no tiene permisos para realizar esta accion"
+            return Response({
+                "error": "El usuario no tiene permisos para realizar esta accion"
             },  status=status.HTTP_403_FORBIDDEN)
-            
+
         datos_respuesta = {}
 
         if serializer.is_valid():  # Si la peticion es valida
             # Guardamos los datos del serializador en la base de datos
             nuevo_usuario = serializer.save()
-            # Cambiamos las variables del usuario 
+            # Cambiamos las variables del usuario
             nuevo_usuario.is_superuser = True
             nuevo_usuario.is_staff = True
             nuevo_usuario.save()
@@ -325,7 +332,6 @@ class UsuariosSignUpAdmin(APIView):
                 "is_superuser": nuevo_usuario.is_superuser,
                 "is_staff": nuevo_usuario.is_staff,
             }
-            
 
             # Agregamos un nuevo usuario a Label Studio con los mismos datos
             agregar_usuario_ls(nuevo_usuario.email, request.data['password'])
@@ -339,6 +345,7 @@ class UsuariosSignUpAdmin(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+
 class UsuariosSignUpStaff(APIView):
 
     @swagger_auto_schema(responses=docs_signup_staff.respuestas, request_body=docs_signup_staff.body_valid)
@@ -347,18 +354,18 @@ class UsuariosSignUpStaff(APIView):
 
         # Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
         serializer = UsuarioSerializer(data=request.data)
-        #Verificamos que el usuario sea administrador
+        # Verificamos que el usuario sea administrador
         if not request.user.is_superuser == True:
-             return Response({
-                "error" : "El usuario no tiene permisos para realizar esta accion"
+            return Response({
+                "error": "El usuario no tiene permisos para realizar esta accion"
             },  status=status.HTTP_403_FORBIDDEN)
-            
+
         datos_respuesta = {}
 
         if serializer.is_valid():  # Si la peticion es valida
             # Guardamos los datos del serializador en la base de datos
             nuevo_usuario = serializer.save()
-            # Cambiamos las variables del usuario 
+            # Cambiamos las variables del usuario
             nuevo_usuario.is_staff = True
             nuevo_usuario.save()
             # Obtenemos el token de ese usuario
@@ -374,7 +381,6 @@ class UsuariosSignUpStaff(APIView):
                 "is_superuser": nuevo_usuario.is_superuser,
                 "is_staff": nuevo_usuario.is_staff,
             }
-            
 
             # Agregamos un nuevo usuario a Label Studio con los mismos datos
             agregar_usuario_ls(nuevo_usuario.email, request.data['password'])
