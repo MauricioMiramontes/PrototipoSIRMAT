@@ -256,44 +256,20 @@ class CustomAuthToken(ObtainAuthToken):
 
 
 class Logout(APIView):
+    # Pedimos autenticacion por token
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
-    # TODO: El logout esta mal hecho, debe de requerir autenticacion y debe utiliar
-    # request.user para determinar el token que debe eliminar
-    def post(self, request, *args, **kwargs):
-
+    @swagger_auto_schema(responses=docs_logout.respuestas)
+    def post(self, request, format=JsonResponse):
         # Logica para una peticion POST de LOGOUT
-        # Es necesario proporcionar en el body una variable llamada 'id' con el valor del idcUsuario con el que se desea cerrar la sesion
-
-        # Se intenta encontrar un usuario que coincida con ese id
-        try:
-            usuario = User.objects.get(id=request.data['id'])
-        except:  # Si no se encuentra se manda mensaje de error
-            return Response(
-                {
-                    'error': 'No se ha encontrado un usuario con estas credenciales'
-                },
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        # Se intenta encontrar un token que este relacionado con ese usuario
-        try:
-            token = Token.objects.get(user=request.data['id'])
-        except:  # Si no se encuentra se manda un mensaje de error
-            return Response(
-                {
-                    'error': 'No hay token registrado para ese usuario'
-                },
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        # Si se encontro el usuario y este tiene un token a su nombre entonces se elimina el token y se manda mensaje de exito
+        # Se toma el token de quien manda el logout y se elimina
+        token = Token.objects.get(user=request.user)
         token.delete()
-        return Response(
-            {
-                'message': 'Sesion y token eliminados con exito'
-            },
-            status=status.HTTP_200_OK
-        )
+        # Mandamos un mensaje con detalles
+        return Response({
+            "mensaje": "Sesion y token eliminados con exito "
+        },  status=status.HTTP_200_OK)
 
 
 class UsuariosSignUpAdmin(APIView):
