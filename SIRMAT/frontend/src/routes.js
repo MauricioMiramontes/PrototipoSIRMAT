@@ -15,9 +15,8 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import Index from "views/Index.js";
+import Inicio from "views/Inicio.js";
 import Profile from "views/examples/Profile.js";
-import Maps from "views/examples/Maps.js";
 import Register from "views/examples/Register.js";
 import Login from "views/examples/Login.js";
 import Tables from "views/examples/Tables.js";
@@ -25,39 +24,60 @@ import Icons from "views/examples/Icons.js";
 
 var routes = [
   {
-    path: "/index",
+    path: "/Inicio",
     name: "Inicio",
     icon: "ni ni-tv-2 text-primary",
-    component: Index,
-    layout: "/app",
+    component: Inicio,
+    layout: "/superu",
   },
   {
     path: "/icons",
     name: "Icons",
     icon: "ni ni-planet text-blue",
     component: Icons,
-    layout: "/app",
-  },
-  {
-    path: "/maps",
-    name: "Maps",
-    icon: "ni ni-pin-3 text-orange",
-    component: Maps,
-    layout: "/app",
+    layout: "/superu",
   },
   {
     path: "/user-profile",
     name: "User Profile",
     icon: "ni ni-single-02 text-yellow",
     component: Profile,
-    layout: "/app",
+    layout: "/superu",
   },
   {
-    path: "/tables",
-    name: "Tables",
-    icon: "ni ni-bullet-list-67 text-red",
+    path: "/muestras",
+    name: "Muestras",
+    icon: "ni ni-ungroup text-red",
     component: Tables,
-    layout: "/app",
+    layout: "/superu",
+  },
+  {
+    path: "/trampas",
+    name: "Trampas",
+    icon: "ni ni-building text-red",
+    component: Tables,
+    layout: "/superu",
+  },
+  {
+    path: "/etiquetado",
+    name: "Etiquetado",
+    icon: "ni ni-tag text-red",
+    component: Tables,
+    layout: "/superu",
+  },
+  {
+    path: "/camaras",
+    name: "Camaras",
+    icon: "ni ni-camera-compact text-red",
+    component: Tables,
+    layout: "/superu",
+  },
+  {
+    path: "/estereoscopios",
+    name: "Estereoscopios",
+    icon: "ni ni-zoom-split-in text-red",
+    component: Tables,
+    layout: "/superu",
   },
   {
     path: "/login",

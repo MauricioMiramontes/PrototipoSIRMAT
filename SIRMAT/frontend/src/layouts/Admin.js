@@ -38,7 +38,7 @@ const Admin = (props) => {
 
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
-      if (prop.layout === "/app") {
+      if (prop.layout === "/superu") {
         return (
           <Route
             path={prop.layout + prop.path}
@@ -70,7 +70,7 @@ const Admin = (props) => {
         {...props}
         routes={routes}
         logo={{
-          innerLink: "/app/index",
+          innerLink: "/superu/Inicio",
           imgSrc: require("../assets/img/brand/argon-react.png").default,
           imgAlt: "...",
         }}
@@ -82,7 +82,7 @@ const Admin = (props) => {
         />
         <Switch>
           {getRoutes(routes)}
-          <Redirect from="*" to="/app/index" />
+          <Redirect from="*" to="/superu/Inicio" />
         </Switch>
         <Container fluid>
           <AdminFooter />

@@ -48,7 +48,7 @@ import {
 
 import Header from "components/Headers/Header.js";
 
-const Index = (props) => {
+const Inicio = (props) => {
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
 
@@ -56,10 +56,10 @@ const Index = (props) => {
     parseOptions(Chart, chartOptions());
   }
 
-  const toggleNavs = (e, index) => {
+  const toggleNavs = (e, Inicio) => {
     e.preventDefault();
-    setActiveNav(index);
-    setChartExample1Data("data" + index);
+    setActiveNav(Inicio);
+    setChartExample1Data("data" + Inicio);
   };
   return (
     <>
@@ -183,7 +183,7 @@ const Index = (props) => {
                     </td>
                   </tr>
                   <tr>
-                    <th scope="row">/argon/index.html</th>
+                    <th scope="row">/argon/Inicio.html</th>
                     <td>3,985</td>
                     <td>319</td>
                     <td>
@@ -335,4 +335,4 @@ const Index = (props) => {
   );
 };
 
-export default Index;
+export default Inicio;
