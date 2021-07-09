@@ -7,69 +7,69 @@ class docs_get():
 
     # Los parametros que se aceptan en la operacion GET
     params = openapi.Parameter(
-        'id', 
-        openapi.IN_QUERY, 
-        description="Parametro opcional en caso de que se requiera solo 1 registro", 
+        'id',
+        openapi.IN_QUERY,
+        description="Parametro opcional en caso de que se requiera solo 1 registro",
         type=openapi.TYPE_INTEGER
     )
 
     user_schema = openapi.Schema(
-                    type=openapi.TYPE_OBJECT, 
-                    properties={
-                        'id': openapi.Schema(
-                            type=openapi.TYPE_INTEGER, 
-                            description='Numero único de identifiacion de cada Usuario'
-                        ),
-                        'last_login': openapi.Schema(
-                            type=openapi.TYPE_STRING,
-                            format=openapi.FORMAT_DATETIME, 
-                            description='Ultima fecha en la que inicio sesion el usuario'
-                        ),
-                        'is_superuser': openapi.Schema(
-                            type=openapi.TYPE_BOOLEAN,
-                            description='Define si el usuario es o no administrador'
-                        ),
-                        'is_staff': openapi.Schema(
-                            type=openapi.TYPE_BOOLEAN,
-                            description='Define si el usuario es o no empleado'
-                        ),
-                        'date_joined': openapi.Schema(
-                            type=openapi.TYPE_STRING,
-                            format=openapi.FORMAT_DATETIME, 
-                            description='Fecha en la que el usuario se registro'
-                        ),
-                        'telefono': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Numero telefonico del Usuario'
-                        ),
-                        'email': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Correo electronico del Usuario'
-                        ),
-                        'first_name': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Nombre del Usuario'
-                        ),
-                        'last_name': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Apellido del Usuario'
-                        ),
-                        'username': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Nombre de usuario'
-                        ),
-                        'is_active': openapi.Schema(
-                            type=openapi.TYPE_BOOLEAN, 
-                            description='Determina si el usuario se ha dado o no de baja en el sistema'
-                        ),
-                    },  
-                    required = ['email', 'password', 'telefono', 'first_name', 'last_name']
-                )
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'id': openapi.Schema(
+                type=openapi.TYPE_INTEGER,
+                description='Numero único de identifiacion de cada Usuario'
+            ),
+            'last_login': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                format=openapi.FORMAT_DATETIME,
+                description='Ultima fecha en la que inicio sesion el usuario'
+            ),
+            'is_superuser': openapi.Schema(
+                type=openapi.TYPE_BOOLEAN,
+                description='Define si el usuario es o no administrador'
+            ),
+            'is_staff': openapi.Schema(
+                type=openapi.TYPE_BOOLEAN,
+                description='Define si el usuario es o no empleado'
+            ),
+            'date_joined': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                format=openapi.FORMAT_DATETIME,
+                description='Fecha en la que el usuario se registro'
+            ),
+            'telefono': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Numero telefonico del Usuario'
+            ),
+            'email': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Correo electronico del Usuario'
+            ),
+            'first_name': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Nombre del Usuario'
+            ),
+            'last_name': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Apellido del Usuario'
+            ),
+            'username': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Nombre de usuario'
+            ),
+            'is_active': openapi.Schema(
+                type=openapi.TYPE_BOOLEAN,
+                description='Determina si el usuario se ha dado o no de baja en el sistema'
+            ),
+        },
+        required=['email', 'password', 'telefono', 'first_name', 'last_name']
+    )
 
     # Posibles respuestas para POST una vez pasada la autenticacion
     respuestas = {
         "200": openapi.Response(
-            schema= user_schema,
+            schema=user_schema,
             description="Respuesta si la operacion GET fue exitosa",
         ),
         "404": openapi.Response(
@@ -98,18 +98,19 @@ class docs_get():
         ),
     }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
+
 
 class docs_put():
     # Detalles de la documentacion para PUT de Usuarios
 
     # Los parametros que se aceptan en la operacion PUT
     params = openapi.Parameter(
-        'id', 
-        openapi.IN_QUERY, 
-        description="Obligatorio. El 'id' del registro que se desea actualizar", 
+        'id',
+        openapi.IN_QUERY,
+        description="Obligatorio. El 'id' del registro que se desea actualizar",
         type=openapi.TYPE_INTEGER,
-        required = True,
+        required=True,
     )
 
     # Posibles respuestas para PUT una vez pasada la autenticacion
@@ -117,7 +118,7 @@ class docs_put():
         "200": openapi.Response(
             description="Respuesta si la operacion PUT fue exitosa",
             examples={
-                'json':{
+                'json': {
                     "id": 1,
                     "last_login": "2021-07-02T00:59:37.412740-05:00",
                     "is_superuser": True,
@@ -148,38 +149,38 @@ class docs_put():
                 "json: Si se proporciono un parametro distinto a 'id'": {
                     "message": "Solo se acepta un parametro con llave 'id'"
                 },
-                "json: Algun campo faltante":{
+                "json: Algun campo faltante": {
                     "password": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ],
                     "telefono": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ],
                     "email": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ],
                     "first_name": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ],
                     "last_name": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ]
-                }, 
-                'json: Si la contraseña no cumple con los validadores':{    
+                },
+                'json: Si la contraseña no cumple con los validadores': {
                     "password": [
-                        "This password is too short. It must contain at least 8 characters.",
-                        "This password is too common.",
-                        "This password is entirely numeric."
+                        "La contraseña es muy corta. Debe contener al menos 8 caracteres.",
+                        "Esta contraseña es muy común.",
+                        "Esta contraseña es totalmente numérica."
                     ],
                 },
-                'json: Si ya existe un usuario con ese correo registrado':{    
+                'json: Si ya existe un usuario con ese correo registrado': {
                     "email": [
-                        "user with this email already exists."
+                        "Ya existe un/a usuario con este/a email."
                     ],
                 },
-                'json: Si no se proporciono ningun parametro':{
+                'json: Si no se proporciono ningun parametro': {
                     "message": "PUT debe proporcionar parametro 'id'"
-                },  
+                },
             }
         ),
         "403": openapi.Response(
@@ -194,44 +195,45 @@ class docs_put():
 
     # Como debe de ser el body de la peticion para ser valido
     body_valid = openapi.Schema(
-                    type=openapi.TYPE_OBJECT, 
-                    properties={
-                        'email': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Correo electronico del Usuario'
-                        ),
-                        'password': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Contraseña del Usuario'
-                        ),
-                        'telefono': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Numero telefonico del Usuario'
-                        ),
-                        'first_name': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Nombre del Usuario'
-                        ),
-                        'last_name': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Apellido del Usuario'
-                        ),
-                    },  
-                    required = ['email', 'password', 'telefono', 'first_name', 'last_name']
-                )
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'email': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Correo electronico del Usuario'
+            ),
+            'password': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Contraseña del Usuario'
+            ),
+            'telefono': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Numero telefonico del Usuario'
+            ),
+            'first_name': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Nombre del Usuario'
+            ),
+            'last_name': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Apellido del Usuario'
+            ),
+        },
+        required=['email', 'password', 'telefono', 'first_name', 'last_name']
+    )
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
+
 
 class docs_delete():
     # Detalles de la documentacion para DELETE de Usuarios
 
     # Los parametros que se aceptan en la operacion DELETE
     params = openapi.Parameter(
-        'id', 
-        openapi.IN_QUERY, 
-        description="Obligatorio. El 'id' del registro que se desea eliminar", 
+        'id',
+        openapi.IN_QUERY,
+        description="Obligatorio. El 'id' del registro que se desea eliminar",
         type=openapi.TYPE_INTEGER,
-        required = True,
+        required=True,
     )
 
     # Posibles respuestas para PUT una vez pasada la autenticacion
@@ -240,7 +242,7 @@ class docs_delete():
             description="Respuesta si la operacion DELETE fue exitosa",
             examples={
                 "json": {
-                   'message': 'Usuario eliminado correctamente'
+                    'message': 'Usuario eliminado correctamente'
                 }
             }
         ),
@@ -258,9 +260,9 @@ class docs_delete():
                 "json: Si se proporciono un parametro distinto a 'id'": {
                     "message": "Solo se acepta un parametro con llave 'id'"
                 },
-                'json: Si no se proporciono ningun parametro':{
+                'json: Si no se proporciono ningun parametro': {
                     "message": "DELETE debe proporcionar parametro 'id'"
-                },  
+                },
             }
         ),
         "403": openapi.Response(
@@ -273,17 +275,18 @@ class docs_delete():
         ),
     }
 
-#--------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------
+
 
 class docs_login():
     # Detalles de la documentacion para el inicio de sesion de Usuarios
-    
+
     # Posibles respuestas para el inicio de sesion
     respuestas = {
         "200": openapi.Response(
             description="Respuesta si el inicio de sesion fue exitoso",
             examples={
-                "json":{
+                "json": {
                     "response": "Inicio de Sesión Exitoso",
                     "token": "c2b8f9e76d4d189f3693337d3bdc4c5b0c4bfc14",
                     "user_data": {
@@ -301,45 +304,47 @@ class docs_login():
         "400": openapi.Response(
             description="Posibles respuestas si la peticion no fue valida",
             examples={
-                "json: Algun campo faltante":{
+                "json: Algun campo faltante": {
                     "username": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ],
                     "password": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ]
                 },
-                "json: Alguno de los datos es incorrecto":{
+                "json: Alguno de los datos es incorrecto": {
                     "non_field_errors": [
-                        "Unable to log in with provided credentials."
+                        "No puede iniciar sesión con las credenciales proporcionadas."
                     ]
-                },         
+                },
             }
         ),
     }
 
     # Como debe de ser el body de la peticion para ser valido
     body_valid = openapi.Schema(
-                    type=openapi.TYPE_OBJECT, 
-                    properties={
-                        'username': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Correo Electronico del Usuario',
-                        ),
-                        'password': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Contraseña del Usuario',    
-                        ),
-                    }, 
-                    required = ["username", "password"],
-                )
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'username': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Correo Electronico del Usuario',
+            ),
+            'password': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Contraseña del Usuario',
+            ),
+        },
+        required=["username", "password"],
+    )
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
+
 
 class docs_logout():
-   print('Falta Documentacion de Logout')
+    print('Falta Documentacion de Logout')
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
+
 
 class docs_signup():
     # Detalles de la documentacion para el registro de nuevos usuarios normales
@@ -349,7 +354,7 @@ class docs_signup():
         "200": openapi.Response(
             description="Respuesta si el registro de usuario nuevo fue exitoso",
             examples={
-                'json':{
+                'json': {
                     "message": "Usuario registrado de forma exitosa",
                     "token": "62ad5db0602b8c1fe9eb41654fc225db0ea3dd0d",
                     "user_data": {
@@ -366,33 +371,33 @@ class docs_signup():
         "400": openapi.Response(
             description="Posibles respuestas si la peticion no fue valida",
             examples={
-                "json: Algun campo faltante":{
+                "json: Algun campo faltante": {
                     "password": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ],
                     "telefono": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ],
                     "email": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ],
                     "first_name": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ],
                     "last_name": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ]
-                }, 
-                'json: Si la contraseña no cumple con los validadores':{    
+                },
+                'json: Si la contraseña no cumple con los validadores': {
                     "password": [
-                        "This password is too short. It must contain at least 8 characters.",
-                        "This password is too common.",
-                        "This password is entirely numeric."
+                        "La contraseña es muy corta. Debe contener al menos 8 caracteres.",
+                        "Esta contraseña es muy común.",
+                        "Esta contraseña es totalmente numérica."
                     ],
                 },
-                'json: Si ya existe un usuario con ese correo registrado':{    
+                'json: Si ya existe un usuario con ese correo registrado': {
                     "email": [
-                        "user with this email already exists."
+                        "Ya existe un/a usuario con este/a email."
                     ],
                 },
             }
@@ -401,33 +406,34 @@ class docs_signup():
 
     # Como debe de ser el body de la peticion para ser valido
     body_valid = openapi.Schema(
-                    type=openapi.TYPE_OBJECT, 
-                    properties={
-                        'email': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Correo electronico del Usuario'
-                        ),
-                        'password': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Contraseña del Usuario'
-                        ),
-                        'telefono': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Numero telefonico del Usuario'
-                        ),
-                        'first_name': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Nombre del Usuario'
-                        ),
-                        'last_name': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Apellido del Usuario'
-                        ),
-                    },  
-                    required = ['email', 'password', 'telefono', 'first_name', 'last_name']
-                )
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'email': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Correo electronico del Usuario'
+            ),
+            'password': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Contraseña del Usuario'
+            ),
+            'telefono': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Numero telefonico del Usuario'
+            ),
+            'first_name': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Nombre del Usuario'
+            ),
+            'last_name': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Apellido del Usuario'
+            ),
+        },
+        required=['email', 'password', 'telefono', 'first_name', 'last_name']
+    )
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
+
 
 class docs_signup_admin():
     # Detalles de la documentacion para el registro de nuevos usuarios administradores
@@ -437,7 +443,7 @@ class docs_signup_admin():
         "200": openapi.Response(
             description="Respuesta si el registro del administrador nuevo fue exitoso",
             examples={
-                'json':{
+                'json': {
                     "message": "Administrador registrado de forma exitosa",
                     "token": "62ad5db0602b8c1fe9eb41654fc225db0ea3dd0d",
                     "user_data": {
@@ -454,33 +460,33 @@ class docs_signup_admin():
         "400": openapi.Response(
             description="Posibles respuestas si la peticion no fue valida",
             examples={
-                "json: Algun campo faltante":{
+                "json: Algun campo faltante": {
                     "password": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ],
                     "telefono": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ],
                     "email": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ],
                     "first_name": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ],
                     "last_name": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ]
-                }, 
-                'json: Si la contraseña no cumple con los validadores':{    
+                },
+                'json: Si la contraseña no cumple con los validadores': {
                     "password": [
-                        "This password is too short. It must contain at least 8 characters.",
-                        "This password is too common.",
-                        "This password is entirely numeric."
+                        "La contraseña es muy corta. Debe contener al menos 8 caracteres.",
+                        "Esta contraseña es muy común.",
+                        "Esta contraseña es totalmente numérica."
                     ],
                 },
-                'json: Si ya existe un usuario con ese correo registrado':{    
+                'json: Si ya existe un usuario con ese correo registrado': {
                     "email": [
-                        "user with this email already exists."
+                        "Ya existe un/a usuario con este/a email."
                     ],
                 },
             }
@@ -497,33 +503,34 @@ class docs_signup_admin():
 
     # Como debe de ser el body de la peticion para ser valido
     body_valid = openapi.Schema(
-                    type=openapi.TYPE_OBJECT, 
-                    properties={
-                        'email': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Correo electronico del Administrador'
-                        ),
-                        'password': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Contraseña del Administrador'
-                        ),
-                        'telefono': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Numero telefonico del Administrador'
-                        ),
-                        'first_name': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Nombre del Administrador'
-                        ),
-                        'last_name': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Apellido del Administrador'
-                        ),
-                    },  
-                    required = ['email', 'password', 'telefono', 'first_name', 'last_name']
-                )
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'email': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Correo electronico del Administrador'
+            ),
+            'password': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Contraseña del Administrador'
+            ),
+            'telefono': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Numero telefonico del Administrador'
+            ),
+            'first_name': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Nombre del Administrador'
+            ),
+            'last_name': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Apellido del Administrador'
+            ),
+        },
+        required=['email', 'password', 'telefono', 'first_name', 'last_name']
+    )
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
+
 
 class docs_signup_staff():
 
@@ -534,7 +541,7 @@ class docs_signup_staff():
         "200": openapi.Response(
             description="Respuesta si el registro del empleado nuevo fue exitoso",
             examples={
-                'json':{
+                'json': {
                     "message": "Empleado registrado de forma exitosa",
                     "token": "62ad5db0602b8c1fe9eb41654fc225db0ea3dd0d",
                     "user_data": {
@@ -551,33 +558,33 @@ class docs_signup_staff():
         "400": openapi.Response(
             description="Posibles respuestas si la peticion no fue valida",
             examples={
-                "json: Algun campo faltante":{
+                "json: Algun campo faltante": {
                     "password": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ],
                     "telefono": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ],
                     "email": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ],
                     "first_name": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ],
                     "last_name": [
-                        "This field is required."
+                        "Este campo es requerido."
                     ]
-                }, 
-                'json: Si la contraseña no cumple con los validadores':{    
+                },
+                'json: Si la contraseña no cumple con los validadores': {
                     "password": [
-                        "This password is too short. It must contain at least 8 characters.",
-                        "This password is too common.",
-                        "This password is entirely numeric."
+                        "La contraseña es muy corta. Debe contener al menos 8 caracteres.",
+                        "Esta contraseña es muy común.",
+                        "Esta contraseña es totalmente numérica."
                     ],
                 },
-                'json: Si ya existe un usuario con ese correo registrado':{    
+                'json: Si ya existe un usuario con ese correo registrado': {
                     "email": [
-                        "user with this email already exists."
+                        "Ya existe un/a usuario con este/a email."
                     ],
                 },
             }
@@ -594,28 +601,28 @@ class docs_signup_staff():
 
     # Como debe de ser el body de la peticion para ser valido
     body_valid = openapi.Schema(
-                    type=openapi.TYPE_OBJECT, 
-                    properties={
-                        'email': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Correo electronico del Empleado'
-                        ),
-                        'password': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Contraseña del Empleado'
-                        ),
-                        'telefono': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Numero telefonico del Empleado'
-                        ),
-                        'first_name': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Nombre del Empleado'
-                        ),
-                        'last_name': openapi.Schema(
-                            type=openapi.TYPE_STRING, 
-                            description='Apellido del Empleado'
-                        ),
-                    },  
-                    required = ['email', 'password', 'telefono', 'first_name', 'last_name']
-                )
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'email': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Correo electronico del Empleado'
+            ),
+            'password': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Contraseña del Empleado'
+            ),
+            'telefono': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Numero telefonico del Empleado'
+            ),
+            'first_name': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Nombre del Empleado'
+            ),
+            'last_name': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='Apellido del Empleado'
+            ),
+        },
+        required=['email', 'password', 'telefono', 'first_name', 'last_name']
+    )
