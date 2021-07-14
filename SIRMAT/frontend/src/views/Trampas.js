@@ -38,9 +38,10 @@ import {
 // core components
 import Header from "components/Headers/Header.js";
 
+// Se importan los datos de prueba para la tabla
+import datos_trampas from "datos_prueba/datos_Trampas.js"
 
-
-class TablaCamaras extends Component {
+class TablaTrampas extends Component {
 
   constructor(props) {
     super(props);
@@ -51,14 +52,14 @@ class TablaCamaras extends Component {
   }
 
   componentDidMount(){
-    const url = "http://127.0.0.1:8081/camaras/";
-    this.GET_camaras(url);
+    const url = "http://127.0.0.1:8081/trampas/";
+    this.GET_trampas(url);
 
   }
     
 
-  // Funcion que se utilizara para hacer un GET a la API en Camaras
-  GET_camaras = (ruta) => {
+  // Funcion que se utilizara para hacer un GET a la API en Trampas
+  GET_trampas = (ruta) => {
     fetch(ruta,{
       method : 'GET',
       headers:{
@@ -68,23 +69,23 @@ class TablaCamaras extends Component {
      
     })
     .then(response => response.json())
-    .then(camarasJson => this.setState({table_data : camarasJson}))
+    .then(trampasJson => this.setState({table_data : trampasJson}))
   };
 
-  //Funcion que se utilizara para hacer POST a la API en Camaras
-  POST_camaras = (ruta, datos) => {
+  //Funcion que se utilizara para hacer POST a la API en Trampas
+  POST_trampas = (ruta, datos) => {
   };
 
-  //Funcion que se utilizara para hacer PUT a la API en Camaras
-  PUT_camaras = (ruta, id, datos) => {
+  //Funcion que se utilizara para hacer PUT a la API en Trampas
+  PUT_trampas = (ruta, id, datos) => {
   };
 
-  //Funcion que se utilizara para hacer DELETE a la API en Camaras
-  DELETE_camaras = (ruta, id) => {
+  //Funcion que se utilizara para hacer DELETE a la API en Trampas
+  DELETE_trampas = (ruta, id) => {
   };
 
   // Funcion que crea la tabla con los datos que se hayan recolectado de la API
-  create_table = (camaras) => {
+  create_table = (trampas) => {
   
 
     //Dependiendo del valor que tenga is_active se mostrara un valor distinto en "Estado"
@@ -108,14 +109,14 @@ class TablaCamaras extends Component {
     };
 
     // Se regresa el contenido de la tabla con los datos de cada uno 
-    // De los registros que contenga la lista "camaras" usando una funcion map()
-    return camaras.map((camara) => {
+    // De los registros que contenga la lista "trampas" usando una funcion map()
+    return trampas.map((trampa) => {
       return (
         <tr>
-          <th scope="row">{camara.marca}</th>
-          <td>{camara.foco}</td>
-          <td>{camara.resolucion}</td>
-          <td>{print_is_active(camara.is_active)}</td>
+          <th scope="row">{trampa.nombre}</th>
+          <td>{trampa.direccion}</td>
+          <td>{trampa.coordenadas}</td>
+          <td>{print_is_active(trampa.is_active)}</td>
           <td className="text-right">
             <UncontrolledDropdown>
               <DropdownToggle
@@ -161,7 +162,7 @@ class TablaCamaras extends Component {
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
-                    <h3 className="mb-0">Camaras</h3>
+                    <h3 className="mb-0">Trampas</h3>
                     <Button className="ml-3" color="success" type="button" size="sm">
                       <i className="ni ni-fat-add mt-1"></i>
                     </Button>
@@ -170,9 +171,9 @@ class TablaCamaras extends Component {
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
-                      <th scope="col">Marca</th>
-                      <th scope="col">Foco</th>
-                      <th scope="col">Resolucion</th>
+                      <th scope="col">Nombre</th>
+                      <th scope="col">Direccion</th>
+                      <th scope="col">Coordenadas</th>
                       <th scope="col">Estado</th>
                       <th scope="col" />
                     </tr>
@@ -243,4 +244,4 @@ class TablaCamaras extends Component {
   }
 };
 
-export default TablaCamaras;
+export default TablaTrampas;

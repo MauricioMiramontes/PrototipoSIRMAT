@@ -24,6 +24,7 @@ import Icons from "views/examples/Icons.js";
 import TablaCamaras from "views/Camaras.js";
 import TablaEstereoscopios from "views/Estereoscopios.js"
 import TablaEtiquetado from "views/Etiquetado.js"
+import TablaTrampas from "views/Trampas.js";
 
 
 var routes = [
@@ -59,7 +60,7 @@ var routes = [
     path: "/trampas",
     name: "Trampas",
     icon: "ni ni-building text-red",
-    component: Tables,
+    component: TablaTrampas,
     layout: "/superu",
   },
   {
