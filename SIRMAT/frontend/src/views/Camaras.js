@@ -15,7 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import { React, Component } from "react";
+import React, {Component}  from "react";
 
 // reactstrap components
 import {
@@ -47,12 +47,28 @@ class TablaCamaras extends Component {
     super(props);
     this.state = {
       // Por ahora se toman los datos de prueba
-      table_data: datos_camaras
+      table_data: []
     };
   }
 
+  componentDidMount(){
+    const url = "http://127.0.0.1:8081/camaras/";
+    this.GET_camaras(url);
+
+  }
+    
+
   // Funcion que se utilizara para hacer un GET a la API en Camaras
   GET_camaras = (ruta) => {
+    fetch(ruta,{
+      method : 'GET',
+      headers:{
+        'Authorization':'Token c6a9356a4c9054c9d106bf882ce70366b407ff0b',
+      },
+     
+    })
+    .then(response => response.json())
+    .then(camarasJson => this.setState({table_data : camarasJson}))
   };
 
   //Funcion que se utilizara para hacer POST a la API en Camaras
@@ -69,6 +85,7 @@ class TablaCamaras extends Component {
 
   // Funcion que crea la tabla con los datos que se hayan recolectado de la API
   create_table = (camaras) => {
+  
 
     //Dependiendo del valor que tenga is_active se mostrara un valor distinto en "Estado"
     const print_is_active = (is_active) => {
@@ -133,6 +150,7 @@ class TablaCamaras extends Component {
   };
 
   render() {
+    
     return (
       <>
         <Header />
