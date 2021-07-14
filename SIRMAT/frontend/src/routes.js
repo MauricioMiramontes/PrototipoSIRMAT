@@ -23,6 +23,7 @@ import Tables from "views/examples/Tables.js";
 import Icons from "views/examples/Icons.js";
 import TablaCamaras from "views/Camaras.js";
 import TablaEstereoscopios from "views/Estereoscopios.js"
+import TablaEtiquetado from "views/Etiquetado.js"
 
 
 var routes = [
@@ -65,7 +66,7 @@ var routes = [
     path: "/etiquetado",
     name: "Etiquetado",
     icon: "ni ni-tag text-red",
-    component: Tables,
+    component: TablaEtiquetado,
     layout: "/superu",
   },
   {
