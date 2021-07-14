@@ -341,9 +341,6 @@ class docs_login():
 
 
 class docs_logout():
-<<<<<<< Updated upstream
-    print('Falta Documentacion de Logout')
-=======
     respuestas = {
         "200": openapi.Response(
             description="Respuesta si la sesion y el token se eliminaron con exito",
@@ -353,7 +350,6 @@ class docs_logout():
                 }
             },
         )}
->>>>>>> Stashed changes
 
 # ----------------------------------------------------------------------------------------
 
