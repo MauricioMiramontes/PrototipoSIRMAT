@@ -40,25 +40,24 @@ import Header from "components/Headers/Header.js";
 
 
 
-class TablaCamaras extends Component {
+class TablaEstereoscopios extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      // Por ahora se toman los datos de prueba
       table_data: []
     };
   }
 
   componentDidMount(){
-    const url = "http://127.0.0.1:8081/camaras/";
-    this.GET_camaras(url);
+    const url = "http://127.0.0.1:8081/estereoscopios/";
+    this.GET_estereoscopios(url);
 
   }
     
 
-  // Funcion que se utilizara para hacer un GET a la API en Camaras
-  GET_camaras = (ruta) => {
+  // Funcion que se utilizara para hacer un GET a la API en Estereoscopios
+  GET_estereoscopios = (ruta) => {
     fetch(ruta,{
       method : 'GET',
       headers:{
@@ -67,23 +66,23 @@ class TablaCamaras extends Component {
      
     })
     .then(response => response.json())
-    .then(camarasJson => this.setState({table_data : camarasJson}))
+    .then(estereoscopiosJson => this.setState({table_data : estereoscopiosJson}))
   };
 
-  //Funcion que se utilizara para hacer POST a la API en Camaras
-  POST_camaras = (ruta, datos) => {
+  //Funcion que se utilizara para hacer POST a la API en estereoscopios
+  POST_estereoscopios = (ruta, datos) => {
   };
 
-  //Funcion que se utilizara para hacer PUT a la API en Camaras
-  PUT_camaras = (ruta, id, datos) => {
+  //Funcion que se utilizara para hacer PUT a la API en estereoscopios
+  PUT_estereoscopios = (ruta, id, datos) => {
   };
 
-  //Funcion que se utilizara para hacer DELETE a la API en Camaras
-  DELETE_camaras = (ruta, id) => {
+  //Funcion que se utilizara para hacer DELETE a la API en estereoscopios
+  DELETE_estereoscopios = (ruta, id) => {
   };
 
   // Funcion que crea la tabla con los datos que se hayan recolectado de la API
-  create_table = (camaras) => {
+  create_table = (estereoscopios) => {
   
 
     //Dependiendo del valor que tenga is_active se mostrara un valor distinto en "Estado"
@@ -92,7 +91,7 @@ class TablaCamaras extends Component {
         return (
           <Badge color="" className="badge-dot">
             <i className="bg-success" />
-            Activa
+            Activo
           </Badge>
         )
       }
@@ -108,13 +107,12 @@ class TablaCamaras extends Component {
 
     // Se regresa el contenido de la tabla con los datos de cada uno 
     // De los registros que contenga la lista "camaras" usando una funcion map()
-    return camaras.map((camara) => {
+    return estereoscopios.map((estereoscopio) => {
       return (
         <tr>
-          <th scope="row">{camara.marca}</th>
-          <td>{camara.foco}</td>
-          <td>{camara.resolucion}</td>
-          <td>{print_is_active(camara.is_active)}</td>
+          <th scope="row">{estereoscopio.marca}</th>
+          <td>{estereoscopio.caracteristicas}</td>
+          <td>{print_is_active(estereoscopio.is_active)}</td>
           <td className="text-right">
             <UncontrolledDropdown>
               <DropdownToggle
@@ -160,7 +158,7 @@ class TablaCamaras extends Component {
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
-                    <h3 className="mb-0">Camaras</h3>
+                    <h3 className="mb-0">Estereoscopios</h3>
                     <Button className="ml-3" color="success" type="button" size="sm">
                       <i className="ni ni-fat-add mt-1"></i>
                     </Button>
@@ -170,8 +168,7 @@ class TablaCamaras extends Component {
                   <thead className="thead-light">
                     <tr>
                       <th scope="col">Marca</th>
-                      <th scope="col">Foco</th>
-                      <th scope="col">Resolucion</th>
+                      <th scope="col">Caracteristicas</th>
                       <th scope="col">Estado</th>
                       <th scope="col" />
                     </tr>
@@ -242,4 +239,4 @@ class TablaCamaras extends Component {
   }
 };
 
-export default TablaCamaras;
+export default TablaEstereoscopios;

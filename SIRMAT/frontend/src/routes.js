@@ -21,7 +21,9 @@ import Register from "views/examples/Register.js";
 import Login from "views/examples/Login.js";
 import Tables from "views/examples/Tables.js";
 import Icons from "views/examples/Icons.js";
-import TablaCamaras from "views/Camaras.js"
+import TablaCamaras from "views/Camaras.js";
+import TablaEstereoscopios from "views/Estereoscopios.js"
+
 
 var routes = [
   {
@@ -77,7 +79,7 @@ var routes = [
     path: "/estereoscopios",
     name: "Estereoscopios",
     icon: "ni ni-zoom-split-in text-red",
-    component: Tables,
+    component: TablaEstereoscopios,
     layout: "/superu",
   },
   {
