@@ -1,4 +1,4 @@
-[
+const datos_usuarios = [
     {
         "id": 1,
         "last_login": "2021-07-07T17:28:57.905815-05:00",
@@ -44,4 +44,6 @@
         "groups": [],
         "user_permissions": []
     }
-]
+];
+
+export default datos_usuarios;

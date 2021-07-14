@@ -1,4 +1,4 @@
-[
+const datos_detallesmuestra = [
     {
         "idtDetallesMuestra": 1,
         "horaFecha": "2019-08-24T14:15:22Z",
@@ -18,3 +18,5 @@
         "idMuestra": 2
     }
 ]
+
+export default datos_detallesmuestra;

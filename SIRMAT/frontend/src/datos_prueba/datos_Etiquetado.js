@@ -1,4 +1,4 @@
-[
+const datos_etiquetado = [
     {
         "idEtiquetado": 1,
         "hora_fecha": "2019-08-24T14:15:22Z",
@@ -17,4 +17,6 @@
         "idDetallesMuestra": 2,
         "id_especie": 1
     }
-]
+];
+
+export default datos_etiquetado;

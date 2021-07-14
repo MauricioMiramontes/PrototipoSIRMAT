@@ -1,4 +1,4 @@
-[
+const datos_trampas = [
     {
         "idcTrampas": 1,
         "nombre": "Trampa1",
@@ -13,4 +13,6 @@
         "coordenadas": "Trampa2",
         "is_active": true
     }
-]
+];
+
+export default datos_trampas;

@@ -1,4 +1,4 @@
-[
+const datos_muestras = [
     {
         "idtMuestra": 1,
         "horaFechainicio": "2019-08-24T14:15:22Z",
@@ -17,4 +17,6 @@
         "idTrampas": 2,
         "idUsuario": 2
     }
-]
+];
+
+export default datos_muestras;

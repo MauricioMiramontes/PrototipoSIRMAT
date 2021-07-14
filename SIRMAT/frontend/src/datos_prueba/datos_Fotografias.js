@@ -1,4 +1,4 @@
-[
+const datos_fotografias = [
     {
         "idFotografias": 1,
         "horaFecha": "2021-07-07T17:55:37.164832-05:00",
@@ -69,4 +69,6 @@
         "idCamara": 2,
         "idMuestra": 2
     }
-]
+];
+
+export default datos_fotografias;

@@ -1,4 +1,4 @@
-[  
+const datos_especies = [  
     {
         "idcEspecie": 1,
         "especie": "Mosca",
@@ -9,4 +9,6 @@
         "especie": "Pulga",
         "is_active": true
     }
-]
+];
+
+export default datos_especies;
