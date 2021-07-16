@@ -38,14 +38,16 @@ import {
 // core components
 import Header from "components/Headers/Header.js";
 
-
+// Se importan los datos de prueba para la tabla
+import user from "datos_prueba/datos_Sesion.js"
 
 class TablaEtiquetado extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      table_data: []
+      table_data: [],
+      user_data: user
     };
   }
 
@@ -61,7 +63,7 @@ class TablaEtiquetado extends Component {
     fetch(ruta,{
       method : 'GET',
       headers:{
-        'Authorization':'Token c6a9356a4c9054c9d106bf882ce70366b407ff0b',
+        'Authorization': 'Token ' + this.state.user_data.token ,
       },
      
     })

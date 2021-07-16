@@ -39,7 +39,7 @@ import {
 import Header from "components/Headers/Header.js";
 
 // Se importan los datos de prueba para la tabla
-import datos_trampas from "datos_prueba/datos_Trampas.js"
+import user from "datos_prueba/datos_Sesion.js"
 
 class TablaTrampas extends Component {
 
@@ -47,7 +47,8 @@ class TablaTrampas extends Component {
     super(props);
     this.state = {
       // Por ahora se toman los datos de prueba
-      table_data: []
+      table_data: [],
+      user_data: user
     };
   }
 
@@ -64,7 +65,7 @@ class TablaTrampas extends Component {
       method : 'GET',
       headers:{
         //Cambiar token dependiendo a quien este manipulando las pruebas
-        'Authorization':'Token qwertyuiopasdfghjklnzxcvb',
+        'Authorization': 'Token ' + this.state.user_data.token ,
       },
      
     })

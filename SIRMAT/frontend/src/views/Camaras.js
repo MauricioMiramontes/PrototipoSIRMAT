@@ -38,6 +38,8 @@ import {
 // core components
 import Header from "components/Headers/Header.js";
 
+// Se importan los datos de prueba para la tabla
+import user from "datos_prueba/datos_Sesion.js"
 
 
 class TablaCamaras extends Component {
@@ -46,7 +48,8 @@ class TablaCamaras extends Component {
     super(props);
     this.state = {
       // Por ahora se toman los datos de prueba
-      table_data: []
+      table_data: [],
+      user_data: user
     };
   }
 
@@ -63,7 +66,7 @@ class TablaCamaras extends Component {
       method : 'GET',
       headers:{
         //Cambiar token dependiendo a quien este manipulando las pruebas
-        'Authorization':'Token qwertyuiopasdfghjklnzxcvb',
+        'Authorization': 'Token ' + this.state.user_data.token ,
       },
      
     })
