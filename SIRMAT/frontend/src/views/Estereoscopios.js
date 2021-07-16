@@ -15,7 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React, {Component}  from "react";
+import React, { Component } from "react";
 
 // reactstrap components
 import {
@@ -37,6 +37,8 @@ import {
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
+import ConfirmDelete from "components/Dialoges/ConfirmDelete.js";
+
 
 // Se importan los datos de prueba para la tabla
 import user from "datos_prueba/datos_Sesion.js"
@@ -47,28 +49,33 @@ class TablaEstereoscopios extends Component {
     super(props);
     this.state = {
       table_data: [],
-      user_data: user
+      user_data: user,
+      elete_dialog: false,
+      estereoscopio_seleccionado: null
     };
+
+    //Functiones
+    this.DELETE_estereoscopios = this.DELETE_estereoscopios.bind(this)
   }
 
-  componentDidMount(){
+  componentDidMount() {
     const url = "http://127.0.0.1:8081/estereoscopios/";
     this.GET_estereoscopios(url);
 
   }
-    
+
 
   // Funcion que se utilizara para hacer un GET a la API en Estereoscopios
   GET_estereoscopios = (ruta) => {
-    fetch(ruta,{
-      method : 'GET',
-      headers:{
+    fetch(ruta, {
+      method: 'GET',
+      headers: {
         'Authorization': 'Token ' + this.state.user_data.token,
       },
-     
+
     })
-    .then(response => response.json())
-    .then(estereoscopiosJson => this.setState({table_data : estereoscopiosJson}))
+      .then(response => response.json())
+      .then(estereoscopiosJson => this.setState({ table_data: estereoscopiosJson }))
   };
 
   //Funcion que se utilizara para hacer POST a la API en estereoscopios
@@ -80,12 +87,15 @@ class TablaEstereoscopios extends Component {
   };
 
   //Funcion que se utilizara para hacer DELETE a la API en estereoscopios
-  DELETE_estereoscopios = (ruta, id) => {
+  DELETE_estereoscopios(id) {
+    this.setState({ delete_dialog: false })
+    console.log('Se va a borrar')
+    console.log(id)
   };
 
   // Funcion que crea la tabla con los datos que se hayan recolectado de la API
   create_table = (estereoscopios) => {
-  
+
 
     //Dependiendo del valor que tenga is_active se mostrara un valor distinto en "Estado"
     const print_is_active = (is_active) => {
@@ -127,7 +137,7 @@ class TablaEstereoscopios extends Component {
               >
                 <i className="fas fa-ellipsis-v" />
               </DropdownToggle>
-              <DropdownMenu className="dropdown-menu-arrow" right>
+              <DropdownMenu className="dropdown-menu-arrow" container="body" right>
                 <DropdownItem
                   href="#pablo"
                   onClick={(e) => e.preventDefault()}
@@ -136,7 +146,7 @@ class TablaEstereoscopios extends Component {
                 </DropdownItem>
                 <DropdownItem
                   href="#pablo"
-                  onClick={(e) => e.preventDefault()}
+                  onClick={() => this.setState({ delete_dialog: true, estereoscopio_seleccionado: estereoscopio.idcEstereoscopios })}
                 >
                   Dar de baja
                 </DropdownItem>
@@ -149,10 +159,14 @@ class TablaEstereoscopios extends Component {
   };
 
   render() {
-    
+
     return (
       <>
         <Header />
+        <ConfirmDelete
+          isOpen={this.state.delete_dialog}
+          onClose={(e) => this.setState({ delete_dialog: false })}
+          onConfirm={() => this.DELETE_estereoscopios(this.state.estereoscopio_seleccionado)} />
         <Container className="mt--7" fluid>
           {/* Tabla */}
           <Row>
@@ -160,7 +174,7 @@ class TablaEstereoscopios extends Component {
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
-                    <h3 className="mb-0">Estereoscopios</h3>
+                    <h3 className="mb-0 ml-2">Estereoscopios</h3>
                     <Button className="ml-3" color="success" type="button" size="sm">
                       <i className="ni ni-fat-add mt-1"></i>
                     </Button>

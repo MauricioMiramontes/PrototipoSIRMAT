@@ -15,7 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React, {Component}  from "react";
+import React, { Component } from "react";
 
 // reactstrap components
 import {
@@ -37,6 +37,7 @@ import {
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
+import ConfirmDelete from "components/Dialoges/ConfirmDelete.js";
 
 // Se importan los datos de prueba para la tabla
 import user from "datos_prueba/datos_Sesion.js"
@@ -48,29 +49,34 @@ class TablaTrampas extends Component {
     this.state = {
       // Por ahora se toman los datos de prueba
       table_data: [],
-      user_data: user
+      user_data: user,
+      delete_dialog: false,
+      trampa_seleccionada: null
     };
+
+    //Functiones
+    this.DELETE_trampas = this.DELETE_trampas.bind(this)
   }
 
-  componentDidMount(){
+  componentDidMount() {
     const url = "http://127.0.0.1:8081/trampas/";
     this.GET_trampas(url);
 
   }
-    
+
 
   // Funcion que se utilizara para hacer un GET a la API en Trampas
   GET_trampas = (ruta) => {
-    fetch(ruta,{
-      method : 'GET',
-      headers:{
+    fetch(ruta, {
+      method: 'GET',
+      headers: {
         //Cambiar token dependiendo a quien este manipulando las pruebas
-        'Authorization': 'Token ' + this.state.user_data.token ,
+        'Authorization': 'Token ' + this.state.user_data.token,
       },
-     
+
     })
-    .then(response => response.json())
-    .then(trampasJson => this.setState({table_data : trampasJson}))
+      .then(response => response.json())
+      .then(trampasJson => this.setState({ table_data: trampasJson }))
   };
 
   //Funcion que se utilizara para hacer POST a la API en Trampas
@@ -82,12 +88,15 @@ class TablaTrampas extends Component {
   };
 
   //Funcion que se utilizara para hacer DELETE a la API en Trampas
-  DELETE_trampas = (ruta, id) => {
+  DELETE_trampas(id) {
+    this.setState({ delete_dialog: false })
+    console.log('Se va a borrar')
+    console.log(id)
   };
 
   // Funcion que crea la tabla con los datos que se hayan recolectado de la API
   create_table = (trampas) => {
-  
+
 
     //Dependiendo del valor que tenga is_active se mostrara un valor distinto en "Estado"
     const print_is_active = (is_active) => {
@@ -130,7 +139,7 @@ class TablaTrampas extends Component {
               >
                 <i className="fas fa-ellipsis-v" />
               </DropdownToggle>
-              <DropdownMenu className="dropdown-menu-arrow" right>
+              <DropdownMenu className="dropdown-menu-arrow" container="body" right>
                 <DropdownItem
                   href="#pablo"
                   onClick={(e) => e.preventDefault()}
@@ -139,7 +148,7 @@ class TablaTrampas extends Component {
                 </DropdownItem>
                 <DropdownItem
                   href="#pablo"
-                  onClick={(e) => e.preventDefault()}
+                  onClick={() => this.setState({ delete_dialog: true, trampa_seleccionada: trampa.idcTrampas })}
                 >
                   Dar de baja
                 </DropdownItem>
@@ -152,10 +161,14 @@ class TablaTrampas extends Component {
   };
 
   render() {
-    
+
     return (
       <>
         <Header />
+        <ConfirmDelete
+          isOpen={this.state.delete_dialog}
+          onClose={(e) => this.setState({ delete_dialog: false })}
+          onConfirm={() => this.DELETE_trampas(this.state.trampa_seleccionada)} />
         <Container className="mt--7" fluid>
           {/* Tabla */}
           <Row>
@@ -163,7 +176,7 @@ class TablaTrampas extends Component {
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
-                    <h3 className="mb-0">Trampas</h3>
+                    <h3 className="mb-0 ml-2">Trampas</h3>
                     <Button className="ml-3" color="success" type="button" size="sm">
                       <i className="ni ni-fat-add mt-1"></i>
                     </Button>

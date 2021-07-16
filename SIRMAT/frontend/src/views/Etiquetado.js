@@ -127,7 +127,7 @@ class TablaEtiquetado extends Component {
               >
                 <i className="fas fa-ellipsis-v" />
               </DropdownToggle>
-              <DropdownMenu className="dropdown-menu-arrow" right>
+              <DropdownMenu className="dropdown-menu-arrow" container="body" right>
                 <DropdownItem
                   href="#pablo"
                   onClick={(e) => e.preventDefault()}
@@ -160,7 +160,7 @@ class TablaEtiquetado extends Component {
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
-                    <h3 className="mb-0">Etiquetado</h3>
+                    <h3 className="mb-0 ml-2">Etiquetado</h3>
                     <Button className="ml-3" color="success" type="button" size="sm">
                       <i className="ni ni-fat-add mt-1"></i>
                     </Button>

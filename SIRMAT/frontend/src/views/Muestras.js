@@ -37,6 +37,7 @@ import {
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
+import ConfirmDelete from "components/Dialoges/ConfirmDelete.js";
 
 // Se importan los datos de prueba para la tabla
 import user from "datos_prueba/datos_Sesion.js"
@@ -47,8 +48,13 @@ class TablaMuestras extends Component {
     super(props);
     this.state = {
       table_data: [],
-      user_data: user
+      user_data: user,
+      delete_dialog: false,
+      muestra_seleccionada: null
     };
+
+    //Functiones
+    this.DELETE_muestras = this.DELETE_muestras.bind(this)
   }
 
   componentDidMount() {
@@ -56,7 +62,6 @@ class TablaMuestras extends Component {
     this.GET_muestras(url);
 
   }
-
 
   // Funcion que se utilizara para hacer un GET a la API en Muestras
   GET_muestras = (ruta) => {
@@ -80,7 +85,10 @@ class TablaMuestras extends Component {
   };
 
   //Funcion que se utilizara para hacer DELETE a la API en Muestras
-  DELETE_muestras = (ruta, id) => {
+  DELETE_muestras(id) {
+    this.setState({ delete_dialog: false })
+    console.log('Se va a borrar')
+    console.log(id)
   };
 
   // Funcion que crea la tabla con los datos que se hayan recolectado de la API
@@ -107,7 +115,6 @@ class TablaMuestras extends Component {
     };
 
     const ir_detalles_Muestra = (muestraID) => {
-      
     };
 
     // Se regresa el contenido de la tabla con los datos de cada uno 
@@ -130,7 +137,7 @@ class TablaMuestras extends Component {
               >
                 <i className="fas fa-ellipsis-v" />
               </DropdownToggle>
-              <DropdownMenu className="dropdown-menu-arrow" right>
+              <DropdownMenu className="dropdown-menu-arrow" container="body" right>
                 <DropdownItem
                   href="#pablo"
                   onClick={(e) => e.preventDefault()}
@@ -139,7 +146,7 @@ class TablaMuestras extends Component {
                 </DropdownItem>
                 <DropdownItem
                   href="#pablo"
-                  onClick={(e) => e.preventDefault()}
+                  onClick={() => this.setState({ delete_dialog: true, muestra_seleccionada: muestra.idtMuestra })}
                 >
                   Dar de baja
                 </DropdownItem>
@@ -156,6 +163,10 @@ class TablaMuestras extends Component {
     return (
       <>
         <Header />
+        <ConfirmDelete
+          isOpen={this.state.delete_dialog}
+          onClose={(e) => this.setState({ delete_dialog: false })}
+          onConfirm={() => this.DELETE_muestras(this.state.muestra_seleccionada)} />
         <Container className="mt--7" fluid>
           {/* Tabla */}
           <Row>
@@ -163,7 +174,7 @@ class TablaMuestras extends Component {
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
-                    <h3 className="mb-0">Muestras</h3>
+                    <h3 className="mb-0 ml-2">Muestras</h3>
                     <Button className="ml-3" color="success" type="button" size="sm">
                       <i className="ni ni-fat-add mt-1"></i>
                     </Button>
