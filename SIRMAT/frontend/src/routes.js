@@ -25,6 +25,7 @@ import TablaCamaras from "views/Camaras.js";
 import TablaEstereoscopios from "views/Estereoscopios.js"
 import TablaEtiquetado from "views/Etiquetado.js"
 import TablaTrampas from "views/Trampas.js";
+import TablaMuestras from "views/Muestras.js"
 
 
 var routes = [
@@ -50,10 +51,17 @@ var routes = [
     layout: "/superu",
   },
   {
+    path: "/tables",
+    name: "Tables",
+    icon: "ni ni-single-02 text-yellow",
+    component: Tables,
+    layout: "/superu",
+  },
+  {
     path: "/muestras",
     name: "Muestras",
     icon: "ni ni-ungroup text-red",
-    component: Tables,
+    component: TablaMuestras,
     layout: "/superu",
   },
   {
