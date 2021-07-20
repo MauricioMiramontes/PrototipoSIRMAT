@@ -26,6 +26,7 @@ import TablaEstereoscopios from "views/Estereoscopios.js"
 import TablaEtiquetado from "views/Etiquetado.js"
 import TablaTrampas from "views/Trampas.js";
 import TablaMuestras from "views/Muestras.js"
+import TablaUsuarios from "views/Usuarios.js"
 
 
 var routes = [
@@ -105,6 +106,13 @@ var routes = [
     icon: "ni ni-circle-08 text-pink",
     component: Register,
     layout: "/auth",
+  },
+  {
+    path: "/usuarios",
+    name: "Usuarios",
+    icon: "ni ni-single-02 text-yellow",
+    component: TablaUsuarios,
+    layout: "/superu",
   },
 ];
 export default routes;
