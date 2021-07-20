@@ -50,7 +50,7 @@ class TablaEstereoscopios extends Component {
     this.state = {
       table_data: [],
       user_data: user,
-      elete_dialog: false,
+      delete_dialog: false,
       estereoscopio_seleccionado: null
     };
 
