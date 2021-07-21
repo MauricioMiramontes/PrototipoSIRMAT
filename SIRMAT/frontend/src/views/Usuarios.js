@@ -123,7 +123,7 @@ class TablaUsuarios extends Component {
     return usuarios.map((usuario) => {
       return (
         <tr>
-          <th scope="row">{usuario.nombre}</th>
+          <th scope="row">{usuario.first_name} {usuario.last_name}</th>
           <td>{usuario.email}</td>
           <td>{usuario.telefono}</td>
           <td>{print_is_active(usuario.is_active)}</td>
