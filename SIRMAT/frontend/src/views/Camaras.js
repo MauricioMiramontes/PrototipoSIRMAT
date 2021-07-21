@@ -155,7 +155,7 @@ class TablaCamaras extends Component {
             form_data: {
             }
           })
-          console.log(status_response)
+          console.log("status: " + status_response)
           console.log(respuesta_post)
         }
         else {
@@ -165,7 +165,7 @@ class TablaCamaras extends Component {
             form_data: {
             }
           })
-          console.log(status_response)
+          console.log("status: " + status_response)
           console.log(respuesta_post)
         }
       })
@@ -192,9 +192,6 @@ class TablaCamaras extends Component {
     // Se esconde el mensaje de confirmacion para eliminar
     this.setState({ delete_dialog: false })
 
-
-    console.log(elemento_eliminar)
-
     //Se hace la llamada a la API
     fetch(url, {
       method: 'DELETE',
@@ -207,18 +204,20 @@ class TablaCamaras extends Component {
         return response.json()
       })
       .then(respuesta_delete => {
-        console.log(respuesta_delete)
+
         if (status_response === 200) {
           // Para evitar recargar la pagina se toma la respuesta de la API y 
           // se agrega directamente al estado.
           // Si la peticion a la API fue un exito
+          console.log("status: " + status_response)
+          console.log(respuesta_delete)
           var updated_table_data = this.state.table_data;
           updated_table_data[elemento_eliminar]['is_active'] = false;
-          this.setState({table_data: updated_table_data})
+          this.setState({ table_data: updated_table_data })
         }
         else {
           // De lo contrario se imprime el error en la consola
-          console.log(status_response)
+          console.log("status: " + status_response)
           console.log(respuesta_delete)
         }
       })
