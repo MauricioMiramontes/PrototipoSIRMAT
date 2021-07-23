@@ -37,7 +37,7 @@ import {
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
-import ConfirmDelete from "components/Dialoges/ConfirmDelete.js";
+import DeleteModal from "components/Modals/DeleteModal.js";
 
 // Se importan los datos de prueba para la tabla
 import user from "datos_prueba/datos_Sesion.js"
@@ -50,11 +50,14 @@ class TablaUsuarios extends Component {
       // Por ahora se toman los datos de prueba
       table_data: [],
       user_data: user,
-      delete_dialog: false,
-      usuario_seleccionado: null
+      usuario_seleccionado: null,
+
+      // Determina si esta o no mostrandose los modales
+      delete_modal: false,
     };
 
     //Functiones
+    this.toggle_delete_modal = this.toggle_delete_modal.bind(this);
     this.DELETE_usuarios = this.DELETE_usuarios.bind(this)
   }
 
@@ -64,6 +67,11 @@ class TablaUsuarios extends Component {
 
   }
 
+  // Muestra u Oculta el modal para eliminar un registro
+  toggle_delete_modal() {
+    var value = this.state.delete_modal
+    this.setState({ delete_modal: !value })
+  }
 
   // Funcion que se utilizara para hacer un GET a la API en Trampas
   GET_usuarios = (ruta) => {
@@ -89,7 +97,7 @@ class TablaUsuarios extends Component {
 
   //Funcion que se utilizara para hacer DELETE a la API en Usuarios
   DELETE_usuarios(id) {
-    this.setState({ delete_dialog: false })
+    this.setState({ delete_modal: false })
     console.log('Se va a borrar')
     console.log(id)
   };
@@ -122,7 +130,7 @@ class TablaUsuarios extends Component {
     // De los registros que contenga la lista "trampas" usando una funcion map()
     return usuarios.map((usuario) => {
       return (
-        <tr>
+        <tr key={usuario.id}>
           <th scope="row">{usuario.first_name} {usuario.last_name}</th>
           <td>{usuario.email}</td>
           <td>{usuario.telefono}</td>
@@ -148,7 +156,7 @@ class TablaUsuarios extends Component {
                 </DropdownItem>
                 <DropdownItem
                   href="#pablo"
-                  onClick={() => this.setState({ delete_dialog: true, usuario_seleccionado: usuario.idcUsuarios })}
+                  onClick={() => this.setState({ delete_modal: true, usuario_seleccionado: usuario.id })}
                 >
                   Dar de baja
                 </DropdownItem>
@@ -165,10 +173,14 @@ class TablaUsuarios extends Component {
     return (
       <>
         <Header />
-        <ConfirmDelete
-          isOpen={this.state.delete_dialog}
-          onClose={(e) => this.setState({ delete_dialog: false })}
-          onConfirm={() => this.DELETE_usuarios(this.state.usuario_seleccionado)} />
+
+        {/* Modal de confirmacion para borrar */}
+        <DeleteModal
+          isOpen={this.state.delete_modal}
+          toggle={() => this.toggle_delete_modal()}
+          onConfirm={() => this.DELETE_usuarios(this.state.usuario_seleccionado)}
+        />
+
         <Container className="mt--7" fluid>
           {/* Tabla */}
           <Row>

@@ -37,7 +37,7 @@ import {
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
-import ConfirmDelete from "components/Dialoges/ConfirmDelete.js";
+import DeleteModal from "components/Modals/DeleteModal.js";
 
 // Se importan los datos de prueba para la tabla
 import user from "datos_prueba/datos_Sesion.js"
@@ -49,11 +49,15 @@ class TablaMuestras extends Component {
     this.state = {
       table_data: [],
       user_data: user,
-      delete_dialog: false,
-      muestra_seleccionada: null
+      muestra_seleccionada: null,
+
+      // Determina si esta o no mostrandose los modales
+      delete_modal: false,
+
     };
 
     //Functiones
+    this.toggle_delete_modal = this.toggle_delete_modal.bind(this);
     this.DELETE_muestras = this.DELETE_muestras.bind(this)
   }
 
@@ -61,6 +65,12 @@ class TablaMuestras extends Component {
     const url = "http://127.0.0.1:8081/muestras/";
     this.GET_muestras(url);
 
+  }
+
+  // Muestra u Oculta el modal para eliminar un registro
+  toggle_delete_modal() {
+    var value = this.state.delete_modal
+    this.setState({ delete_modal: !value })
   }
 
   // Funcion que se utilizara para hacer un GET a la API en Muestras
@@ -86,7 +96,7 @@ class TablaMuestras extends Component {
 
   //Funcion que se utilizara para hacer DELETE a la API en Muestras
   DELETE_muestras(id) {
-    this.setState({ delete_dialog: false })
+    this.setState({ delete_modal: false })
     console.log('Se va a borrar')
     console.log(id)
   };
@@ -121,7 +131,7 @@ class TablaMuestras extends Component {
     // De los registros que contenga la lista "camaras" usando una funcion map()
     return muestrass.map((muestra) => {
       return (
-        <tr>
+        <tr key={muestra.idtMuestra}>
           <th scope="row">{muestra.NombreMuestra}</th>
           <td>{muestra.horaFechainicio}</td>
           <td>{print_is_active(muestra.is_active)}</td>
@@ -146,7 +156,7 @@ class TablaMuestras extends Component {
                 </DropdownItem>
                 <DropdownItem
                   href="#pablo"
-                  onClick={() => this.setState({ delete_dialog: true, muestra_seleccionada: muestra.idtMuestra })}
+                  onClick={() => this.setState({ delete_modal: true, muestra_seleccionada: muestra.idtMuestra })}
                 >
                   Dar de baja
                 </DropdownItem>
@@ -163,10 +173,12 @@ class TablaMuestras extends Component {
     return (
       <>
         <Header />
-        <ConfirmDelete
-          isOpen={this.state.delete_dialog}
-          onClose={(e) => this.setState({ delete_dialog: false })}
-          onConfirm={() => this.DELETE_muestras(this.state.muestra_seleccionada)} />
+        {/* Modal de confirmacion para borrar */}
+        <DeleteModal
+          isOpen={this.state.delete_modal}
+          toggle={() => this.toggle_delete_modal()}
+          onConfirm={() => this.DELETE_muestras(this.state.muestra_seleccionada)}
+        />
         <Container className="mt--7" fluid>
           {/* Tabla */}
           <Row>

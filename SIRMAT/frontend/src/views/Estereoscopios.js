@@ -37,7 +37,7 @@ import {
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
-import ConfirmDelete from "components/Dialoges/ConfirmDelete.js";
+import DeleteModal from "components/Modals/DeleteModal.js";
 
 
 // Se importan los datos de prueba para la tabla
@@ -50,12 +50,15 @@ class TablaEstereoscopios extends Component {
     this.state = {
       table_data: [],
       user_data: user,
-      delete_dialog: false,
-      estereoscopio_seleccionado: null
+      estereoscopio_seleccionado: null,
+
+      // Determina si esta o no mostrandose los modales
+      delete_modal: false,
     };
 
     //Functiones
-    this.DELETE_estereoscopios = this.DELETE_estereoscopios.bind(this)
+    this.toggle_delete_modal = this.toggle_delete_modal.bind(this);
+    this.DELETE_estereoscopios = this.DELETE_estereoscopios.bind(this);
   }
 
   componentDidMount() {
@@ -64,6 +67,11 @@ class TablaEstereoscopios extends Component {
 
   }
 
+  // Muestra u Oculta el modal para eliminar un registro
+  toggle_delete_modal() {
+    var value = this.state.delete_modal
+    this.setState({ delete_modal: !value })
+  }
 
   // Funcion que se utilizara para hacer un GET a la API en Estereoscopios
   GET_estereoscopios = (ruta) => {
@@ -88,7 +96,7 @@ class TablaEstereoscopios extends Component {
 
   //Funcion que se utilizara para hacer DELETE a la API en estereoscopios
   DELETE_estereoscopios(id) {
-    this.setState({ delete_dialog: false })
+    this.setState({ delete_modal: false })
     console.log('Se va a borrar')
     console.log(id)
   };
@@ -121,7 +129,7 @@ class TablaEstereoscopios extends Component {
     // De los registros que contenga la lista "camaras" usando una funcion map()
     return estereoscopios.map((estereoscopio) => {
       return (
-        <tr>
+        <tr key = {estereoscopio.idcEstereoscopios}>
           <th scope="row">{estereoscopio.marca}</th>
           <td>{estereoscopio.caracteristicas}</td>
           <td>{print_is_active(estereoscopio.is_active)}</td>
@@ -146,7 +154,7 @@ class TablaEstereoscopios extends Component {
                 </DropdownItem>
                 <DropdownItem
                   href="#pablo"
-                  onClick={() => this.setState({ delete_dialog: true, estereoscopio_seleccionado: estereoscopio.idcEstereoscopios })}
+                  onClick={() => this.setState({ delete_modal: true, estereoscopio_seleccionado: estereoscopio.idcEstereoscopios })}
                 >
                   Dar de baja
                 </DropdownItem>
@@ -163,10 +171,12 @@ class TablaEstereoscopios extends Component {
     return (
       <>
         <Header />
-        <ConfirmDelete
-          isOpen={this.state.delete_dialog}
-          onClose={(e) => this.setState({ delete_dialog: false })}
-          onConfirm={() => this.DELETE_estereoscopios(this.state.estereoscopio_seleccionado)} />
+        {/* Modal de confirmacion para borrar */}
+        <DeleteModal
+          isOpen={this.state.delete_modal}
+          toggle={() => this.toggle_delete_modal()}
+          onConfirm={() => this.DELETE_estereoscopios(this.state.estereoscopio_seleccionado)}
+        />
         <Container className="mt--7" fluid>
           {/* Tabla */}
           <Row>

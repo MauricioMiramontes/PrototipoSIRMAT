@@ -5,10 +5,6 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Card,
-  CardHeader,
-  CardBody,
-  Row
 } from "reactstrap";
 
 function DeleteModal(props) {

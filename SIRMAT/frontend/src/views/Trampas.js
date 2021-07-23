@@ -37,7 +37,7 @@ import {
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
-import ConfirmDelete from "components/Dialoges/ConfirmDelete.js";
+import DeleteModal from "components/Modals/DeleteModal.js";
 
 // Se importan los datos de prueba para la tabla
 import user from "datos_prueba/datos_Sesion.js"
@@ -47,14 +47,17 @@ class TablaTrampas extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      // Por ahora se toman los datos de prueba
       table_data: [],
       user_data: user,
-      delete_dialog: false,
-      trampa_seleccionada: null
+      trampa_seleccionada: null,
+
+      // Determina si esta o no mostrandose los modales
+      delete_modal: false,
+
     };
 
     //Functiones
+    this.toggle_delete_modal = this.toggle_delete_modal.bind(this);
     this.DELETE_trampas = this.DELETE_trampas.bind(this)
   }
 
@@ -64,6 +67,11 @@ class TablaTrampas extends Component {
 
   }
 
+  // Muestra u Oculta el modal para eliminar un registro
+  toggle_delete_modal() {
+    var value = this.state.delete_modal
+    this.setState({ delete_modal: !value })
+  }
 
   // Funcion que se utilizara para hacer un GET a la API en Trampas
   GET_trampas = (ruta) => {
@@ -89,7 +97,7 @@ class TablaTrampas extends Component {
 
   //Funcion que se utilizara para hacer DELETE a la API en Trampas
   DELETE_trampas(id) {
-    this.setState({ delete_dialog: false })
+    this.setState({ delete_modal: false })
     console.log('Se va a borrar')
     console.log(id)
   };
@@ -122,7 +130,7 @@ class TablaTrampas extends Component {
     // De los registros que contenga la lista "trampas" usando una funcion map()
     return trampas.map((trampa) => {
       return (
-        <tr>
+        <tr key={trampa.idcTrampas}>
           <th scope="row">{trampa.nombre}</th>
           <td>{trampa.direccion}</td>
           <td>{trampa.coordenadas}</td>
@@ -148,7 +156,7 @@ class TablaTrampas extends Component {
                 </DropdownItem>
                 <DropdownItem
                   href="#pablo"
-                  onClick={() => this.setState({ delete_dialog: true, trampa_seleccionada: trampa.idcTrampas })}
+                  onClick={() => this.setState({ delete_modal: true, trampa_seleccionada: trampa.idcTrampas })}
                 >
                   Dar de baja
                 </DropdownItem>
@@ -165,10 +173,14 @@ class TablaTrampas extends Component {
     return (
       <>
         <Header />
-        <ConfirmDelete
-          isOpen={this.state.delete_dialog}
-          onClose={(e) => this.setState({ delete_dialog: false })}
-          onConfirm={() => this.DELETE_trampas(this.state.trampa_seleccionada)} />
+
+        {/* Modal de confirmacion para borrar */}
+        <DeleteModal
+          isOpen={this.state.delete_modal}
+          toggle={() => this.toggle_delete_modal()}
+          onConfirm={() => this.DELETE_trampas(this.state.trampa_seleccionada)}
+        />
+
         <Container className="mt--7" fluid>
           {/* Tabla */}
           <Row>

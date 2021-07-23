@@ -61,12 +61,10 @@ class TablaCamaras extends Component {
       user_data: user,
       camara_seleccionada: null,
 
-      // Determina si se esta mostrando o no el dialogo para confirmar 
-      delete_dialog: false,
-
-      // Determina si esta o no mostrandose el modal para agregar nuevo registro
+      // Determina si esta o no mostrandose los modales
       add_modal: false,
       edit_modal: false,
+      delete_modal: false,
 
       //Datos del formulario
       form_data: {
@@ -119,8 +117,8 @@ class TablaCamaras extends Component {
 
   // Muestra u Oculta el modal para eliminar un registro
   toggle_delete_modal() {
-    var value = this.state.delete_dialog
-    this.setState({ delete_dialog: !value })
+    var value = this.state.delete_modal
+    this.setState({ delete_modal: !value })
   }
 
   // Funcion que se utilizara para hacer un GET a la API en Camaras
@@ -270,7 +268,7 @@ class TablaCamaras extends Component {
     var elemento_eliminar = this.state.table_data.findIndex(element => element['idcCamaras'] === id)
 
     // Se esconde el mensaje de confirmacion para eliminar
-    this.setState({ delete_dialog: false })
+    this.setState({ delete_modal: false })
 
     //Se hace la llamada a la API
     fetch(url, {
@@ -367,7 +365,7 @@ class TablaCamaras extends Component {
                 </DropdownItem>
                 <DropdownItem
                   href="#pablo"
-                  onClick={() => this.setState({ delete_dialog: true, camara_seleccionada: camara.idcCamaras })}
+                  onClick={() => this.setState({ delete_modal: true, camara_seleccionada: camara.idcCamaras })}
                 >
                   Dar de baja
                 </DropdownItem>
@@ -387,7 +385,7 @@ class TablaCamaras extends Component {
 
         {/* Modal de confirmacion para borrar */}
         <DeleteModal
-          isOpen={this.state.delete_dialog}
+          isOpen={this.state.delete_modal}
           toggle={() => this.toggle_delete_modal()}
           onConfirm={() => this.DELETE_camaras(this.state.camara_seleccionada)}
         />
