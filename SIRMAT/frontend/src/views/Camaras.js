@@ -46,7 +46,7 @@ import {
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
-import ConfirmDelete from "components/Dialoges/ConfirmDelete.js";
+import DeleteModal from "components/Modals/DeleteModal.js";
 
 // Se importan los datos de prueba para la tabla
 import user from "datos_prueba/datos_Sesion.js"
@@ -79,6 +79,7 @@ class TablaCamaras extends Component {
     this.PUT_camaras = this.PUT_camaras.bind(this);
     this.toggle_add_modal = this.toggle_add_modal.bind(this);
     this.toggle_edit_modal = this.toggle_edit_modal.bind(this);
+    this.toggle_delete_modal = this.toggle_delete_modal.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
   }
 
@@ -91,14 +92,17 @@ class TablaCamaras extends Component {
   handleInputChange(event) {
     // Cada vez que haya un cambio en el formulario se actualizara la variable form_data del estado
     const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const value = target.value;
     const name = target.name;
 
+    // Se crea una copia de la variable form_data del estado
     var updated_form_data = this.state.form_data;
+
+    // Se actualiza la copia con los nuevos valores
     updated_form_data[name] = value;
 
+    // Se actualiza el valor de la variable vieja con el de la copia actualizada
     this.setState({ form_data: updated_form_data });
-    console.log(this.state.form_data)
   }
 
   // Muestra u Oculta el modal para agregar registro
@@ -107,11 +111,17 @@ class TablaCamaras extends Component {
     this.setState({ add_modal: !value })
   };
 
-  // Muestra u Oculta el modal para agregar registro
+  // Muestra u Oculta el modal para editar registro
   toggle_edit_modal() {
     var value = this.state.edit_modal
     this.setState({ edit_modal: !value })
   };
+
+  // Muestra u Oculta el modal para eliminar un registro
+  toggle_delete_modal() {
+    var value = this.state.delete_dialog
+    this.setState({ delete_dialog: !value })
+  }
 
   // Funcion que se utilizara para hacer un GET a la API en Camaras
   GET_camaras = (ruta) => {
@@ -194,7 +204,7 @@ class TablaCamaras extends Component {
 
     // Esta variable determina la URL a la que se hara la peticion a la API
     const url = "http://127.0.0.1:8081/camaras/?" + new URLSearchParams(params);
-    
+
     // Esta variable determina cual elemento de la lista es el que se va a editar
     var elemento_eliminar = this.state.table_data.findIndex(element => element['idcCamaras'] === id)
 
@@ -375,11 +385,12 @@ class TablaCamaras extends Component {
       <>
         <Header />
 
-        {/* Dialogo de confirmacion para borrar */}
-        <ConfirmDelete
+        {/* Modal de confirmacion para borrar */}
+        <DeleteModal
           isOpen={this.state.delete_dialog}
-          onClose={(e) => this.setState({ delete_dialog: false })}
-          onConfirm={() => this.DELETE_camaras(this.state.camara_seleccionada)} />
+          toggle={() => this.toggle_delete_modal()}
+          onConfirm={() => this.DELETE_camaras(this.state.camara_seleccionada)}
+        />
 
         {/* Modal para agregar nuevo registro */}
         <Modal isOpen={this.state.add_modal} toggle={() => this.toggle_add_modal()}>
