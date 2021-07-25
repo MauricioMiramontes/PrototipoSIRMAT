@@ -1,5 +1,5 @@
 const user = {
-    "token": "8c1f52812178ee87fccd77cf0807d0c5f81062a6",
+    "token": "5e53206e73ae72ac03df3322d909aab7248c84ed",
     "data":{
         "id": 1,
         "email": "usuario@prueba.com",
