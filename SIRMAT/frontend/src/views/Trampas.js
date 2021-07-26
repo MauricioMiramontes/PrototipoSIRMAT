@@ -508,7 +508,7 @@ class TablaTrampas extends Component {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder={this.state.form_data.resolucion}
+                    placeholder={this.state.form_data.coordenadas}
                     type="text"
                     name="coordenadas"
                     onChange={this.handleInputChange}

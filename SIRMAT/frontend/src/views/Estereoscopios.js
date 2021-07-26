@@ -66,8 +66,8 @@ class TablaEstereoscopios extends Component {
       edit_modal: false,
       delete_modal: false,
 
-      form_data:{
-        
+      form_data: {
+
       }
     };
 
@@ -78,7 +78,7 @@ class TablaEstereoscopios extends Component {
     this.toggle_add_modal = this.toggle_add_modal.bind(this);
     this.toggle_edit_modal = this.toggle_edit_modal.bind(this);
     this.toggle_delete_modal = this.toggle_delete_modal.bind(this);
-    this.handleInputChange = this.handleInputChange.bind(this);    
+    this.handleInputChange = this.handleInputChange.bind(this);
   }
 
   componentDidMount() {
@@ -134,8 +134,6 @@ class TablaEstereoscopios extends Component {
       .then(response => response.json())
       .then(estereoscopiosJson => this.setState({ table_data: estereoscopiosJson }))
   };
-
-  
 
   //Funcion que se utilizara para hacer POST a la API en estereoscopios
   POST_estereoscopios(event) {
@@ -205,6 +203,8 @@ class TablaEstereoscopios extends Component {
 
     // Esta variable determina la URL a la que se hara la peticion a la API
     const url = "http://127.0.0.1:8081/estereoscopios/?" + new URLSearchParams(params);
+
+    console.log(url)
 
     // Esta variable determina cual elemento de la lista es el que se va a editar
     var elemento_eliminar = this.state.table_data.findIndex(element => element['idcEstereoscopios'] === id)
@@ -332,7 +332,7 @@ class TablaEstereoscopios extends Component {
     // De los registros que contenga la lista "camaras" usando una funcion map()
     return estereoscopios.map((estereoscopio) => {
       return (
-        <tr key = {estereoscopio.idcEstereoscopios}>
+        <tr key={estereoscopio.idcEstereoscopios}>
           <th scope="row">{estereoscopio.marca}</th>
           <td>{estereoscopio.caracteristicas}</td>
           <td>{print_is_active(estereoscopio.is_active)}</td>
@@ -465,14 +465,19 @@ class TablaEstereoscopios extends Component {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder={this.state.form_data.carcateristicas}
+                    placeholder={this.state.form_data.caracteristicas}
                     type="text"
                     name="caracteristicas"
                     onChange={this.handleInputChange} />
                 </InputGroup>
               </FormGroup>
               <Row className="justify-content-end mr-1">
-                <Button color="primary" type="submit" onClick={(e) => this.PUT_estereoscopios(e, this.state.esterescopio_seleccionado)}>Editar</Button>
+                <Button
+                  color="primary"
+                  type="submit"
+                  onClick={
+                    (e) => this.PUT_estereoscopios(e, this.state.estereoscopio_seleccionado)}>
+                  Editar</Button>
                 <Button
                   color="secondary"
                   onClick={() => {

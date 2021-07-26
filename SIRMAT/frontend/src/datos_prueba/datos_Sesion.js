@@ -1,7 +1,7 @@
 const user = {
-    "token": "5e53206e73ae72ac03df3322d909aab7248c84ed",
+    "token": "8c1f52812178ee87fccd77cf0807d0c5f81062a6",
     "data":{
-        "id": 1,
+        "id": 2,
         "email": "usuario@prueba.com",
         "first_name": "Usuario",
         "last_name": "Prueba",

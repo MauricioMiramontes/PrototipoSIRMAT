@@ -93,11 +93,13 @@ class TablaMuestras extends Component {
     // Se crea una copia de la variable form_data del estado
     var updated_form_data = this.state.form_data;
 
+    updated_form_data['idUsuario'] = this.state.user_data.data.id;
     // Se actualiza la copia con los nuevos valores
     updated_form_data[name] = value;
 
     // Se actualiza el valor de la variable vieja con el de la copia actualizada
     this.setState({ form_data: updated_form_data });
+    console.log(this.state.form_data)
   }
 
   // Muestra u Oculta el modal para agregar registro
@@ -321,6 +323,8 @@ class TablaMuestras extends Component {
           <th scope="row">{muestra.NombreMuestra}</th>
           <td>{muestra.horaFechainicio}</td>
           <td>{muestra.horaFechaFin}</td>
+          <td>{muestra.idTrampas}</td>
+          <td>{muestra.idUsuario}</td>
           <td>{print_is_active(muestra.is_active)}</td>
           <td className="text-right">
             <UncontrolledDropdown>
@@ -349,7 +353,8 @@ class TablaMuestras extends Component {
                         NombreMuestra: muestra.NombreMuestra,
                         horaFechainicio: muestra.horaFechainicio,
                         horaFechaFin: muestra.horaFechaFin,
-                        idTrampa: muestra.idTrampa,
+                        idTrampas: muestra.idTrampas,
+                        idUsuario: this.state.user_data.data.id,
                       },
                     });
                   }}
@@ -437,7 +442,7 @@ class TablaMuestras extends Component {
                   </InputGroupAddon>
                   <Input
                     placeholder="Hora Fecha Fin"
-                    type="text"
+                    type="smalldatetime"
                     name="horaFechaFin"
                     onChange={this.handleInputChange}
                   />
@@ -454,7 +459,7 @@ class TablaMuestras extends Component {
                   <Input
                     placeholder="Trampa"
                     type="select"
-                    name="idTrampa"
+                    name="idTrampas"
                     onChange={this.handleInputChange}
                   >
                     <option>Aqui</option>
@@ -517,7 +522,7 @@ class TablaMuestras extends Component {
                 <InputGroup className="input-group-alternative mb-3">
                   <InputGroupAddon addonType="prepend">
                     <InputGroupText>
-                      <i className="ni ni-zoom-split-in" />
+                      <i className="ni ni-calendar-grid-58" />
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
@@ -532,7 +537,7 @@ class TablaMuestras extends Component {
                 <InputGroup className="input-group-alternative mb-3">
                   <InputGroupAddon addonType="prepend">
                     <InputGroupText>
-                      <i className="ni ni-image" />
+                      <i className="ni ni-calendar-grid-58" />
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
@@ -554,7 +559,7 @@ class TablaMuestras extends Component {
                   <Input
                     placeholder={this.state.form_data.idTrampa}
                     type="select"
-                    name="idTrampa"
+                    name="idTrampas"
                     onChange={this.handleInputChange}
                   >
                     <option>Aqui</option>
@@ -615,6 +620,9 @@ class TablaMuestras extends Component {
                       <th scope="col">Nombre</th>
                       <th scope="col">Fecha</th>
                       <th scope="col">Etiquetado</th>
+                      <th scope="col">Trampa</th>
+                      <th scope="col">Usuario</th>
+                      <th scope="col">Estado</th>
                       <th scope="col" />
                     </tr>
                   </thead>
