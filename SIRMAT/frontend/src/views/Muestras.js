@@ -60,12 +60,14 @@ class TablaMuestras extends Component {
       muestra_seleccionada: null,
 
       // Determina si esta o no mostrandose los modales
-      delete_modal: false,
+      add_modal: false,
       edit_modal: false,
       delete_modal: false,
+      detail_modal: false,
 
       //Datos del formulario
       form_data: {},
+      detail_form_data: {},
     };
 
     //Functiones
@@ -76,11 +78,31 @@ class TablaMuestras extends Component {
     this.toggle_add_modal = this.toggle_add_modal.bind(this);
     this.toggle_edit_modal = this.toggle_edit_modal.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleDetailInputChange = this.handleDetailInputChange.bind(this);
+    this.clearState = this.clearState.bind(this)
   }
 
   componentDidMount() {
     const url = "http://127.0.0.1:8081/muestras/";
     this.GET_muestras(url);
+  }
+
+  handleDetailInputChange(event) {
+    // Cada vez que haya un cambio en el formulario se actualizara la variable form_data del estado
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+
+    // Se crea una copia de la variable form_data del estado
+    var updated_form_data = this.state.detail_form_data;
+
+    // Se actualiza la copia con los nuevos valores
+    updated_form_data[name] = value;
+
+    // Se actualiza el valor de la variable vieja con el de la copia actualizada
+    this.setState({ detail_form_data: updated_form_data });
+    console.log(this.state.detail_form_data)
+
   }
 
   // Funcion para manejar los cambios en el formulario del modal
@@ -102,19 +124,35 @@ class TablaMuestras extends Component {
     console.log(this.state.form_data)
   }
 
+  // Limpia el state de form_data y de detail_form_data
+  clearState() {
+    this.setState({ form_data: {}, detail_form_data: {}, muestra_seleccionada: null })
+  }
+
+  // Muestra u Oculta el modal para los detalles de la muestra
+  toggle_detail_modal() {
+    this.clearState();
+    var value = this.state.detail_modal;
+    this.setState({ detail_modal: !value });
+  }
+
   // Muestra u Oculta el modal para agregar registro
   toggle_add_modal() {
+    this.clearState();
     var value = this.state.add_modal;
     this.setState({ add_modal: !value });
   }
 
+  // Muestra u Oculta el modal para editar un registro
   toggle_edit_modal() {
+    this.clearState()
     var value = this.state.edit_modal;
     this.setState({ edit_modal: !value });
   }
 
   // Muestra u Oculta el modal para eliminar un registro
   toggle_delete_modal() {
+    this.clearState();
     var value = this.state.delete_modal;
     this.setState({ delete_modal: !value });
   }
@@ -139,6 +177,7 @@ class TablaMuestras extends Component {
     // Variables utiles
     var status_response;
     const url = "http://127.0.0.1:8081/muestras/";
+    const urlD = "http://127.0.0.1:8081/detallesmuestra/"
 
     // Peticion a la API
     fetch(url, {
@@ -159,27 +198,48 @@ class TablaMuestras extends Component {
           // Para evitar recargar la pagina se toma la respuesta de la API y
           // se agrega directamente al estado.
           // Si la peticion a la API fue un exito
+
+          // Se crea una copia de la variable form_data del estado
+          var updated_form_data = this.state.detail_form_data;
+
+          // Se actualiza la copia con los nuevos valores
+          updated_form_data['idMuestra'] = respuesta_post['idtMuestra'];
+
           this.setState({
             table_data: this.state.table_data.concat(respuesta_post),
+            detail_form_data: updated_form_data
+          });
 
-            // Se limpia la variable form_data
-            form_data: {},
-          });
+          // Se hace post a DetallesMuestra
+          fetch(urlD, {
+            method: "POST",
+            headers: {
+              Authorization: "Token " + this.state.user_data.token,
+              "Content-Type": "application/json",
+            },
+            // Se toman los datos de la variable form_data del estado
+            body: JSON.stringify(this.state.detail_form_data),
+          })
+            .then((response) => response.json())
+            .then((respuesta_detalles) => console.log(respuesta_detalles));
+
           console.log("status: " + status_response);
           console.log(respuesta_post);
+
+          // Se esconde el modal de agregar registro
+          this.toggle_add_modal();
+          this.toggle_detail_modal();
+
         } else {
-          // De lo contrario se imprime el error en la consola
-          this.setState({
-            // Se limpia la variable form_data
-            form_data: {},
-          });
+
           console.log("status: " + status_response);
           console.log(respuesta_post);
+
+          // Se esconde el modal de agregar registro
+          this.toggle_add_modal();
+          this.toggle_detail_modal();
         }
       });
-
-    // Se esconde el modal de agregar registro
-    this.setState({ add_modal: false });
   }
 
   //Funcion que se utilizara para hacer PUT a la API en Muestras
@@ -313,7 +373,7 @@ class TablaMuestras extends Component {
       }
     };
 
-    const ir_detalles_Muestra = (muestraID) => {};
+    const ir_detalles_Muestra = (muestraID) => { };
 
     // Se regresa el contenido de la tabla con los datos de cada uno
     // De los registros que contenga la lista "muestras" usando una funcion map()
@@ -475,18 +535,111 @@ class TablaMuestras extends Component {
                 <Button
                   color="primary"
                   type="submit"
-                  onClick={(e) => this.POST_muestras(e)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    this.setState({ detail_modal: true });
+                  }}
+                >
+                  Siguiente
+                </Button>
+                <Button
+                  color="secondary"
+                  onClick={() => {
+                    this.toggle_add_modal();
+                  }}
+                >
+                  Cancel
+                </Button>
+              </Row>
+            </Form>
+          </ModalBody>
+        </Modal>
+
+        {/* Modal para agregar detalles nuevo registro */}
+        <Modal
+          isOpen={this.state.detail_modal}
+          toggle={() => this.toggle_detail_modal()}
+        >
+          <ModalHeader tag="h3" toggle={() => this.toggle_detail_modal()}>
+            Agregar detalles muestra <i className="ni ni-ungroup" />
+          </ModalHeader>
+          <ModalBody>
+            <Form role="form">
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <Input
+                    placeholder="Observaciones"
+                    type="textarea"
+                    name="observaciones"
+                    onChange={this.handleDetailInputChange}
+                  />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="ni ni-calendar-grid-58" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    placeholder="Hora"
+                    type="text"
+                    name="horaFecha"
+                    onChange={this.handleDetailInputChange}
+                  />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <Input
+                    placeholder="Cantidad de bichos"
+                    type="text"
+                    name="cantidad"
+                    onChange={this.handleDetailInputChange}
+                  />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      Especie:
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    placeholder="Especie"
+                    type="select"
+                    name="idEspecie"
+                    onChange={this.handleDetailInputChange}
+                  >
+                    <option>Aqui</option>
+                    <option>Iran</option>
+                    <option>Las</option>
+                    <option>Especies</option>
+                    <option>Registrados</option>
+                    <option>1</option>
+                  </Input>
+                </InputGroup>
+              </FormGroup>
+              <Row className="justify-content-end mr-1">
+                <Button
+                  color="primary"
+                  type="submit"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    this.POST_muestras(e)
+                  }}
                 >
                   Agregar
                 </Button>
                 <Button
                   color="secondary"
                   onClick={() => {
-                    this.toggle_add_modal();
-                    this.setState({ form_data: {} });
+                    this.toggle_detail_modal();
                   }}
                 >
-                  Cancel
+                  Atras
                 </Button>
               </Row>
             </Form>
@@ -585,7 +738,6 @@ class TablaMuestras extends Component {
                   color="secondary"
                   onClick={() => {
                     this.toggle_edit_modal();
-                    this.setState({ form_data: {} });
                   }}
                 >
                   Cancel
