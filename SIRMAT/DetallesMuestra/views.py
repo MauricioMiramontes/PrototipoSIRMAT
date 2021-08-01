@@ -41,7 +41,7 @@ class DetallesMuestraAPI(APIView):
             # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id'
             try:
                 detallesmuestra = DetallesMuestra.objects.get(
-                    idtDetallesMuestra=request.query_params['id'])
+                    idMuestra=request.query_params['id'])
             # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
             except:
                 return Response({
