@@ -8,38 +8,43 @@ from django.conf import settings
 
 class Fotografia(models.Model):
     idFotografias = models.BigAutoField(
-        primary_key=True, 
+        primary_key=True,
         help_text="Numero de identificacion del registro")
 
     horaFecha = models.DateTimeField(
-        auto_now_add=True, 
+        auto_now_add=True,
         help_text="Hora y fecha en la que se tomo la fotografia")
 
     zoom = models.CharField(
-        max_length=45, 
+        max_length=45,
         help_text="Cantidad de zoom de la fotografia")
 
     resolucion = models.CharField(
-        max_length=45, 
+        max_length=45,
         help_text="Resolucion de la fotografia")
 
+    etiquetado = models.CharField(
+        max_length=45,
+        default="Pendiente",
+        help_text="Estado de Etiquetado de la fotografia ('Pendiente' o 'Finalizado')")
+
     idCamara = models.ForeignKey(
-        Camara, 
-        on_delete=models.CASCADE, 
+        Camara,
+        on_delete=models.CASCADE,
         help_text="Camara con la que se tomo la fotografia")
 
     idMuestra = models.ForeignKey(
-        Muestra, 
-        on_delete=models.CASCADE, 
+        Muestra,
+        on_delete=models.CASCADE,
         help_text='Muestra a la que pertenece la fotografia')
 
     fileFoto = models.ImageField(
-        upload_to=settings.LS_FILES_DIR + 'media/upload/', 
-        max_length=100, 
+        upload_to=settings.LS_FILES_DIR + 'media/upload/',
+        max_length=100,
         help_text='Archivo de la fotografia que se guardara en el sistema y label studio')
 
     is_active = models.BooleanField(
-        default=True, 
+        default=True,
         help_text="Define si el registro esta o no dado de baja en el sistema")
 
     class Meta:
