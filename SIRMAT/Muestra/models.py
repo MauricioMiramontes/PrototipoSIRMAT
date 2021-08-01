@@ -34,6 +34,15 @@ class Muestra(models.Model):
         default=True, 
         help_text='Define si el registro esta o no dado de baja en el sistema')
 
+    
+    etiquetado = models.CharField(
+        max_length=45,
+        default="Pendiente",
+        help_text='Define el progreso de las fotografias que pertenecen a la muestra')
+
+
+    
+
     class Meta:
         db_table = 'tMuestras'
         verbose_name = 'tMuestra'
