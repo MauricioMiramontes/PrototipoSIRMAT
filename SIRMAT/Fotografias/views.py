@@ -23,7 +23,7 @@ class FotografiaAPI(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    @swagger_auto_schema(manual_parameters=[docs_get.params], responses=docs_get.respuestas)
+    @swagger_auto_schema(manual_parameters=docs_get.params, responses=docs_get.respuestas)
     def get(self, request, format=JsonResponse):
         # Logica para una peticion tipo GET
         # Si se quiere ver un solo objeto es necesario proporcionar un parametro llamado 'id' con el valor
@@ -31,31 +31,62 @@ class FotografiaAPI(APIView):
 
         if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
 
-            # Se verifica que exista el parametro con llave 'id'
-            try:
-                request.query_params['id']
+            # Se verifica cual de los parametros fue el recibido
+            try: 
+                id = request.query_params['id']
             except:
+                id = False
+            try: 
+                muestra = request.query_params['muestra']
+            except:
+                muestra = False
+
+            # Si se recibieron parametro pero ninguno es 'id' o 'muestra' se manda un error
+            if not id and not muestra:
+                 return Response({
+                    "message": "Solo se acepta un parametro con llave 'id' o 'muestra'"
+                },  status=status.HTTP_400_BAD_REQUEST)
+            
+            # Si se recibieron ambos al mismo tiempo se manda un error
+            if id and muestra:
                 return Response({
-                    "message": "Solo se acepta un parametro con llave 'id'"
+                    "message": "'id' y 'muestra' son mutuamente excluyentes"
                 },  status=status.HTTP_400_BAD_REQUEST)
 
-            # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id'
-            try:
-                fotografia = Fotografia.objects.get(
-                    idFotografias=request.query_params['id'])
-            # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
-            except:
-                return Response({
-                    'message': 'No se encontro ningun elemento que coincida con ese id'
-                },  status=status.HTTP_404_NOT_FOUND)
+            # Si se recibio el parametro 'id'
+            if id:
+                # Si intentamos encontrar el elemento que coincida con el parametro 'id'
+                try:
+                    fotografia = Fotografia.objects.get(
+                        idFotografias=request.query_params['id'])
+                # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
+                except:
+                    return Response({
+                        'message': 'No se encontro ningun elemento que coincida con ese id'
+                    },  status=status.HTTP_404_NOT_FOUND)
 
-            # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'Fotografia'
-            serializer = FotografiaSerializer(fotografia)
+                # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'Fotografia'
+                serializer = FotografiaSerializer(fotografia)
+
+            # Si se recibio parametro 'muestra'
+            elif muestra:
+                 # Intentamos encontrar los elementos que pertenezcan a la muestra
+
+                fotografias = Fotografia.objects.filter(idMuestra=muestra)
+                
+                # Si el filter() regresa una lista vacia se manda un mensaje de error
+                if not fotografias:
+                    return Response({
+                        'message': 'No se encontro ningun elemento que coincida con esa muestra'
+                    },  status=status.HTTP_404_NOT_FOUND)
+
+                serializer = FotografiaSerializer(fotografias, many=True)
         else:
             # Si no hay parameteros tomamos todos los objetos en la base de datos y los serializamos
             fotografias = Fotografia.objects.all()
             serializer = FotografiaSerializer(fotografias, many=True)
 
+        # Si no se encuentran registros 
         if not serializer.data:
             # Si aun no hay registros mandamos una respuesta con el error y un mensaje con detalles
             return Response({

@@ -71,7 +71,7 @@ const Admin = (props) => {
         routes={routes}
         logo={{
           innerLink: "/superu/Inicio",
-          imgSrc: require("../assets/img/brand/argon-react.png").default,
+          imgSrc: require("../assets/img/brand/SIRMAT-logo.png").default,
           imgAlt: "...",
         }}
       />

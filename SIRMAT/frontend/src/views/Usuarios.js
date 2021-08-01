@@ -15,7 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React, {Component}  from "react";
+import React, { Component } from "react";
 
 // reactstrap components
 import {
@@ -37,55 +37,74 @@ import {
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
+import DeleteModal from "components/Modals/DeleteModal.js";
 
 // Se importan los datos de prueba para la tabla
 import user from "datos_prueba/datos_Sesion.js"
 
-class TablaEtiquetado extends Component {
+class TablaUsuarios extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
+      // Por ahora se toman los datos de prueba
       table_data: [],
-      user_data: user
+      user_data: user,
+      usuario_seleccionado: null,
+
+      // Determina si esta o no mostrandose los modales
+      delete_modal: false,
     };
+
+    //Functiones
+    this.toggle_delete_modal = this.toggle_delete_modal.bind(this);
+    this.DELETE_usuarios = this.DELETE_usuarios.bind(this)
   }
 
-  componentDidMount(){
-    const url = "http://127.0.0.1:8081/etiquetado/";
-    this.GET_etiquetado(url);
+  componentDidMount() {
+    const url = "http://127.0.0.1:8081/usuarios/";
+    this.GET_usuarios(url);
 
   }
-    
 
-  // Funcion que se utilizara para hacer un GET a la API en etiquetado
-  GET_etiquetado = (ruta) => {
-    fetch(ruta,{
-      method : 'GET',
-      headers:{
-        'Authorization': 'Token ' + this.state.user_data.token ,
+  // Muestra u Oculta el modal para eliminar un registro
+  toggle_delete_modal() {
+    var value = this.state.delete_modal
+    this.setState({ delete_modal: !value })
+  }
+
+  // Funcion que se utilizara para hacer un GET a la API en Trampas
+  GET_usuarios = (ruta) => {
+    fetch(ruta, {
+      method: 'GET',
+      headers: {
+        //Cambiar token dependiendo a quien este manipulando las pruebas
+        'Authorization': 'Token ' + this.state.user_data.token,
       },
-     
+
     })
-    .then(response => response.json())
-    .then(etiquetadoJson => this.setState({table_data : etiquetadoJson}))
+      .then(response => response.json())
+      .then(usuariosJson => this.setState({ table_data: usuariosJson }))
   };
 
-  //Funcion que se utilizara para hacer POST a la API en etiquetado
-  POST_etiquetado = (ruta, datos) => {
+  //Funcion que se utilizara para hacer POST a la API en Usuarios
+  POST_usuarios = (ruta, datos) => {
   };
 
-  //Funcion que se utilizara para hacer PUT a la API en etiquetado
-  PUT_etiquetado = (ruta, id, datos) => {
+  //Funcion que se utilizara para hacer PUT a la API en Usuarios
+  PUT_usuarios = (ruta, id, datos) => {
   };
 
-  //Funcion que se utilizara para hacer DELETE a la API en etiquetado
-  DELETE_etiquetado = (ruta, id) => {
+  //Funcion que se utilizara para hacer DELETE a la API en Usuarios
+  DELETE_usuarios(id) {
+    this.setState({ delete_modal: false })
+    console.log('Se va a borrar')
+    console.log(id)
   };
 
   // Funcion que crea la tabla con los datos que se hayan recolectado de la API
-  create_table = (etiquetados) => {
-  
+  create_table = (usuarios) => {
+
 
     //Dependiendo del valor que tenga is_active se mostrara un valor distinto en "Estado"
     const print_is_active = (is_active) => {
@@ -93,7 +112,7 @@ class TablaEtiquetado extends Component {
         return (
           <Badge color="" className="badge-dot">
             <i className="bg-success" />
-            Activo
+            Activa
           </Badge>
         )
       }
@@ -108,13 +127,14 @@ class TablaEtiquetado extends Component {
     };
 
     // Se regresa el contenido de la tabla con los datos de cada uno 
-    // De los registros que contenga la lista "camaras" usando una funcion map()
-    return etiquetados.map((etiquetado) => {
+    // De los registros que contenga la lista "trampas" usando una funcion map()
+    return usuarios.map((usuario) => {
       return (
-        <tr>
-          <th scope="row">{etiquetado.poligono}</th>
-          <td>{etiquetado.hora_fecha}</td>
-          <td>{print_is_active(etiquetado.is_active)}</td>
+        <tr key={usuario.id}>
+          <th scope="row">{usuario.first_name} {usuario.last_name}</th>
+          <td>{usuario.email}</td>
+          <td>{usuario.telefono}</td>
+          <td>{print_is_active(usuario.is_active)}</td>
           <td className="text-right">
             <UncontrolledDropdown>
               <DropdownToggle
@@ -136,7 +156,7 @@ class TablaEtiquetado extends Component {
                 </DropdownItem>
                 <DropdownItem
                   href="#pablo"
-                  onClick={(e) => e.preventDefault()}
+                  onClick={() => this.setState({ delete_modal: true, usuario_seleccionado: usuario.id })}
                 >
                   Dar de baja
                 </DropdownItem>
@@ -149,10 +169,18 @@ class TablaEtiquetado extends Component {
   };
 
   render() {
-    
+
     return (
       <>
         <Header />
+
+        {/* Modal de confirmacion para borrar */}
+        <DeleteModal
+          isOpen={this.state.delete_modal}
+          toggle={() => this.toggle_delete_modal()}
+          onConfirm={() => this.DELETE_usuarios(this.state.usuario_seleccionado)}
+        />
+
         <Container className="mt--7" fluid>
           {/* Tabla */}
           <Row>
@@ -160,7 +188,7 @@ class TablaEtiquetado extends Component {
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
-                    <h3 className="mb-0 ml-2">Etiquetado</h3>
+                    <h3 className="mb-0 ml-2">Usuarios</h3>
                     <Button className="ml-3" color="success" type="button" size="sm">
                       <i className="ni ni-fat-add mt-1"></i>
                     </Button>
@@ -169,8 +197,9 @@ class TablaEtiquetado extends Component {
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
-                      <th scope="col">Poligono</th>
-                      <th scope="col">Fecha y Hora</th>
+                      <th scope="col">Nombre</th>
+                      <th scope="col">email</th>
+                      <th scope="col">Telefono</th>
                       <th scope="col">Estado</th>
                       <th scope="col" />
                     </tr>
@@ -241,4 +270,4 @@ class TablaEtiquetado extends Component {
   }
 };
 
-export default TablaEtiquetado;
+export default TablaUsuarios;

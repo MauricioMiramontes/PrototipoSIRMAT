@@ -15,7 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React, {Component}  from "react";
+import React, { Component } from "react";
 
 // reactstrap components
 import {
@@ -34,10 +34,22 @@ import {
   Table,
   Container,
   Row,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  FormGroup,
+  Form,
+  Input,
+  InputGroupAddon,
+  InputGroupText,
+  InputGroup,
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
+import DeleteModal from "components/Modals/DeleteModal.js";
 
+// Se importan los datos de prueba para la tabla
+import user from "datos_prueba/datos_Sesion.js"
 
 
 class TablaCamaras extends Component {
@@ -45,47 +57,252 @@ class TablaCamaras extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      // Por ahora se toman los datos de prueba
-      table_data: []
+      table_data: [],
+      user_data: user,
+      camara_seleccionada: null,
+
+      // Determina si esta o no mostrandose los modales
+      add_modal: false,
+      edit_modal: false,
+      delete_modal: false,
+
+      //Datos del formulario
+      form_data: {
+      }
     };
+
+    //Funciones
+    this.DELETE_camaras = this.DELETE_camaras.bind(this);
+    this.POST_camaras = this.POST_camaras.bind(this);
+    this.PUT_camaras = this.PUT_camaras.bind(this);
+    this.toggle_add_modal = this.toggle_add_modal.bind(this);
+    this.toggle_edit_modal = this.toggle_edit_modal.bind(this);
+    this.toggle_delete_modal = this.toggle_delete_modal.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
   }
 
-  componentDidMount(){
+  componentDidMount() {
     const url = "http://127.0.0.1:8081/camaras/";
     this.GET_camaras(url);
-
   }
-    
+
+  // Funcion para manejar los cambios en el formulario del modal
+  handleInputChange(event) {
+    // Cada vez que haya un cambio en el formulario se actualizara la variable form_data del estado
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+
+    // Se crea una copia de la variable form_data del estado
+    var updated_form_data = this.state.form_data;
+
+    // Se actualiza la copia con los nuevos valores
+    updated_form_data[name] = value;
+
+    // Se actualiza el valor de la variable vieja con el de la copia actualizada
+    this.setState({ form_data: updated_form_data });
+  }
+
+  // Muestra u Oculta el modal para agregar registro
+  toggle_add_modal() {
+    var value = this.state.add_modal
+    this.setState({ add_modal: !value })
+  };
+
+  // Muestra u Oculta el modal para editar registro
+  toggle_edit_modal() {
+    var value = this.state.edit_modal
+    this.setState({ edit_modal: !value })
+  };
+
+  // Muestra u Oculta el modal para eliminar un registro
+  toggle_delete_modal() {
+    var value = this.state.delete_modal
+    this.setState({ delete_modal: !value })
+  }
 
   // Funcion que se utilizara para hacer un GET a la API en Camaras
   GET_camaras = (ruta) => {
-    fetch(ruta,{
-      method : 'GET',
-      headers:{
-        //Cambiar token dependiendo a quien este manipulando las pruebas
-        'Authorization':'Token qwertyuiopasdfghjklnzxcvb',
+    fetch(ruta, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Token ' + this.state.user_data.token,
       },
-     
+
     })
-    .then(response => response.json())
-    .then(camarasJson => this.setState({table_data : camarasJson}))
+      .then(response => response.json())
+      .then(camarasJson => this.setState({ table_data: camarasJson }))
   };
 
   //Funcion que se utilizara para hacer POST a la API en Camaras
-  POST_camaras = (ruta, datos) => {
+  POST_camaras(event) {
+
+    // Esto solo es pare que no se recargue la pagina cuando mandamos el formulario
+    event.preventDefault()
+
+    // Variables utiles
+    var status_response
+    const url = "http://127.0.0.1:8081/camaras/";
+
+    // Peticion a la API
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Token ' + this.state.user_data.token,
+        'Content-Type': 'application/json'
+      },
+      // Se toman los datos de la variable form_data del estado 
+      body: JSON.stringify(this.state.form_data)
+    })
+      .then((response) => {
+        status_response = response.status;
+        return response.json()
+      })
+      .then(respuesta_post => {
+        if (status_response === 200) {
+          // Para evitar recargar la pagina se toma la respuesta de la API y 
+          // se agrega directamente al estado.
+          // Si la peticion a la API fue un exito
+          this.setState({
+            table_data: this.state.table_data.concat(respuesta_post),
+
+            // Se limpia la variable form_data
+            form_data: {
+            }
+          })
+          console.log("status: " + status_response)
+          console.log(respuesta_post)
+        }
+        else {
+          // De lo contrario se imprime el error en la consola
+          this.setState({
+            // Se limpia la variable form_data
+            form_data: {
+            }
+          })
+          console.log("status: " + status_response)
+          console.log(respuesta_post)
+        }
+      })
+
+    // Se esconde el modal de agregar registro
+    this.setState({ add_modal: false })
   };
 
   //Funcion que se utilizara para hacer PUT a la API en Camaras
-  PUT_camaras = (ruta, id, datos) => {
+  PUT_camaras(event, id) {
+
+    event.preventDefault()
+
+    // Se de la formato a el parametro id
+    var params = { "id": id };
+
+    // Variables utiles
+    var status_response;
+
+    // Esta variable determina la URL a la que se hara la peticion a la API
+    const url = "http://127.0.0.1:8081/camaras/?" + new URLSearchParams(params);
+
+    // Esta variable determina cual elemento de la lista es el que se va a editar
+    var elemento_eliminar = this.state.table_data.findIndex(element => element['idcCamaras'] === id)
+
+    // Peticion a la API
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Token ' + this.state.user_data.token,
+        'Content-Type': 'application/json'
+      },
+      // Se toman los datos de la variable form_data del estado 
+      body: JSON.stringify(this.state.form_data)
+    })
+      .then((response) => {
+        status_response = response.status;
+        return response.json()
+      })
+      .then(respuesta_put => {
+        if (status_response === 200) {
+          // Para evitar recargar la pagina se toma la respuesta de la API y 
+          // se agrega directamente al estado.
+          // Si la peticion a la API fue un exito
+          var updated_table_data = this.state.table_data;
+
+          updated_table_data[elemento_eliminar] = respuesta_put;
+
+          this.setState({
+            table_data: updated_table_data,
+            // Se limpia la variable form_data
+            form_data: {
+            }
+          })
+          console.log(status_response);
+          console.log(respuesta_put);
+        }
+        else {
+          // De lo contrario se imprime el error en la consola
+          this.setState({
+            // Se limpia la variable form_data
+            form_data: {
+            }
+          })
+          console.log("status: " + status_response)
+          console.log(respuesta_put)
+        }
+      })
+
+    this.setState({ edit_modal: false })
+    console.log('Se va a actualizar' + id)
+    console.log(this.state.form_data)
+
   };
 
   //Funcion que se utilizara para hacer DELETE a la API en Camaras
-  DELETE_camaras = (ruta, id) => {
+  DELETE_camaras(id) {
+
+    // Se de la formato a el parametro id
+    var params = { "id": id };
+
+    // Se crea la URL para mandar a la API
+    const url = "http://127.0.0.1:8081/camaras/?" + new URLSearchParams(params);
+    var status_response;
+    var elemento_eliminar = this.state.table_data.findIndex(element => element['idcCamaras'] === id)
+
+    // Se esconde el mensaje de confirmacion para eliminar
+    this.setState({ delete_modal: false })
+
+    //Se hace la llamada a la API
+    fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Token ' + this.state.user_data.token,
+      },
+    })
+      .then(response => {
+        status_response = response.status;
+        return response.json()
+      })
+      .then(respuesta_delete => {
+
+        if (status_response === 200) {
+          // Para evitar recargar la pagina se toma la respuesta de la API y 
+          // se agrega directamente al estado.
+          // Si la peticion a la API fue un exito
+          console.log("status: " + status_response)
+          console.log(respuesta_delete)
+          var updated_table_data = this.state.table_data;
+          updated_table_data[elemento_eliminar]['is_active'] = false;
+          this.setState({ table_data: updated_table_data })
+        }
+        else {
+          // De lo contrario se imprime el error en la consola
+          console.log("status: " + status_response)
+          console.log(respuesta_delete)
+        }
+      })
   };
 
   // Funcion que crea la tabla con los datos que se hayan recolectado de la API
   create_table = (camaras) => {
-  
 
     //Dependiendo del valor que tenga is_active se mostrara un valor distinto en "Estado"
     const print_is_active = (is_active) => {
@@ -111,7 +328,7 @@ class TablaCamaras extends Component {
     // De los registros que contenga la lista "camaras" usando una funcion map()
     return camaras.map((camara) => {
       return (
-        <tr>
+        <tr key={camara.idcCamaras}>
           <th scope="row">{camara.marca}</th>
           <td>{camara.foco}</td>
           <td>{camara.resolucion}</td>
@@ -128,16 +345,27 @@ class TablaCamaras extends Component {
               >
                 <i className="fas fa-ellipsis-v" />
               </DropdownToggle>
-              <DropdownMenu className="dropdown-menu-arrow" right>
+              <DropdownMenu className="dropdown-menu-arrow" container="body" right>
                 <DropdownItem
                   href="#pablo"
-                  onClick={(e) => e.preventDefault()}
+                  onClick={() => {
+                    this.toggle_edit_modal();
+                    this.setState({
+                      camara_seleccionada: camara.idcCamaras,
+                      form_data: {
+                        marca: camara.marca,
+                        foco: camara.foco,
+                        resolucion: camara.resolucion,
+                        idEstereoscopios: camara.idEstereoscopios,
+                      }
+                    });
+                  }}
                 >
                   Editar
                 </DropdownItem>
                 <DropdownItem
                   href="#pablo"
-                  onClick={(e) => e.preventDefault()}
+                  onClick={() => this.setState({ delete_modal: true, camara_seleccionada: camara.idcCamaras })}
                 >
                   Dar de baja
                 </DropdownItem>
@@ -150,19 +378,193 @@ class TablaCamaras extends Component {
   };
 
   render() {
-    
+
     return (
       <>
         <Header />
+
+        {/* Modal de confirmacion para borrar */}
+        <DeleteModal
+          isOpen={this.state.delete_modal}
+          toggle={() => this.toggle_delete_modal()}
+          onConfirm={() => this.DELETE_camaras(this.state.camara_seleccionada)}
+        />
+
+        {/* Modal para agregar nuevo registro */}
+        <Modal isOpen={this.state.add_modal} toggle={() => this.toggle_add_modal()}>
+          <ModalHeader tag="h3" toggle={() => this.toggle_add_modal()}>Agregar nueva camara <i className="ni ni-camera-compact" /></ModalHeader>
+          <ModalBody>
+            <Form role="form">
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="ni ni-shop" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    placeholder="Marca"
+                    type="text"
+                    name="marca"
+                    onChange={this.handleInputChange} />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="ni ni-zoom-split-in" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    placeholder="Foco"
+                    type="text"
+                    name="foco"
+                    onChange={this.handleInputChange} />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="ni ni-image" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    placeholder="Resolucion"
+                    type="text"
+                    name="resolucion"
+                    onChange={this.handleInputChange} />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="ni ni-support-16 mr-3" />
+                      Estereoscopio:
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    placeholder="Estetoscopio"
+                    type="select"
+                    name="idEstereoscopios"
+                    onChange={this.handleInputChange}>
+                    <option>Aqui</option>
+                    <option>Iran</option>
+                    <option>Los</option>
+                    <option>Estereoscopios</option>
+                    <option>Registrados</option>
+                    <option>1</option>
+                  </Input>
+                </InputGroup>
+              </FormGroup>
+              <Row className="justify-content-end mr-1">
+                <Button color="primary" type="submit" onClick={(e) => this.POST_camaras(e)}>Agregar</Button>
+                <Button
+                  color="secondary"
+                  onClick={() => {
+                    this.toggle_add_modal();
+                    this.setState({ form_data: {} })
+                  }}>Cancel</Button>
+              </Row>
+            </Form>
+          </ModalBody>
+
+        </Modal>
+
+        {/* Modal para editar un registro */}
+        <Modal isOpen={this.state.edit_modal} toggle={() => this.toggle_edit_modal()}>
+          <ModalHeader tag="h3" toggle={() => this.toggle_edit_modal()}>Editar camara <i className="ni ni-camera-compact" /></ModalHeader>
+          <ModalBody>
+            <Form role="form">
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="ni ni-shop" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    placeholder={this.state.form_data.marca}
+                    type="text"
+                    name="marca"
+                    onChange={this.handleInputChange} />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="ni ni-zoom-split-in" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    placeholder={this.state.form_data.foco}
+                    type="text"
+                    name="foco"
+                    onChange={this.handleInputChange} />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="ni ni-image" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    placeholder={this.state.form_data.resolucion}
+                    type="text"
+                    name="resolucion"
+                    onChange={this.handleInputChange} />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="ni ni-support-16 mr-3" />
+                      Estereoscopio:
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    placeholder={this.state.form_data.idEstereoscopios}
+                    type="select"
+                    name="idEstereoscopios"
+                    onChange={this.handleInputChange}>
+                    <option>Aqui</option>
+                    <option>Iran</option>
+                    <option>Los</option>
+                    <option>Estereoscopios</option>
+                    <option>Registrados</option>
+                    <option>1</option>
+                  </Input>
+                </InputGroup>
+              </FormGroup>
+              <Row className="justify-content-end mr-1">
+                <Button color="primary" type="submit" onClick={(e) => this.PUT_camaras(e, this.state.camara_seleccionada)}>Editar</Button>
+                <Button
+                  color="secondary"
+                  onClick={() => {
+                    this.toggle_edit_modal();
+                    this.setState({ form_data: {} })
+                  }}>Cancel</Button>
+              </Row>
+            </Form>
+          </ModalBody>
+
+        </Modal>
+
+        {/* Tabla */}
         <Container className="mt--7" fluid>
-          {/* Tabla */}
           <Row>
             <div className="col">
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
-                    <h3 className="mb-0">Camaras</h3>
-                    <Button className="ml-3" color="success" type="button" size="sm">
+                    <h3 className="mb-0 ml-2">Camaras</h3>
+                    <Button className="ml-3" color="success" type="button" size="sm" onClick={() => this.toggle_add_modal()}>
                       <i className="ni ni-fat-add mt-1"></i>
                     </Button>
                   </Row>

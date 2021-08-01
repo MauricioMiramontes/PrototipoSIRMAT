@@ -6,12 +6,20 @@ class docs_get():
     # Detalles de la documentacion para GET de Fotografias
 
     # Los parametros que se aceptan en la operacion GET
-    params = openapi.Parameter(
+    params = [
+        openapi.Parameter(
         'id',
         openapi.IN_QUERY,
-        description="Parametro opcional en caso de que se requiera solo 1 registro",
+        description="Parametro opcional en caso de que se requiera solo 1 registro mutuamente excluyente con 'muestra'",
         type=openapi.TYPE_INTEGER
-    )
+        ),
+        openapi.Parameter(
+        'muestra',
+        openapi.IN_QUERY,
+        description="Parametro opcional en caso de que requira las fotografias de una sola muestra, mutuamente excluyente con 'id'",
+        type=openapi.TYPE_INTEGER
+        )
+    ]
 
     # Posibles respuestas para POST una vez pasada la autenticacion
     respuestas = {
@@ -20,19 +28,26 @@ class docs_get():
             description="Respuesta si la operacion GET fue exitosa",
         ),
         "404": openapi.Response(
-            description="Respuesta si no se encuentra un registro con el id especificado",
+            description="Respuesta si no se encuentran los registros especificados",
             examples={
-                "json": {
+                "json: No se encontro un elemento con ese 'id'": {
                     'message': 'No se encontro ningun elemento que coincida con ese id'
-                }
+                },
+                "json: No se encontraron elementos pertenecientes a esa 'muestra'": {
+                    'message': 'No se encontro ningun elemento que coincida con esa muestra'
+                },
+
             }
         ),
         "400": openapi.Response(
-            description="Respuesta si se proporciono un parametro distinto a 'id'",
+            description="Respuestas posibles por mandar un peticion con parametros erroneos",
             examples={
-                "json": {
-                    "message": "Solo se acepta un parametro con llave 'id'"
-                }
+                "json: Se envia un parametro distinto a 'id' o 'muestra'": {
+                    "message": "Solo se acepta un parametro con llave 'id' o 'muestra'"
+                },
+                "json: Se envia al mismo tiempo el parametro 'id' y 'muestra'": {
+                    "message":  "'id' y 'muestra' son mutuamente excluyentes"
+                },
             }
         ),
         "204": openapi.Response(

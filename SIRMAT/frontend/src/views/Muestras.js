@@ -51,36 +51,58 @@ import DeleteModal from "components/Modals/DeleteModal.js";
 // Se importan los datos de prueba para la tabla
 import user from "datos_prueba/datos_Sesion.js";
 
-class TablaTrampas extends Component {
+class TablaMuestras extends Component {
   constructor(props) {
     super(props);
     this.state = {
       table_data: [],
       user_data: user,
-      trampa_seleccionada: null,
+      muestra_seleccionada: null,
 
       // Determina si esta o no mostrandose los modales
       add_modal: false,
       edit_modal: false,
       delete_modal: false,
+      detail_modal: false,
 
       //Datos del formulario
       form_data: {},
+      detail_form_data: {},
     };
 
     //Functiones
-    this.DELETE_trampas = this.DELETE_trampas.bind(this);
-    this.POST_trampas = this.POST_trampas.bind(this);
-    this.PUT_trampas = this.PUT_trampas.bind(this);
+    this.toggle_delete_modal = this.toggle_delete_modal.bind(this);
+    this.DELETE_muestras = this.DELETE_muestras.bind(this);
+    this.POST_muestras = this.POST_muestras.bind(this);
+    this.PUT_muestras = this.PUT_muestras.bind(this);
     this.toggle_add_modal = this.toggle_add_modal.bind(this);
     this.toggle_edit_modal = this.toggle_edit_modal.bind(this);
-    this.toggle_delete_modal = this.toggle_delete_modal.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleDetailInputChange = this.handleDetailInputChange.bind(this);
+    this.clearState = this.clearState.bind(this)
   }
 
   componentDidMount() {
-    const url = "http://127.0.0.1:8081/trampas/";
-    this.GET_trampas(url);
+    const url = "http://127.0.0.1:8081/muestras/";
+    this.GET_muestras(url);
+  }
+
+  handleDetailInputChange(event) {
+    // Cada vez que haya un cambio en el formulario se actualizara la variable form_data del estado
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+
+    // Se crea una copia de la variable form_data del estado
+    var updated_form_data = this.state.detail_form_data;
+
+    // Se actualiza la copia con los nuevos valores
+    updated_form_data[name] = value;
+
+    // Se actualiza el valor de la variable vieja con el de la copia actualizada
+    this.setState({ detail_form_data: updated_form_data });
+    console.log(this.state.detail_form_data)
+
   }
 
   // Funcion para manejar los cambios en el formulario del modal
@@ -93,52 +115,69 @@ class TablaTrampas extends Component {
     // Se crea una copia de la variable form_data del estado
     var updated_form_data = this.state.form_data;
 
+    updated_form_data['idUsuario'] = this.state.user_data.data.id;
     // Se actualiza la copia con los nuevos valores
     updated_form_data[name] = value;
 
     // Se actualiza el valor de la variable vieja con el de la copia actualizada
     this.setState({ form_data: updated_form_data });
+    console.log(this.state.form_data)
+  }
+
+  // Limpia el state de form_data y de detail_form_data
+  clearState() {
+    this.setState({ form_data: {}, detail_form_data: {}, muestra_seleccionada: null })
+  }
+
+  // Muestra u Oculta el modal para los detalles de la muestra
+  toggle_detail_modal() {
+    this.clearState();
+    var value = this.state.detail_modal;
+    this.setState({ detail_modal: !value });
   }
 
   // Muestra u Oculta el modal para agregar registro
   toggle_add_modal() {
+    this.clearState();
     var value = this.state.add_modal;
     this.setState({ add_modal: !value });
   }
 
-  // Muestra u Oculta el modal para editar registro
+  // Muestra u Oculta el modal para editar un registro
   toggle_edit_modal() {
+    this.clearState()
     var value = this.state.edit_modal;
     this.setState({ edit_modal: !value });
   }
 
   // Muestra u Oculta el modal para eliminar un registro
   toggle_delete_modal() {
+    this.clearState();
     var value = this.state.delete_modal;
     this.setState({ delete_modal: !value });
   }
 
-  // Funcion que se utilizara para hacer un GET a la API en Trampas
-  GET_trampas = (ruta) => {
+  // Funcion que se utilizara para hacer un GET a la API en Muestras
+  GET_muestras = (ruta) => {
     fetch(ruta, {
       method: "GET",
       headers: {
-        //Cambiar token dependiendo a quien este manipulando las pruebas
         Authorization: "Token " + this.state.user_data.token,
       },
     })
       .then((response) => response.json())
-      .then((trampasJson) => this.setState({ table_data: trampasJson }));
+      .then((MuestrasJson) => this.setState({ table_data: MuestrasJson }));
   };
 
-  //Funcion que se utilizara para hacer POST a la API en Trampas
-  POST_trampas(event) {
+  //Funcion que se utilizara para hacer POST a la API en Muestras
+  POST_muestras(event) {
     // Esto solo es pare que no se recargue la pagina cuando mandamos el formulario
     event.preventDefault();
 
     // Variables utiles
     var status_response;
-    const url = "http://127.0.0.1:8081/trampas/";
+    const url = "http://127.0.0.1:8081/muestras/";
+    const urlD = "http://127.0.0.1:8081/detallesmuestra/"
 
     // Peticion a la API
     fetch(url, {
@@ -159,31 +198,52 @@ class TablaTrampas extends Component {
           // Para evitar recargar la pagina se toma la respuesta de la API y
           // se agrega directamente al estado.
           // Si la peticion a la API fue un exito
+
+          // Se crea una copia de la variable form_data del estado
+          var updated_form_data = this.state.detail_form_data;
+
+          // Se actualiza la copia con los nuevos valores
+          updated_form_data['idMuestra'] = respuesta_post['idtMuestra'];
+
           this.setState({
             table_data: this.state.table_data.concat(respuesta_post),
+            detail_form_data: updated_form_data
+          });
 
-            // Se limpia la variable form_data
-            form_data: {},
-          });
+          // Se hace post a DetallesMuestra
+          fetch(urlD, {
+            method: "POST",
+            headers: {
+              Authorization: "Token " + this.state.user_data.token,
+              "Content-Type": "application/json",
+            },
+            // Se toman los datos de la variable form_data del estado
+            body: JSON.stringify(this.state.detail_form_data),
+          })
+            .then((response) => response.json())
+            .then((respuesta_detalles) => console.log(respuesta_detalles));
+
           console.log("status: " + status_response);
           console.log(respuesta_post);
+
+          // Se esconde el modal de agregar registro
+          this.toggle_add_modal();
+          this.toggle_detail_modal();
+
         } else {
-          // De lo contrario se imprime el error en la consola
-          this.setState({
-            // Se limpia la variable form_data
-            form_data: {},
-          });
+
           console.log("status: " + status_response);
           console.log(respuesta_post);
+
+          // Se esconde el modal de agregar registro
+          this.toggle_add_modal();
+          this.toggle_detail_modal();
         }
       });
-
-    // Se esconde el modal de agregar registro
-    this.setState({ add_modal: false });
   }
 
-  //Funcion que se utilizara para hacer PUT a la API en Trampas
-  PUT_trampas(event, id) {
+  //Funcion que se utilizara para hacer PUT a la API en Muestras
+  PUT_muestras(event, id) {
     event.preventDefault();
 
     // Se de la formato a el parametro id
@@ -193,11 +253,12 @@ class TablaTrampas extends Component {
     var status_response;
 
     // Esta variable determina la URL a la que se hara la peticion a la API
-    const url = "http://127.0.0.1:8081/trampas/?" + new URLSearchParams(params);
+    const url =
+      "http://127.0.0.1:8081/muestras/?" + new URLSearchParams(params);
 
     // Esta variable determina cual elemento de la lista es el que se va a editar
     var elemento_eliminar = this.state.table_data.findIndex(
-      (element) => element["idcTrampas"] === id
+      (element) => element["idtMuestra"] === id
     );
 
     // Peticion a la API
@@ -246,16 +307,17 @@ class TablaTrampas extends Component {
     console.log(this.state.form_data);
   }
 
-  //Funcion que se utilizara para hacer DELETE a la API en Trampas
-  DELETE_trampas(id) {
+  //Funcion que se utilizara para hacer DELETE a la API en Muestras
+  DELETE_muestras(id) {
     // Se de la formato a el parametro id
     var params = { id: id };
 
     // Se crea la URL para mandar a la API
-    const url = "http://127.0.0.1:8081/trampas/?" + new URLSearchParams(params);
+    const url =
+      "http://127.0.0.1:8081/muestras/?" + new URLSearchParams(params);
     var status_response;
     var elemento_eliminar = this.state.table_data.findIndex(
-      (element) => element["idcTrampas"] === id
+      (element) => element["idtMuestra"] === id
     );
 
     // Se esconde el mensaje de confirmacion para eliminar
@@ -291,14 +353,14 @@ class TablaTrampas extends Component {
   }
 
   // Funcion que crea la tabla con los datos que se hayan recolectado de la API
-  create_table = (trampas) => {
+  create_table = (muestrass) => {
     //Dependiendo del valor que tenga is_active se mostrara un valor distinto en "Estado"
     const print_is_active = (is_active) => {
       if (is_active === true) {
         return (
           <Badge color="" className="badge-dot">
             <i className="bg-success" />
-            Activa
+            Activo
           </Badge>
         );
       } else if (is_active === false) {
@@ -311,15 +373,19 @@ class TablaTrampas extends Component {
       }
     };
 
+    const ir_detalles_Muestra = (muestraID) => { };
+
     // Se regresa el contenido de la tabla con los datos de cada uno
-    // De los registros que contenga la lista "trampas" usando una funcion map()
-    return trampas.map((trampa) => {
+    // De los registros que contenga la lista "muestras" usando una funcion map()
+    return muestrass.map((muestra) => {
       return (
-        <tr key={trampa.idcTrampas}>
-          <th scope="row">{trampa.nombre}</th>
-          <td>{trampa.direccion}</td>
-          <td>{trampa.coordenadas}</td>
-          <td>{print_is_active(trampa.is_active)}</td>
+        <tr key={muestra.idtMuestra}>
+          <th scope="row">{muestra.NombreMuestra}</th>
+          <td>{muestra.horaFechainicio}</td>
+          <td>{muestra.horaFechaFin}</td>
+          <td>{muestra.idTrampas}</td>
+          <td>{muestra.idUsuario}</td>
+          <td>{print_is_active(muestra.is_active)}</td>
           <td className="text-right">
             <UncontrolledDropdown>
               <DropdownToggle
@@ -342,11 +408,13 @@ class TablaTrampas extends Component {
                   onClick={() => {
                     this.toggle_edit_modal();
                     this.setState({
-                      trampa_seleccionada: trampa.idcTrampas,
+                      muestra_seleccionada: muestra.idtMuestra,
                       form_data: {
-                        nombre: trampa.nombre,
-                        direccion: trampa.direccion,
-                        coordenadas: trampa.coordenadas,
+                        NombreMuestra: muestra.NombreMuestra,
+                        horaFechainicio: muestra.horaFechainicio,
+                        horaFechaFin: muestra.horaFechaFin,
+                        idTrampas: muestra.idTrampas,
+                        idUsuario: this.state.user_data.data.id,
                       },
                     });
                   }}
@@ -358,7 +426,7 @@ class TablaTrampas extends Component {
                   onClick={() =>
                     this.setState({
                       delete_modal: true,
-                      trampa_seleccionada: trampa.idcTrampas,
+                      muestra_seleccionada: muestra.idtMuestra,
                     })
                   }
                 >
@@ -376,20 +444,22 @@ class TablaTrampas extends Component {
     return (
       <>
         <Header />
-
         {/* Modal de confirmacion para borrar */}
         <DeleteModal
           isOpen={this.state.delete_modal}
           toggle={() => this.toggle_delete_modal()}
-          onConfirm={() => this.DELETE_trampas(this.state.trampa_seleccionada)}
+          onConfirm={() =>
+            this.DELETE_muestras(this.state.muestra_seleccionada)
+          }
         />
+
         {/* Modal para agregar nuevo registro */}
         <Modal
           isOpen={this.state.add_modal}
           toggle={() => this.toggle_add_modal()}
         >
           <ModalHeader tag="h3" toggle={() => this.toggle_add_modal()}>
-            Agregar nueva trampa <i className="ni ni-building" />
+            Agregar nueva muestra <i className="ni ni-ungroup" />
           </ModalHeader>
           <ModalBody>
             <Form role="form">
@@ -401,9 +471,9 @@ class TablaTrampas extends Component {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder="Nombre"
+                    placeholder="Nombre de la Muestra"
                     type="text"
-                    name="nombre"
+                    name="NombreMuestra"
                     onChange={this.handleInputChange}
                   />
                 </InputGroup>
@@ -412,13 +482,13 @@ class TablaTrampas extends Component {
                 <InputGroup className="input-group-alternative mb-3">
                   <InputGroupAddon addonType="prepend">
                     <InputGroupText>
-                      <i className="ni ni-square-pin" />
+                      <i className="ni ni-calendar-grid-58" />
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder="Direccion"
+                    placeholder="Hora Fecha Inicio"
                     type="text"
-                    name="direccion"
+                    name="horaFechaInicio"
                     onChange={this.handleInputChange}
                   />
                 </InputGroup>
@@ -427,33 +497,149 @@ class TablaTrampas extends Component {
                 <InputGroup className="input-group-alternative mb-3">
                   <InputGroupAddon addonType="prepend">
                     <InputGroupText>
-                      <i className="ni ni-vector" />
+                      <i className="ni ni-calendar-grid-58" />
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder="Coordenadas"
-                    type="text"
-                    name="coordenadas"
+                    placeholder="Hora Fecha Fin"
+                    type="smalldatetime"
+                    name="horaFechaFin"
                     onChange={this.handleInputChange}
                   />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="ni ni-building" />
+                      Trampa:
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    placeholder="Trampa"
+                    type="select"
+                    name="idTrampas"
+                    onChange={this.handleInputChange}
+                  >
+                    <option>Aqui</option>
+                    <option>Iran</option>
+                    <option>Las</option>
+                    <option>Trampas</option>
+                    <option>Registrados</option>
+                    <option>1</option>
+                  </Input>
                 </InputGroup>
               </FormGroup>
               <Row className="justify-content-end mr-1">
                 <Button
                   color="primary"
                   type="submit"
-                  onClick={(e) => this.POST_trampas(e)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    this.setState({ detail_modal: true });
+                  }}
+                >
+                  Siguiente
+                </Button>
+                <Button
+                  color="secondary"
+                  onClick={() => {
+                    this.toggle_add_modal();
+                  }}
+                >
+                  Cancel
+                </Button>
+              </Row>
+            </Form>
+          </ModalBody>
+        </Modal>
+
+        {/* Modal para agregar detalles nuevo registro */}
+        <Modal
+          isOpen={this.state.detail_modal}
+          toggle={() => this.toggle_detail_modal()}
+        >
+          <ModalHeader tag="h3" toggle={() => this.toggle_detail_modal()}>
+            Agregar detalles muestra <i className="ni ni-ungroup" />
+          </ModalHeader>
+          <ModalBody>
+            <Form role="form">
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <Input
+                    placeholder="Observaciones"
+                    type="textarea"
+                    name="observaciones"
+                    onChange={this.handleDetailInputChange}
+                  />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="ni ni-calendar-grid-58" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    placeholder="Hora"
+                    type="text"
+                    name="horaFecha"
+                    onChange={this.handleDetailInputChange}
+                  />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <Input
+                    placeholder="Cantidad de bichos"
+                    type="text"
+                    name="cantidad"
+                    onChange={this.handleDetailInputChange}
+                  />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      Especie:
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    placeholder="Especie"
+                    type="select"
+                    name="idEspecie"
+                    onChange={this.handleDetailInputChange}
+                  >
+                    <option>Aqui</option>
+                    <option>Iran</option>
+                    <option>Las</option>
+                    <option>Especies</option>
+                    <option>Registrados</option>
+                    <option>1</option>
+                  </Input>
+                </InputGroup>
+              </FormGroup>
+              <Row className="justify-content-end mr-1">
+                <Button
+                  color="primary"
+                  type="submit"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    this.POST_muestras(e)
+                  }}
                 >
                   Agregar
                 </Button>
                 <Button
                   color="secondary"
                   onClick={() => {
-                    this.toggle_add_modal();
-                    this.setState({ form_data: {} });
+                    this.toggle_detail_modal();
                   }}
                 >
-                  Cancel
+                  Atras
                 </Button>
               </Row>
             </Form>
@@ -466,7 +652,7 @@ class TablaTrampas extends Component {
           toggle={() => this.toggle_edit_modal()}
         >
           <ModalHeader tag="h3" toggle={() => this.toggle_edit_modal()}>
-            Editar trampa <i className="ni ni-building" />
+            Editar muestra <i className="ni ni-camera-compact" />
           </ModalHeader>
           <ModalBody>
             <Form role="form">
@@ -474,13 +660,13 @@ class TablaTrampas extends Component {
                 <InputGroup className="input-group-alternative mb-3">
                   <InputGroupAddon addonType="prepend">
                     <InputGroupText>
-                      <i className="ni ni-tag" />
+                      <i className="ni ni-shop" />
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder={this.state.form_data.nombre}
+                    placeholder={this.state.form_data.NombreMuestra}
                     type="text"
-                    name="nombre"
+                    name="NombreMuestra"
                     onChange={this.handleInputChange}
                   />
                 </InputGroup>
@@ -489,13 +675,13 @@ class TablaTrampas extends Component {
                 <InputGroup className="input-group-alternative mb-3">
                   <InputGroupAddon addonType="prepend">
                     <InputGroupText>
-                      <i className="ni ni-square-pin" />
+                      <i className="ni ni-calendar-grid-58" />
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder={this.state.form_data.direccion}
+                    placeholder={this.state.form_data.horaFechainicio}
                     type="text"
-                    name="direccion"
+                    name="hora fecha Inicio"
                     onChange={this.handleInputChange}
                   />
                 </InputGroup>
@@ -504,15 +690,38 @@ class TablaTrampas extends Component {
                 <InputGroup className="input-group-alternative mb-3">
                   <InputGroupAddon addonType="prepend">
                     <InputGroupText>
-                      <i className="ni ni-vector" />
+                      <i className="ni ni-calendar-grid-58" />
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder={this.state.form_data.coordenadas}
+                    placeholder={this.state.form_data.horaFechaFin}
                     type="text"
-                    name="coordenadas"
+                    name="hora fecha fin"
                     onChange={this.handleInputChange}
                   />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="ni ni-support-16 mr-3" />
+                      Trampa:
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    placeholder={this.state.form_data.idTrampa}
+                    type="select"
+                    name="idTrampas"
+                    onChange={this.handleInputChange}
+                  >
+                    <option>Aqui</option>
+                    <option>Iran</option>
+                    <option>Las</option>
+                    <option>Trampas</option>
+                    <option>Registrados</option>
+                    <option>1</option>
+                  </Input>
                 </InputGroup>
               </FormGroup>
               <Row className="justify-content-end mr-1">
@@ -520,7 +729,7 @@ class TablaTrampas extends Component {
                   color="primary"
                   type="submit"
                   onClick={(e) =>
-                    this.PUT_trampas(e, this.state.trampa_seleccionada)
+                    this.PUT_muestras(e, this.state.muestra_seleccionada)
                   }
                 >
                   Editar
@@ -529,7 +738,6 @@ class TablaTrampas extends Component {
                   color="secondary"
                   onClick={() => {
                     this.toggle_edit_modal();
-                    this.setState({ form_data: {} });
                   }}
                 >
                   Cancel
@@ -539,14 +747,14 @@ class TablaTrampas extends Component {
           </ModalBody>
         </Modal>
 
-        {/* Tabla */}
         <Container className="mt--7" fluid>
+          {/* Tabla */}
           <Row>
             <div className="col">
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
-                    <h3 className="mb-0 ml-2">Trampas</h3>
+                    <h3 className="mb-0 ml-2">Muestras</h3>
                     <Button
                       className="ml-3"
                       color="success"
@@ -562,8 +770,10 @@ class TablaTrampas extends Component {
                   <thead className="thead-light">
                     <tr>
                       <th scope="col">Nombre</th>
-                      <th scope="col">Direccion</th>
-                      <th scope="col">Coordenadas</th>
+                      <th scope="col">Fecha</th>
+                      <th scope="col">Etiquetado</th>
+                      <th scope="col">Trampa</th>
+                      <th scope="col">Usuario</th>
                       <th scope="col">Estado</th>
                       <th scope="col" />
                     </tr>
@@ -634,4 +844,4 @@ class TablaTrampas extends Component {
   }
 }
 
-export default TablaTrampas;
+export default TablaMuestras;
