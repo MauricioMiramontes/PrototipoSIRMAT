@@ -21,7 +21,7 @@ class DetallesMuestra(models.Model):
     cantidad = models.IntegerField(
         help_text='Cantidad de insectos detectados en la muestra')
     
-    idMuestra = models.ForeignKey(
+    idMuestra = models.OneToOneField(
         Muestra, on_delete=models.CASCADE, help_text='Muestra a la que pertenecen estos detalles')
     
     is_active = models.BooleanField(
