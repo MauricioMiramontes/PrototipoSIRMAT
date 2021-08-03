@@ -27,6 +27,7 @@ import TablaEtiquetado from "views/Etiquetado.js"
 import TablaTrampas from "views/Trampas.js";
 import TablaMuestras from "views/Muestras.js"
 import TablaUsuarios from "views/Usuarios.js"
+import DetallesMuestra from "views/DetallesMuestra.js"
 
 
 var routes = [
@@ -63,6 +64,13 @@ var routes = [
     name: "Muestras",
     icon: "ni ni-ungroup text-red",
     component: TablaMuestras,
+    layout: "/superu",
+  },
+  {
+    path: "/detallesmuestra",
+    name: "Detalles",
+    icon: "ni ni-ungroup text-red",
+    component: DetallesMuestra,
     layout: "/superu",
   },
   {

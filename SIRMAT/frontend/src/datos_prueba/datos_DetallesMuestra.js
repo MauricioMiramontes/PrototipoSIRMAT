@@ -1,22 +1,21 @@
-const datos_detallesmuestra = [
+const datos_detallesmuestra = 
     {
         "idtDetallesMuestra": 1,
         "horaFecha": "2019-08-24T14:15:22Z",
-        "observaciones": "Muchas moscas",
-        "cantidad": 13,
+        "observaciones": "Se observo un chingo de moscas en esta muestra",
         "is_active": true,
-        "idEspecie": 1,
-        "idMuestra": 1
-    },
-    {
-        "idtDetallesMuestra": 2,
-        "horaFecha": "2019-08-24T14:15:22Z",
-        "observaciones": "Pocas pulgas",
-        "cantidad": 1,
-        "is_active": true,
-        "idEspecie": 2,
-        "idMuestra": 2
+        "idMuestra": 1,
+        "Especies": [
+            {
+                "nombre": "Mosca",
+                "cantidad" : 10
+            },
+            {
+                "nombre": "Mosquito",
+                "cantidad" : 15
+            },
+        ]
     }
-]
+
 
 export default datos_detallesmuestra;
