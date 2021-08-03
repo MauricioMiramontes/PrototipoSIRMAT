@@ -23,7 +23,7 @@ import Tables from "views/examples/Tables.js";
 import Icons from "views/examples/Icons.js";
 import TablaCamaras from "views/Camaras.js";
 import TablaEstereoscopios from "views/Estereoscopios.js"
-import TablaEtiquetado from "views/Etiquetado.js"
+import TablaEtiquetado from "views/Especie.js"
 import TablaTrampas from "views/Trampas.js";
 import TablaMuestras from "views/Muestras.js"
 import TablaUsuarios from "views/Usuarios.js"
@@ -81,8 +81,8 @@ var routes = [
     layout: "/superu",
   },
   {
-    path: "/etiquetado",
-    name: "Etiquetado",
+    path: "/especie",
+    name: "Especies",
     icon: "ni ni-tag text-red",
     component: TablaEtiquetado,
     layout: "/superu",
