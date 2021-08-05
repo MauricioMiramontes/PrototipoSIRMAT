@@ -4,10 +4,10 @@ const datos_fotografias = [
         "horaFecha": "2021-07-07T17:58:17.027915-05:00",
         "zoom": "4x",
         "resolucion": "1920x1080",
-        "fileFoto": "/Label_Studio_Data/media/upload/Comprobante_laboratorio_erzh68q.jpg",
+        "fileFoto": "/Label_Studio_Data/media/upload/download20191202234553.png",
         "is_active": true,
         "idCamara": 2,
-        "etiquetado": "Pendiente",
+        "etiquetado": "Incompleto",
         "idMuestra": 1
     },
     {

@@ -313,8 +313,7 @@ class TablaMuestras extends Component {
     var params = { id: id };
 
     // Se crea la URL para mandar a la API
-    const url =
-      "http://127.0.0.1:8081/muestras/?" + new URLSearchParams(params);
+    const url = "http://127.0.0.1:8081/muestras/?" + new URLSearchParams(params);
     var status_response;
     var elemento_eliminar = this.state.table_data.findIndex(
       (element) => element["idtMuestra"] === id
@@ -373,13 +372,15 @@ class TablaMuestras extends Component {
       }
     };
 
-    const ir_detalles_Muestra = (muestraID) => { };
+    const ir_detalles_Muestra = (muestraID) => {
+      console.log("Nos vamos a los detalles de la muestra: " + muestraID)
+     };
 
     // Se regresa el contenido de la tabla con los datos de cada uno
     // De los registros que contenga la lista "muestras" usando una funcion map()
     return muestrass.map((muestra) => {
       return (
-        <tr key={muestra.idtMuestra}>
+        <tr key={muestra.idtMuestra} onClick={(e) => ir_detalles_Muestra(muestra.idtMuestra)}>
           <th scope="row">{muestra.NombreMuestra}</th>
           <td>{muestra.horaFechainicio}</td>
           <td>{muestra.horaFechaFin}</td>

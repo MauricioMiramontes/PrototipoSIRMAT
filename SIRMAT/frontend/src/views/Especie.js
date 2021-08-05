@@ -80,7 +80,6 @@ class TablaEspecie extends Component {
     this.toggle_add_modal = this.toggle_add_modal.bind(this);
     this.toggle_edit_modal = this.toggle_edit_modal.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleDetailInputChange = this.handleDetailInputChange.bind(this);
     this.clearState = this.clearState.bind(this)
 
   }
@@ -91,24 +90,6 @@ class TablaEspecie extends Component {
 
   }
   
-  handleDetailInputChange(event) {
-    // Cada vez que haya un cambio en el formulario se actualizara la variable form_data del estado
-    const target = event.target;
-    const value = target.value;
-    const name = target.name;
-
-    // Se crea una copia de la variable form_data del estado
-    var updated_form_data = this.state.detail_form_data;
-
-    // Se actualiza la copia con los nuevos valores
-    updated_form_data[name] = value;
-
-    // Se actualiza el valor de la variable vieja con el de la copia actualizada
-    this.setState({ detail_form_data: updated_form_data });
-    console.log(this.state.detail_form_data)
-
-  }
-
   // Funcion para manejar los cambios en el formulario del modal
   handleInputChange(event) {
     // Cada vez que haya un cambio en el formulario se actualizara la variable form_data del estado
@@ -131,13 +112,6 @@ class TablaEspecie extends Component {
   // Limpia el state de form_data y de detail_form_data
   clearState() {
     this.setState({ form_data: {}, detail_form_data: {}, especie_seleccionada: null })
-  }
-
-  // Muestra u Oculta el modal para los detalles de la muestra
-  toggle_detail_modal() {
-    this.clearState();
-    var value = this.state.detail_modal;
-    this.setState({ detail_modal: !value });
   }
 
   // Muestra u Oculta el modal para agregar registro
@@ -246,7 +220,7 @@ class TablaEspecie extends Component {
     console.log(url)
 
     // Esta variable determina cual elemento de la lista es el que se va a editar
-    var elemento_eliminar = this.state.table_data.findIndex(element => element['idcEspecies'] === id)
+    var elemento_editar = this.state.table_data.findIndex(element => element['idcEspecie'] === id)
 
     // Peticion a la API
     fetch(url, {
@@ -269,7 +243,7 @@ class TablaEspecie extends Component {
           // Si la peticion a la API fue un exito
           var updated_table_data = this.state.table_data;
 
-          updated_table_data[elemento_eliminar] = respuesta_put;
+          updated_table_data[elemento_editar] = respuesta_put;
 
           this.setState({
             table_data: updated_table_data,
@@ -531,8 +505,6 @@ class TablaEspecie extends Component {
           </ModalBody>
         </Modal>
 
-
-
         <Container className="mt--7" fluid>
           {/* Tabla */}
           <Row>
@@ -551,6 +523,7 @@ class TablaEspecie extends Component {
                     <tr>
                       <th scope="col">id</th>
                       <th scope="col">Especie</th>
+                      <th scope="col">Estado</th>
                       <th scope="col" />
                     </tr>
                   </thead>
