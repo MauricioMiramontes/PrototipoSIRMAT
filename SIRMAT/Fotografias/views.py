@@ -4,6 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
+import os
+from pathlib import Path
 # Importamos el serializador del modelo Fotografia
 from .serializers import FotografiaSerializer
 from .Label_Studio_db import eliminar_foto_ls, agregar_foto_ls
@@ -15,6 +17,8 @@ from rest_framework.permissions import IsAuthenticated
 # Importaciones de documentacion Swagger
 from drf_yasg.utils import swagger_auto_schema
 from .docs import * 
+
+DIR = Path(__file__).resolve().parent.parent
 
 class FotografiaAPI(APIView):
     # Vistas de la API para la tabla 'Fotografia' de la base de datos
@@ -228,12 +232,12 @@ class FotografiaAPI(APIView):
 
             # Si el try no falla entonces eliminamos la muestra de label studio
             eliminar_foto_ls(fotografia.idFotografias)
-            # Cambiamos el registro is_active de la BD
 
-            fotografia.is_active = False  # cambiamos is_active a False
-            # guardamos los cambios
-            fotografia.save(update_fields=['is_active'])
-            # Enviamos mensaje de éxito
+            # Elimina el archivo de la fotografia de la carpeta Label_Studio_Data
+            os.remove(str(DIR) + "/" + str(fotografia.fileFoto))
+
+            # Eliminamos el registro de la fotografia de la base de datos
+            fotografia.delete()
 
             return Response({
                 'message': 'Fotografia eliminada correctamente'

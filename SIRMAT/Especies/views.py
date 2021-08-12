@@ -3,6 +3,7 @@ from .models import Especie
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
 # Importamos el serializador del modelo Especie
 from .serializers import EspecieSerializer
 
@@ -177,13 +178,11 @@ class EspeciesAPI(APIView):
                         'message': 'No se encontro ningun elemento que coincida con ese id'
                     },  status=status.HTTP_404_NOT_FOUND)
 
-                # Si el try no falla entonces cambiamos el registro is_active de la BD
-                especie.is_active = False  # cambiamos is_active a False
-                # guardamos los cambios
-                especie.save(update_fields=['is_active'])
-                # Enviamos mensaje de éxito
+                # Eliminamos el registro de la fotografia de la base de datos
+                especie.delete()
+
                 return Response({
-                    'message': 'Muestra eliminada correctamente'
+                    'message': 'Especie eliminada correctamente'
                 }, status=status.HTTP_200_OK)
 
             else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
