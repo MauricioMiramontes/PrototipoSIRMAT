@@ -53,7 +53,7 @@ class DetallesMuestra extends Component {
   }
 
   componentDidMount() {
-    this.GET_detalles()    
+    this.GET_detalles()
   }
 
   toggle_add_modal() {
@@ -129,17 +129,7 @@ class DetallesMuestra extends Component {
               </Card>
             </Col>
             <Col className="order-xl-1" xl="8">
-              <Card className="shadow">
-                <CardHeader className="bg-white border-0">
-                  <Row className="align-items-center">
-                    <h3 className="mb-0 ml-2">Fotografias</h3>
-                    <Button className="ml-3" color="success" type="button" size="sm" onClick={() => this.toggle_add_modal()}>
-                      <i className="ni ni-fat-add mt-1"></i>
-                    </Button>
-                  </Row>
-                </CardHeader>
-                <TablaFotografias muestra={this.state.muestra} />
-              </Card>
+              <TablaFotografias muestra={this.state.muestra} />
             </Col>
           </Row>
         </Container>

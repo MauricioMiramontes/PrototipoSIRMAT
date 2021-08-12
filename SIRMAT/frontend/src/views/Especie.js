@@ -111,7 +111,7 @@ class TablaEspecie extends Component {
 
   // Limpia el state de form_data y de detail_form_data
   clearState() {
-    this.setState({ form_data: {}, detail_form_data: {}, especie_seleccionada: null })
+    this.setState({ form_data: {}, especie_seleccionada: null })
   }
 
   // Muestra u Oculta el modal para agregar registro
