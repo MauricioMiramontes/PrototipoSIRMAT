@@ -28,6 +28,7 @@ import {
 
 // Se importan los datos de prueba para la tabla
 import user from "datos_prueba/datos_Sesion.js";
+import DeleteModal from "components/Modals/DeleteModal.js";
 
 class TablaFotografias extends Component {
   constructor(props) {
@@ -51,11 +52,17 @@ class TablaFotografias extends Component {
     //Funciones 
     this.POST_fotografias = this.POST_fotografias.bind(this);
     this.PUT_fotografias = this.PUT_fotografias.bind(this);
+    this.DELETE_fotografias = this.DELETE_fotografias.bind(this);
     this.toggle_add_modal = this.toggle_add_modal.bind(this);
     this.toggle_edit_modal = this.toggle_edit_modal.bind(this);
+    this.toggle_delete_modal = this.toggle_delete_modal.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleImageChange = this.handleImageChange.bind(this);
     this.clearState = this.clearState.bind(this);
+  }
+
+  componentDidMount() {
+    this.GET_fotografias()
   }
 
   // Limpia el estado del componente
@@ -108,15 +115,18 @@ class TablaFotografias extends Component {
     this.setState({ add_modal: !value })
   };
 
+  // Muestra u Oculta el modal para editar un registro
   toggle_edit_modal() {
     this.clearState()
     var value = this.state.edit_modal
     this.setState({ edit_modal: !value })
   };
 
-  componentDidMount() {
-    this.GET_fotografias()
-
+  // Muestra u Oculta el modal para elminar un registro
+  toggle_delete_modal() {
+    this.clearState()
+    var value = this.state.delete_modal
+    this.setState({ delete_modal: !value })
   }
 
   // Funcion que se utilizara para hacer GET a la API en fotografias
@@ -142,7 +152,7 @@ class TablaFotografias extends Component {
         return response.json()
       })
       .then((fotografiasJson) => {
-        if(status_response === 200){
+        if (status_response === 200) {
           this.setState({ table_data: fotografiasJson })
         }
       });
@@ -200,9 +210,6 @@ class TablaFotografias extends Component {
         }
       })
 
-    // Se esconde el modal de agregar registro
-    this.toggle_add_modal();
-
   }
 
   //Funcion que se utilizara para hacer PUT a la API en Fotografias
@@ -220,17 +227,23 @@ class TablaFotografias extends Component {
     const url = "http://127.0.0.1:8081/fotografias/?" + new URLSearchParams(params);
 
     // Esta variable determina cual elemento de la lista es el que se va a editar
-    var elemento_eliminar = this.state.table_data.findIndex(element => element['idFotografias'] === id)
+    var elemento_editar = this.state.table_data.findIndex(element => element['idFotografias'] === id)
+
+    // Datos del formulario
+    const datos_formulario = new FormData()
+
+    for (const name in this.state.form_data) {
+      datos_formulario.append(name, this.state.form_data[name])
+    }
 
     // Peticion a la API
     fetch(url, {
       method: 'PUT',
       headers: {
         'Authorization': 'Token ' + this.state.user_data.token,
-        'Content-Type': 'multipart/form-data'
       },
       // Se toman los datos de la variable form_data del estado 
-      body: JSON.stringify(this.state.form_data)
+      body: datos_formulario,
     })
       .then((response) => {
         status_response = response.status;
@@ -243,7 +256,7 @@ class TablaFotografias extends Component {
           // Si la peticion a la API fue un exito
           var updated_table_data = this.state.table_data;
 
-          updated_table_data[elemento_eliminar] = respuesta_put;
+          updated_table_data[elemento_editar] = respuesta_put;
 
           this.setState({ table_data: updated_table_data })
           console.log(status_response);
@@ -260,6 +273,57 @@ class TablaFotografias extends Component {
     console.log(this.state.form_data)
   };
 
+  DELETE_fotografias(event, id){
+
+    event.preventDefault()
+
+    // Se de la formato a el parametro id
+    var params = { "id": id };
+
+    // Se crea la URL para mandar a la API
+    const url = "http://127.0.0.1:8081/fotografias/?" + new URLSearchParams(params);
+    var status_response;
+    var elemento_eliminar = this.state.table_data.findIndex(element => element['idFotografias'] === id)
+
+    // Se esconde el mensaje de confirmacion para eliminar
+    this.setState({ delete_modal: false })
+
+    //Se hace la llamada a la API
+    fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Token ' + this.state.user_data.token,
+      },
+    })
+      .then(response => {
+        status_response = response.status;
+        return response.json()
+      })
+      .then(respuesta_delete => {
+
+        if (status_response === 200) {
+          // Para evitar recargar la pagina se toma la respuesta de la API y 
+          // se agrega directamente al estado.
+          // Si la peticion a la API fue un exito
+          console.log("status: " + status_response)
+          console.log(respuesta_delete)
+
+          // Creamos una copia del estado
+          var updated_table_data = this.state.table_data;
+
+          // Modificamos la copia
+          updated_table_data.splice(elemento_eliminar, 1)
+
+          // Sobre escribimos el estado con la copia actualizada
+          this.setState({ table_data: updated_table_data })
+        }
+        else {
+          // De lo contrario se imprime el error en la consola
+          console.log("status: " + status_response)
+          console.log(respuesta_delete)
+        }
+      })
+  }
 
   format_image(string_image) {
     const base_url = "http://127.0.0.1:8081";
@@ -315,7 +379,7 @@ class TablaFotografias extends Component {
               <Media>
                 <a
                   className="avatar rounded-circle mr-3"
-                  href="#pablo"
+                  href={"127.0.0.1:8080/projectos/" + this.props.muestra + "task/" + foto.idFotografias} 
                   onClick={(e) => e.preventDefault()}
                 >
                   <img
@@ -341,15 +405,33 @@ class TablaFotografias extends Component {
                 <DropdownMenu className="dropdown-menu-arrow" container="body" right>
                   <DropdownItem
                     href="#"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      this.toggle_edit_modal()
+                      this.setState({
+                        fotografia_seleccionada: foto.idFotografias,
+                        form_data: {
+                          zoom: foto.zoom,
+                          resolucion: foto.resolucion,
+                          idCamara: foto.idCamara,
+                          fileFoto: foto.fileFoto,
+                          etiquetado: foto.etiquetado,
+                          idMuestra: foto.idMuestra
+                        }
+                      })
+                    }}
                   >
                     Editar
                   </DropdownItem>
                   <DropdownItem
                     href="#pablo"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      this.toggle_delete_modal()
+                      this.setState({fotografia_seleccionada:foto.idFotografias})
+                    }}
                   >
-                    Dar de baja
+                    Eliminar
                   </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
@@ -363,8 +445,15 @@ class TablaFotografias extends Component {
   render() {
     return (
       <>
-        {console.log(this.state.table_data)}
+
+        <DeleteModal
+          isOpen={this.state.delete_modal}
+          toggle={() => this.toggle_delete_modal()}
+          onConfirm={(e) => this.DELETE_fotografias(e, this.state.fotografia_seleccionada)}
+        />
+
         {/* Modal para agregar nuevo registro */}
+
         <Modal isOpen={this.state.add_modal} toggle={() => this.toggle_add_modal()}>
           <ModalHeader tag="h3" toggle={() => this.toggle_add_modal()}>Agregar nueva fotografia <i className="ni ni-camera-compact" /></ModalHeader>
           <ModalBody>
@@ -401,12 +490,12 @@ class TablaFotografias extends Component {
                 <InputGroup className="input-group-alternative mb-3">
                   <InputGroupAddon addonType="prepend">
                     <InputGroupText>
-                      <i className="ni ni-camera-compact" />
+                      <i className="ni ni-camera-compact mr-3" />
                       Camara:
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder="Camara"
+                    placeholder=" Camara"
                     type="select"
                     name="idCamara"
                     onChange={this.handleInputChange}>
@@ -435,6 +524,81 @@ class TablaFotografias extends Component {
                   color="secondary"
                   onClick={() => {
                     this.toggle_add_modal();
+                    this.setState({ form_data: {} })
+                  }}>Cancel</Button>
+              </Row>
+            </Form>
+          </ModalBody>
+        </Modal>
+
+        {/*Modal para editar un nuevo registro*/}
+        <Modal isOpen={this.state.edit_modal} toggle={() => this.toggle_edit_modal()}>
+          <ModalHeader tag="h3" toggle={() => this.toggle_edit_modal()}>Editar Fotografia <i className="ni ni-image" /></ModalHeader>
+          <ModalBody>
+            <Form role="form">
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="ni ni-shop" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    value={this.state.form_data.zoom}
+                    type="text"
+                    name="zoom"
+                    onChange={this.handleInputChange} />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="ni ni-zoom-split-in" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    value={this.state.form_data.resolucion}
+                    type="text"
+                    name="resolucion"
+                    onChange={this.handleInputChange} />
+                </InputGroup>
+                <FormGroup>
+                  <InputGroup className="input-group-alternative mb-3">
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>
+                        <i className="ni ni-camera-compact" />
+                        Camara:
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <Input
+                      placeholder="Camara"
+                      type="select"
+                      name="idCamara"
+                      onChange={this.handleInputChange}>
+                      <option>Aqui</option>
+                      <option>Iran</option>
+                      <option>Las</option>
+                      <option>Camaras</option>
+                      <option>Registradas</option>
+                      <option>1</option>
+                    </Input>
+                  </InputGroup>
+                </FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <Input
+                    value={this.state.form_data.fotografia_seleccionada}
+                    type="file"
+                    name="fileFoto"
+                    onChange={this.handleImageChange} />
+                </InputGroup>
+              </FormGroup>
+              <Row className="justify-content-end mr-1">
+                <Button color="primary" type="submit" onClick={(e) => this.PUT_fotografias(e, this.state.fotografia_seleccionada)}>Editar</Button>
+                <Button
+                  color="secondary"
+                  onClick={() => {
+                    this.toggle_edit_modal();
                     this.setState({ form_data: {} })
                   }}>Cancel</Button>
               </Row>

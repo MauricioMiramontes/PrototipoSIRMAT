@@ -109,7 +109,7 @@ class TablaEspecie extends Component {
     console.log(this.state.form_data)
   }
 
-  // Limpia el state de form_data y de detail_form_data
+  // Limpia el state de form_data
   clearState() {
     this.setState({ form_data: {}, especie_seleccionada: null })
   }
@@ -474,7 +474,7 @@ class TablaEspecie extends Component {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder={this.state.form_data.especie}
+                    value={this.state.form_data.especie}
                     type="text"
                     name="especie"
                     onChange={this.handleInputChange}

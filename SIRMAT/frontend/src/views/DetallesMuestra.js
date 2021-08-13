@@ -46,7 +46,7 @@ class DetallesMuestra extends Component {
       data: datos_detallesmuestra,
       user_data: user,
       // Temporal 
-      muestra: 18
+      muestra: 16
     };
   }
 
