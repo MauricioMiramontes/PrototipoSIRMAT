@@ -28,14 +28,12 @@ import {
 
 // Se importan los datos de prueba para la tabla
 import user from "datos_prueba/datos_Sesion.js";
-import datos_fotografias from "datos_prueba/datos_Fotografias.js";
-import { collapseTextChangeRangesAcrossMultipleVersions, textSpanIntersectsWithPosition } from "typescript";
 
 class TablaFotografias extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      fotografias: false,
+      table_data: [],
       fotografia_seleccionada: null,
       user_data: user,
 
@@ -129,7 +127,9 @@ class TablaFotografias extends Component {
 
     // Se crea la URL para mandar a la API
 
+    // Variables utiles
     const ruta_fotografias = "http://127.0.0.1:8081/fotografias/?" + new URLSearchParams(params);
+    var status_response
 
     fetch(ruta_fotografias, {
       method: "GET",
@@ -137,14 +137,18 @@ class TablaFotografias extends Component {
         Authorization: "Token " + this.state.user_data.token,
       },
     })
-      .then((response) => response.json())
+      .then((response) => {
+        status_response = response.status;
+        return response.json()
+      })
       .then((fotografiasJson) => {
-        this.setState({ fotografias: fotografiasJson })
+        if(status_response === 200){
+          this.setState({ table_data: fotografiasJson })
+        }
       });
-
   }
 
-  //Funcion que se utilizara para hacer POST a la API en fotografias
+  //Funcion que se utilizara para hacer POST a la API en table_data
   POST_fotografias(event) {
 
     // Esto solo es pare que no se recargue la pagina cuando mandamos el formulario
@@ -184,7 +188,9 @@ class TablaFotografias extends Component {
           // Para evitar recargar la pagina se toma la respuesta de la API y 
           // se agrega directamente al estado.
           // Si la peticion a la API fue un exito
-          this.setState({ fotografias: this.state.fotografias.concat(respuesta_post) })
+          this.setState({
+            table_data: this.state.table_data.concat(respuesta_post),
+          })
           console.log("status: " + status_response)
           console.log(respuesta_post)
         }
@@ -293,15 +299,15 @@ class TablaFotografias extends Component {
 
     // // Si la variable "fotografias" del estado esta vacia se imprime un mensaje correspondiente
     // // de lo contrario se crea la lista con las fotografias
-    if (this.state.fotografias.message === "No se encontro ningun elemento que coincida con esa muestra") {
+    if (this.state.table_data.length === 0) {
       return (
         <>
           <h3 className="ml-6 mt-4 mb-4">No se tiene ninguna fotografia registrada en esta muestra </h3>
         </>
       )
     }
-    else if (typeof (this.state.fotografias) == "object") {
-      return this.state.fotografias.map((foto) => {
+    else {
+      return this.state.table_data.map((foto) => {
 
         return (
           <tr key={foto.idFotografias}>
@@ -352,19 +358,12 @@ class TablaFotografias extends Component {
         );
       });
     }
-    else {
-      return (
-        <>
-          <h3 className="ml-6 mt-4 mb-4">Alguna otra cosa paso </h3>
-        </>
-      )
-    }
   }
 
   render() {
     return (
       <>
-
+        {console.log(this.state.table_data)}
         {/* Modal para agregar nuevo registro */}
         <Modal isOpen={this.state.add_modal} toggle={() => this.toggle_add_modal()}>
           <ModalHeader tag="h3" toggle={() => this.toggle_add_modal()}>Agregar nueva fotografia <i className="ni ni-camera-compact" /></ModalHeader>

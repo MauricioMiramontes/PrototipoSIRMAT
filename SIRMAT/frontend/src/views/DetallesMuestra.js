@@ -46,18 +46,12 @@ class DetallesMuestra extends Component {
       data: datos_detallesmuestra,
       user_data: user,
       // Temporal 
-      muestra: 17
+      muestra: 18
     };
-
-    this.toggle_add_modal = this.toggle_add_modal.bind(this)
   }
 
   componentDidMount() {
     this.GET_detalles()
-  }
-
-  toggle_add_modal() {
-
   }
 
   // Funcion que se utilizara para hacer GET a la API en DetallesMuestra

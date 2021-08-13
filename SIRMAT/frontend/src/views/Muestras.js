@@ -24,6 +24,7 @@ import {
   Card,
   CardHeader,
   CardFooter,
+  Col,
   DropdownMenu,
   DropdownItem,
   UncontrolledDropdown,
@@ -34,6 +35,7 @@ import {
   Table,
   Container,
   Row,
+  Label,
   Modal,
   ModalHeader,
   ModalBody,
@@ -67,7 +69,14 @@ class TablaMuestras extends Component {
 
       //Datos del formulario
       form_data: {},
-      detail_form_data: {},
+      detail_form_data: {
+        Especies: [
+          {
+            especie: "",
+            cantidad: ""
+          }
+        ]
+      },
     };
 
     //Functiones
@@ -79,6 +88,8 @@ class TablaMuestras extends Component {
     this.toggle_edit_modal = this.toggle_edit_modal.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleDetailInputChange = this.handleDetailInputChange.bind(this);
+    this.agregar_especie = this.agregar_especie.bind(this);
+    this.eliminar_especie = this.eliminar_especie.bind(this);
     this.clearState = this.clearState.bind(this)
   }
 
@@ -87,7 +98,7 @@ class TablaMuestras extends Component {
     this.GET_muestras(url);
   }
 
-  handleDetailInputChange(event) {
+  handleDetailInputChange(event, index = 0) {
     // Cada vez que haya un cambio en el formulario se actualizara la variable form_data del estado
     const target = event.target;
     const value = target.value;
@@ -96,8 +107,15 @@ class TablaMuestras extends Component {
     // Se crea una copia de la variable form_data del estado
     var updated_form_data = this.state.detail_form_data;
 
-    // Se actualiza la copia con los nuevos valores
-    updated_form_data[name] = value;
+
+    if (name === "especie" || name === "cantidad") {
+      updated_form_data.Especies[index][name] = value;
+    }
+    else {
+      // Se actualiza la copia con los nuevos valores
+      updated_form_data[name] = value;
+    }
+
 
     // Se actualiza el valor de la variable vieja con el de la copia actualizada
     this.setState({ detail_form_data: updated_form_data });
@@ -126,12 +144,22 @@ class TablaMuestras extends Component {
 
   // Limpia el state de form_data y de detail_form_data
   clearState() {
-    this.setState({ form_data: {}, detail_form_data: {}, muestra_seleccionada: null })
+    this.setState({
+      form_data: {},
+      detail_form_data: {
+        Especies: [
+          {
+            especie: "",
+            cantidad: ""
+          },
+        ]
+      },
+      muestra_seleccionada: null
+    })
   }
 
   // Muestra u Oculta el modal para los detalles de la muestra
   toggle_detail_modal() {
-    this.clearState();
     var value = this.state.detail_modal;
     this.setState({ detail_modal: !value });
   }
@@ -351,6 +379,34 @@ class TablaMuestras extends Component {
       });
   }
 
+  // Agrega dos campos nuevos en el formulario de detalles para poner otra especie
+  agregar_especie(event) {
+
+    event.preventDefault();
+
+    var new_element = {
+      especie: "",
+      cantidad: ""
+    }
+
+    var updated_form_data = this.state.detail_form_data;
+    updated_form_data.Especies = updated_form_data.Especies.concat(new_element)
+
+    this.setState({ detail_form_data: updated_form_data })
+
+  }
+
+  // Elimina los campos del formulario de detalles de una especie
+  eliminar_especie(event, index) {
+
+    event.preventDefault();
+
+    var updated_form_data = this.state.detail_form_data;
+    updated_form_data.Especies.splice(index, 1)
+
+    this.setState({ detail_form_data: updated_form_data })
+  }
+
   // Funcion que crea la tabla con los datos que se hayan recolectado de la API
   create_table = (muestrass) => {
     //Dependiendo del valor que tenga is_active se mostrara un valor distinto en "Estado"
@@ -374,7 +430,7 @@ class TablaMuestras extends Component {
 
     const ir_detalles_Muestra = (muestraID) => {
       console.log("Nos vamos a los detalles de la muestra: " + muestraID)
-     };
+    };
 
     // Se regresa el contenido de la tabla con los datos de cada uno
     // De los registros que contenga la lista "muestras" usando una funcion map()
@@ -445,6 +501,7 @@ class TablaMuestras extends Component {
     return (
       <>
         <Header />
+
         {/* Modal de confirmacion para borrar */}
         <DeleteModal
           isOpen={this.state.delete_modal}
@@ -591,38 +648,68 @@ class TablaMuestras extends Component {
                   />
                 </InputGroup>
               </FormGroup>
-              <FormGroup>
-                <InputGroup className="input-group-alternative mb-3">
-                  <Input
-                    placeholder="Cantidad de bichos"
-                    type="text"
-                    name="cantidad"
-                    onChange={this.handleDetailInputChange}
-                  />
-                </InputGroup>
-              </FormGroup>
-              <FormGroup>
-                <InputGroup className="input-group-alternative mb-3">
-                  <InputGroupAddon addonType="prepend">
-                    <InputGroupText>
-                      Especie:
-                    </InputGroupText>
-                  </InputGroupAddon>
-                  <Input
-                    placeholder="Especie"
-                    type="select"
-                    name="idEspecie"
-                    onChange={this.handleDetailInputChange}
+              {this.state.detail_form_data.Especies.map((especie, index) =>
+                <Row key={index}>
+                  <Col md={6}>
+                    <FormGroup>
+                      <InputGroup className="input-group-alternative mb-3">
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            Especie:
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <Input
+                          placeholder="Especie"
+                          type="select"
+                          name="especie"
+                          onChange={(e) => this.handleDetailInputChange(e, index)}
+                        >
+                          <option>Aqui</option>
+                          <option>Iran</option>
+                          <option>Las</option>
+                          <option>Especies</option>
+                          <option>Registrados</option>
+                          <option>1</option>
+                        </Input>
+                      </InputGroup>
+                    </FormGroup>
+                  </Col>
+                  <Col md={4}>
+                    <FormGroup>
+                      <InputGroup className="input-group-alternative mb-3">
+                        <Input
+                          placeholder="Cantidad"
+                          type="text"
+                          name="cantidad"
+                          onChange={(e) => this.handleDetailInputChange(e, index)}
+                        />
+                      </InputGroup>
+                    </FormGroup>
+                  </Col>
+                  <Col>
+                    <Button
+                      color="secondary"
+                      size="sm"
+                      className="mt-2"
+                      onClick={(e) => this.eliminar_especie(e, index)}
+                    >
+                      <i className="ni ni-fat-delete"></i>
+                    </Button>
+                  </Col>
+                </Row>
+              )}
+              <Row>
+                <Col>
+                  <Button
+                    color="primary"
+                    type="submit"
+                    size="sm"
+                    onClick={(e) => this.agregar_especie(e)}
                   >
-                    <option>Aqui</option>
-                    <option>Iran</option>
-                    <option>Las</option>
-                    <option>Especies</option>
-                    <option>Registrados</option>
-                    <option>1</option>
-                  </Input>
-                </InputGroup>
-              </FormGroup>
+                    <i className="ni ni-fat-add"></i>
+                  </Button>
+                </Col>
+              </Row>
               <Row className="justify-content-end mr-1">
                 <Button
                   color="primary"

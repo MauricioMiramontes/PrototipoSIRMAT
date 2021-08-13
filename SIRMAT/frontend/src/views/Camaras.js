@@ -382,7 +382,6 @@ class TablaCamaras extends Component {
     return (
       <>
         <Header />
-
         {/* Modal de confirmacion para borrar */}
         <DeleteModal
           isOpen={this.state.delete_modal}
