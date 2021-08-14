@@ -46,9 +46,11 @@ import {
   InputGroupText,
   InputGroup,
 } from "reactstrap";
+import { Link } from "react-router-dom";
 // core components
 import Header from "components/Headers/Header.js";
 import DeleteModal from "components/Modals/DeleteModal.js";
+import DetallesMuestra from "./DetallesMuestra.js"
 
 // Se importan los datos de prueba para la tabla
 import user from "datos_prueba/datos_Sesion.js";
@@ -60,6 +62,8 @@ class TablaMuestras extends Component {
       table_data: [],
       user_data: user,
       muestra_seleccionada: null,
+      nombre_muestra_seleccionada: null,
+      mostrar_detalles: false,
 
       // Determina si esta o no mostrandose los modales
       add_modal: false,
@@ -80,17 +84,19 @@ class TablaMuestras extends Component {
     };
 
     //Functiones
-    this.toggle_delete_modal = this.toggle_delete_modal.bind(this);
     this.DELETE_muestras = this.DELETE_muestras.bind(this);
     this.POST_muestras = this.POST_muestras.bind(this);
     this.PUT_muestras = this.PUT_muestras.bind(this);
     this.toggle_add_modal = this.toggle_add_modal.bind(this);
     this.toggle_edit_modal = this.toggle_edit_modal.bind(this);
+    this.toggle_delete_modal = this.toggle_delete_modal.bind(this);
+    this.ir_detalles_Muestra = this.ir_detalles_Muestra.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleDetailInputChange = this.handleDetailInputChange.bind(this);
     this.agregar_especie = this.agregar_especie.bind(this);
     this.eliminar_especie = this.eliminar_especie.bind(this);
     this.clearState = this.clearState.bind(this)
+
   }
 
   componentDidMount() {
@@ -184,6 +190,22 @@ class TablaMuestras extends Component {
     var value = this.state.delete_modal;
     this.setState({ delete_modal: !value });
   }
+
+  ir_detalles_Muestra(muestra) {
+    if (this.state.muestra_seleccionada === null) {
+
+      console.log(muestra.idtMuestra)
+      console.log(muestra.NombreMuestra)
+
+      this.setState({
+        muestra_seleccionada: muestra,
+        mostrar_detalles: true,
+      });
+    }
+    else {
+      this.setState({ muestra_seleccionada: null, mostrar_detalles: false });
+    }
+  };
 
   // Funcion que se utilizara para hacer un GET a la API en Muestras
   GET_muestras = (ruta) => {
@@ -428,15 +450,13 @@ class TablaMuestras extends Component {
       }
     };
 
-    const ir_detalles_Muestra = (muestraID) => {
-      console.log("Nos vamos a los detalles de la muestra: " + muestraID)
-    };
+
 
     // Se regresa el contenido de la tabla con los datos de cada uno
     // De los registros que contenga la lista "muestras" usando una funcion map()
     return muestrass.map((muestra) => {
       return (
-        <tr key={muestra.idtMuestra} onClick={(e) => ir_detalles_Muestra(muestra.idtMuestra)}>
+        <tr key={muestra.idtMuestra} onClick={(e) => this.ir_detalles_Muestra(muestra)}>
           <th scope="row">{muestra.NombreMuestra}</th>
           <td>{muestra.horaFechainicio}</td>
           <td>{muestra.horaFechaFin}</td>
@@ -525,11 +545,12 @@ class TablaMuestras extends Component {
                 <InputGroup className="input-group-alternative mb-3">
                   <InputGroupAddon addonType="prepend">
                     <InputGroupText>
-                      <i className="ni ni-tag" />
+                      <i className="ni ni-tag mr-1" />
+                      Nombre
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder="Nombre de la Muestra"
+                    placeholder="T-"
                     type="text"
                     name="NombreMuestra"
                     onChange={this.handleInputChange}
@@ -835,98 +856,111 @@ class TablaMuestras extends Component {
           </ModalBody>
         </Modal>
 
-        <Container className="mt--7" fluid>
-          {/* Tabla */}
-          <Row>
-            <div className="col">
-              <Card className="shadow">
-                <CardHeader className="border-0">
-                  <Row className="align-items-center">
-                    <h3 className="mb-0 ml-2">Muestras</h3>
-                    <Button
-                      className="ml-3"
-                      color="success"
-                      type="button"
-                      size="sm"
-                      onClick={() => this.toggle_add_modal()}
-                    >
-                      <i className="ni ni-fat-add mt-1"></i>
-                    </Button>
-                  </Row>
-                </CardHeader>
-                <Table className="align-items-center table-flush" responsive>
-                  <thead className="thead-light">
-                    <tr>
-                      <th scope="col">Nombre</th>
-                      <th scope="col">Fecha</th>
-                      <th scope="col">Etiquetado</th>
-                      <th scope="col">Trampa</th>
-                      <th scope="col">Usuario</th>
-                      <th scope="col">Estado</th>
-                      <th scope="col" />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* Se llama a la funcion que crea la tabla */}
-                    {this.create_table(this.state.table_data)}
-                  </tbody>
-                </Table>
-                <CardFooter className="py-4">
-                  <nav aria-label="...">
-                    <Pagination
-                      className="pagination justify-content-end mb-0"
-                      listClassName="justify-content-end mb-0"
-                    >
-                      <PaginationItem className="disabled">
-                        <PaginationLink
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                          tabIndex="-1"
-                        >
-                          <i className="fas fa-angle-left" />
-                          <span className="sr-only">Previous</span>
-                        </PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem className="active">
-                        <PaginationLink
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          1
-                        </PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationLink
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          2 <span className="sr-only">(current)</span>
-                        </PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationLink
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          3
-                        </PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationLink
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <i className="fas fa-angle-right" />
-                          <span className="sr-only">Next</span>
-                        </PaginationLink>
-                      </PaginationItem>
-                    </Pagination>
-                  </nav>
-                </CardFooter>
-              </Card>
-            </div>
-          </Row>
-        </Container>
+        {this.state.mostrar_detalles ?
+          /*Si mostrar_detalles es verdadera entonces renderizamos el componente de detalles*/
+          <Container>
+            <DetallesMuestra
+              muestra={this.state.muestra_seleccionada.idtMuestra}
+              regresar={() => this.ir_detalles_Muestra()}
+              nombre_muestra={this.state.muestra_seleccionada.NombreMuestra}
+              etiquetado = {this.state.muestra_seleccionada.etiquetado}
+            />
+          </Container>
+          :
+          /*De lo contrario mostramos la tabla de todas las muestras*/
+          <Container className="mt--7" fluid>
+            {/* Tabla */}
+            <Row>
+              <div className="col">
+                <Card className="shadow">
+                  <CardHeader className="border-0">
+                    <Row className="align-items-center">
+                      <h3 className="mb-0 ml-2">Muestras</h3>
+                      <Button
+                        className="ml-3"
+                        color="success"
+                        type="button"
+                        size="sm"
+                        onClick={() => this.toggle_add_modal()}
+                      >
+                        <i className="ni ni-fat-add mt-1"></i>
+                      </Button>
+                    </Row>
+                  </CardHeader>
+                  <Table className="align-items-center table-flush" responsive>
+                    <thead className="thead-light">
+                      <tr>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col">Etiquetado</th>
+                        <th scope="col">Trampa</th>
+                        <th scope="col">Usuario</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col" />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {/* Se llama a la funcion que crea la tabla */}
+                      {this.create_table(this.state.table_data)}
+                    </tbody>
+                  </Table>
+                  <CardFooter className="py-4">
+                    <nav aria-label="...">
+                      <Pagination
+                        className="pagination justify-content-end mb-0"
+                        listClassName="justify-content-end mb-0"
+                      >
+                        <PaginationItem className="disabled">
+                          <PaginationLink
+                            href="#pablo"
+                            onClick={(e) => e.preventDefault()}
+                            tabIndex="-1"
+                          >
+                            <i className="fas fa-angle-left" />
+                            <span className="sr-only">Previous</span>
+                          </PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem className="active">
+                          <PaginationLink
+                            href="#pablo"
+                            onClick={(e) => e.preventDefault()}
+                          >
+                            1
+                          </PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                          <PaginationLink
+                            href="#pablo"
+                            onClick={(e) => e.preventDefault()}
+                          >
+                            2 <span className="sr-only">(current)</span>
+                          </PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                          <PaginationLink
+                            href="#pablo"
+                            onClick={(e) => e.preventDefault()}
+                          >
+                            3
+                          </PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                          <PaginationLink
+                            href="#pablo"
+                            onClick={(e) => e.preventDefault()}
+                          >
+                            <i className="fas fa-angle-right" />
+                            <span className="sr-only">Next</span>
+                          </PaginationLink>
+                        </PaginationItem>
+                      </Pagination>
+                    </nav>
+                  </CardFooter>
+                </Card>
+              </div>
+            </Row>
+          </Container>
+        }
       </>
     );
   }

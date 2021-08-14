@@ -45,8 +45,6 @@ class DetallesMuestra extends Component {
     this.state = {
       data: datos_detallesmuestra,
       user_data: user,
-      // Temporal 
-      muestra: 16
     };
   }
 
@@ -60,7 +58,7 @@ class DetallesMuestra extends Component {
   GET_detalles(ruta) {
 
     // Se de la formato a el parametro id
-    var params = { id: this.state.muestra }
+    var params = { id: this.props.muestra }
 
     // Se crea la URL para mandar a la API
     const ruta_detalles = "http://127.0.0.1:8081/detallesmuestra/?" + new URLSearchParams(params);
@@ -90,17 +88,24 @@ class DetallesMuestra extends Component {
   render() {
     return (
       <>
-        <Header />
         {/* Page content */}
         <Container className="mt--7" fluid>
+          <Row className="mb-2">
+            <Col className="mt-1">
+              <Button outline color="" size="sm" onClick={this.props.regresar}>
+                <i className="ni ni-bold-left"></i> Volver a muestras
+              </Button>
+            </Col>
+          </Row>
           <Row>
             <Col className="order-xl-2 mb-5 mb-xl-0" xl="4">
               <Card className="card-profile shadow">
                 <CardHeader className="text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
-                  <h3>Detalles Muestra</h3>
+                  <h3>Detalles Muestra: {this.props.nombre_muestra}</h3>
                 </CardHeader>
-                <CardBody className="pt-0 pt-md-4">
+                <CardBody className="pt-0 pt-md-1">
                   <div className="text-center">
+                    <p>Estado del etiquetado: {this.props.etiquetado}</p>
                     <p>Fecha/Hora de captura: {this.format_date(this.state.data.horaFecha)}</p>
                     <p>
                       {this.state.data.observaciones}
@@ -123,7 +128,7 @@ class DetallesMuestra extends Component {
               </Card>
             </Col>
             <Col className="order-xl-1" xl="8">
-              <TablaFotografias muestra={this.state.muestra} />
+              <TablaFotografias muestra={this.props.muestra} />
             </Col>
           </Row>
         </Container>

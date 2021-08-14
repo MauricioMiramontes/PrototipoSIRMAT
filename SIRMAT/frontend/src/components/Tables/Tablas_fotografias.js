@@ -210,6 +210,7 @@ class TablaFotografias extends Component {
         }
       })
 
+    this.toggle_add_modal()
   }
 
   //Funcion que se utilizara para hacer PUT a la API en Fotografias
@@ -273,7 +274,8 @@ class TablaFotografias extends Component {
     console.log(this.state.form_data)
   };
 
-  DELETE_fotografias(event, id){
+  //Funcion que se utilizara para hacer DELETE a la API en Fotografias
+  DELETE_fotografias(event, id) {
 
     event.preventDefault()
 
@@ -374,12 +376,13 @@ class TablaFotografias extends Component {
       return this.state.table_data.map((foto) => {
 
         return (
-          <tr key={foto.idFotografias}>
-            <th scope="row">
+          <tr key={foto.idFotografias} >
+            <th
+              scope="row"
+              onClick={() => window.open("http://127.0.0.1:8080/projects/" + this.props.muestra + "/data?task=" + foto.idFotografias, "_blank")}>
               <Media>
                 <a
                   className="avatar rounded-circle mr-3"
-                  href={"127.0.0.1:8080/projectos/" + this.props.muestra + "task/" + foto.idFotografias} 
                   onClick={(e) => e.preventDefault()}
                 >
                   <img
@@ -389,8 +392,11 @@ class TablaFotografias extends Component {
                 </a>
               </Media>
             </th>
-            <td>{print_estado_etiquetado(foto.etiquetado)}</td>
-            <td className="text-right">
+            <td
+              onClick={() => window.open("http://127.0.0.1:8080/projects/" + this.props.muestra + "/data?task=" + foto.idFotografias, "_blank")}>
+              {print_estado_etiquetado(foto.etiquetado)}
+            </td>
+            <td className="text-right" >
               <UncontrolledDropdown>
                 <DropdownToggle
                   className="btn-icon-only text-light"
@@ -428,7 +434,7 @@ class TablaFotografias extends Component {
                     onClick={(e) => {
                       e.preventDefault()
                       this.toggle_delete_modal()
-                      this.setState({fotografia_seleccionada:foto.idFotografias})
+                      this.setState({ fotografia_seleccionada: foto.idFotografias })
                     }}
                   >
                     Eliminar
