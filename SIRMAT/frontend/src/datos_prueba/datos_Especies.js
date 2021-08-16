@@ -1,7 +1,7 @@
 const datos_especies = [  
     {
         "idcEspecie": 1,
-        "especie": "Mosca2",
+        "especie": "Mosca",
         "is_active": true
     },
     {
