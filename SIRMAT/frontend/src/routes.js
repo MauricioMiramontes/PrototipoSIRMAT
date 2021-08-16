@@ -46,20 +46,6 @@ var routes = [
     layout: "/superu",
   },
   {
-    path: "/user-profile",
-    name: "User Profile",
-    icon: "ni ni-single-02 text-info",
-    component: Profile,
-    layout: "/superu",
-  },
-  {
-    path: "/tables",
-    name: "Tables",
-    icon: "ni ni-single-02 text-info",
-    component: Tables,
-    layout: "/superu",
-  },
-  {
     path: "/muestras",
     name: "Muestras",
     icon: "ni ni-ungroup text-info",
