@@ -398,49 +398,54 @@ class TablaUsuarios extends Component {
           <td>{usuario.email}</td>
           <td>{print_tipo_usuario(usuario.is_superuser, usuario.is_staff, usuario.is_active)}</td>
           <td className="text-right">
-            <UncontrolledDropdown>
-              <DropdownToggle
-                className="btn-icon-only text-light"
-                href="#pablo"
-                role="button"
-                size="m"
-                color=""
-                onClick={(e) => e.preventDefault()}
-              >
-                <i className="fas fa-ellipsis-v" />
-              </DropdownToggle>
-              <DropdownMenu className="dropdown-menu-arrow" container="body" right>
-                <DropdownItem
+            {this.state.user_data.data.is_superuser ?
+              <UncontrolledDropdown>
+                <DropdownToggle
+                  className="btn-icon-only text-light"
                   href="#pablo"
-                  onClick={(e) => {
+                  role="button"
+                  size="m"
+                  color=""
+                  onClick={(e) => e.preventDefault()}
+                >
+                  <i className="fas fa-ellipsis-v" />
+                </DropdownToggle>
+                <DropdownMenu className="dropdown-menu-arrow" container="body" right>
+                  <DropdownItem
+                    href="#pablo"
+                    onClick={(e) => {
 
-                    this.toggle_edit_modal();
-                    this.setState({
-                      usuario_seleccionado: usuario.id,
-                      form_data: {
-                        email: usuario.email,
-                        first_name: usuario.first_name,
-                        last_name: usuario.last_name,
-                        is_superuser: usuario.is_superuser,
-                        is_staff: usuario.is_staff,
-                        telefono: usuario.telefono,
-                      }
-                    });
-                    console.log(this.state.usuario_seleccionado)
-                    console.log(this.state.form_data)
-                  }
-                  }
-                >
-                  Editar
-                </DropdownItem>
-                <DropdownItem
-                  href="#pablo"
-                  onClick={() => this.setState({ delete_modal: true, usuario_seleccionado: usuario.id })}
-                >
-                  Dar de baja
-                </DropdownItem>
-              </DropdownMenu>
-            </UncontrolledDropdown>
+                      this.toggle_edit_modal();
+                      this.setState({
+                        usuario_seleccionado: usuario.id,
+                        form_data: {
+                          email: usuario.email,
+                          first_name: usuario.first_name,
+                          last_name: usuario.last_name,
+                          is_superuser: usuario.is_superuser,
+                          is_staff: usuario.is_staff,
+                          telefono: usuario.telefono,
+                        }
+                      });
+                      console.log(this.state.usuario_seleccionado)
+                      console.log(this.state.form_data)
+                    }
+                    }
+                  >
+                    Editar
+                  </DropdownItem>
+                  <DropdownItem
+                    href="#pablo"
+                    onClick={() => this.setState({ delete_modal: true, usuario_seleccionado: usuario.id })}
+                  >
+                    Dar de baja
+                  </DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
+              :
+              <></>
+            }
+
           </td>
         </tr>
       );
@@ -538,10 +543,10 @@ class TablaUsuarios extends Component {
               <FormGroup>
                 <InputGroup className="input-group-alternative mb-0">
                   <InputGroupAddon addonType="prepend">
-                    
+
                     <InputGroupText>
                       <i className="ni ni-money-coins mr-3" />
-                      Tipo 
+                      Tipo
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
@@ -667,12 +672,12 @@ class TablaUsuarios extends Component {
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
                     <h3 className="mb-0 ml-2">Usuarios</h3>
-                    {this.state.user_data.data.is_superuser ? 
-                    <Button className="ml-3" color="success" type="button" size="sm" onClick={this.toggle_add_modal}>
-                      <i className="ni ni-fat-add mt-1"></i>
-                    </Button>
-                    :
-                    <></>}
+                    {this.state.user_data.data.is_superuser ?
+                      <Button className="ml-3" color="success" type="button" size="sm" onClick={this.toggle_add_modal}>
+                        <i className="ni ni-fat-add mt-1"></i>
+                      </Button>
+                      :
+                      <></>}
                   </Row>
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>
