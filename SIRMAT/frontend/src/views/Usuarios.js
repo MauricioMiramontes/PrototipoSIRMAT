@@ -667,9 +667,12 @@ class TablaUsuarios extends Component {
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
                     <h3 className="mb-0 ml-2">Usuarios</h3>
+                    {this.state.user_data.data.is_superuser ? 
                     <Button className="ml-3" color="success" type="button" size="sm" onClick={this.toggle_add_modal}>
                       <i className="ni ni-fat-add mt-1"></i>
                     </Button>
+                    :
+                    <></>}
                   </Row>
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>
