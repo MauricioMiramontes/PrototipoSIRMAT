@@ -3,7 +3,7 @@ const datos_estereoscopios = [
 
         "idcEstereoscopios": 1,
         "marca": "NoSe",
-        "caracteristicas": "Che",
+        "caracteristicas": "Chepe",
         "is_active": true
 
     },
