@@ -1,7 +1,7 @@
 const datos_etiquetado = [
     {
         "idEtiquetado": 1,
-        "hora_fecha": "2019-08-24T14:15:22Z",
+        "hora_fecha": "2019-08-24T14:15:23Z",
         "poligono": "Esto no se debe mostrar en la tabla",
         "is_active": true,
         "id_usuario": 1,
