@@ -351,6 +351,7 @@ class TablaEspecie extends Component {
           <td>{especie.especie}</td>
           <td>{print_is_active(especie.is_active)}</td>
           <td className="text-right">
+          {this.state.user_data.data.is_superuser ?            
             <UncontrolledDropdown>
               <DropdownToggle
                 className="btn-icon-only text-light"
@@ -391,6 +392,9 @@ class TablaEspecie extends Component {
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
+            :
+            <></>
+          }
           </td>
         </tr>
       );
@@ -512,10 +516,14 @@ class TablaEspecie extends Component {
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
-                    <h3 className="mb-0 ml-2">Especie</h3>
+                    <h3 className="mb-0 ml-2">Especies</h3>
+                  {this.state.user_data.data.is_superuser ?
                     <Button className="ml-3" color="success" type="button" size="sm" onClick={() => this.toggle_add_modal()}>
                       <i className="ni ni-fat-add mt-1"></i>
                     </Button>
+                    :
+                    <></>
+                  }
                   </Row>
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>

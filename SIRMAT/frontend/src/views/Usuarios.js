@@ -110,7 +110,6 @@ class TablaUsuarios extends Component {
 
   // Muestra u Oculta el modal para agregar registro
   toggle_add_modal() {
-    console.log("Hola")
     this.clearState()
     var value = this.state.add_modal
     this.setState({ add_modal: !value })
@@ -189,18 +188,13 @@ class TablaUsuarios extends Component {
         }
         else {
           // De lo contrario se imprime el error en la consola
-          this.setState({
-            // Se limpia la variable form_data
-            form_data: {
-            }
-          })
           console.log("status: " + status_response)
           console.log(respuesta_post)
         }
       })
 
     // Se esconde el modal de agregar registro
-    this.setState({ add_modal: false })
+    this.toggle_add_modal()
   };
 
   //Funcion que se utilizara para hacer PUT a la API en Usuarios
@@ -280,26 +274,17 @@ class TablaUsuarios extends Component {
 
           this.setState({
             table_data: updated_table_data,
-            // Se limpia la variable form_data
-            form_data: {
-            }
           })
           console.log(status_response);
           console.log(respuesta_put);
         }
         else {
-          // De lo contrario se imprime el error en la consola
-          this.setState({
-            // Se limpia la variable form_data
-            form_data: {
-            }
-          })
           console.log("status: " + status_response)
           console.log(respuesta_put)
         }
       })
 
-    this.setState({ edit_modal: false })
+    this.toggle_edit_modal()
     console.log('Se va a actualizar' + id)
     console.log(this.state.form_data)
 
@@ -316,8 +301,7 @@ class TablaUsuarios extends Component {
     var status_response;
     var elemento_eliminar = this.state.table_data.findIndex(element => element['id'] === id)
 
-    // Se esconde el mensaje de confirmacion para eliminar
-    this.setState({ delete_modal: false })
+    
 
     //Se hace la llamada a la API
     fetch(url, {
@@ -354,6 +338,9 @@ class TablaUsuarios extends Component {
           console.log(respuesta_delete)
         }
       })
+
+    // Se esconde el mensaje de confirmacion para eliminar
+    this.toggle_delete_modal()
   };
 
 

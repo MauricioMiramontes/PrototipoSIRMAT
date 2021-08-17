@@ -79,6 +79,7 @@ class TablaCamaras extends Component {
     this.toggle_edit_modal = this.toggle_edit_modal.bind(this);
     this.toggle_delete_modal = this.toggle_delete_modal.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.clearState = this.clearState.bind(this);
   }
 
   componentDidMount() {
@@ -103,20 +104,28 @@ class TablaCamaras extends Component {
     this.setState({ form_data: updated_form_data });
   }
 
+  // Limpia el state de form_data
+  clearState() {
+    this.setState({ form_data: {}, camara_seleccionada: null })
+  }
+
   // Muestra u Oculta el modal para agregar registro
   toggle_add_modal() {
+    this.clearState()
     var value = this.state.add_modal
     this.setState({ add_modal: !value })
   };
 
   // Muestra u Oculta el modal para editar registro
   toggle_edit_modal() {
+    this.clearState()
     var value = this.state.edit_modal
     this.setState({ edit_modal: !value })
   };
 
   // Muestra u Oculta el modal para eliminar un registro
   toggle_delete_modal() {
+    this.clearState()
     var value = this.state.delete_modal
     this.setState({ delete_modal: !value })
   }
@@ -165,28 +174,18 @@ class TablaCamaras extends Component {
           // Si la peticion a la API fue un exito
           this.setState({
             table_data: this.state.table_data.concat(respuesta_post),
-
-            // Se limpia la variable form_data
-            form_data: {
-            }
           })
           console.log("status: " + status_response)
           console.log(respuesta_post)
         }
         else {
-          // De lo contrario se imprime el error en la consola
-          this.setState({
-            // Se limpia la variable form_data
-            form_data: {
-            }
-          })
           console.log("status: " + status_response)
           console.log(respuesta_post)
         }
       })
 
-    // Se esconde el modal de agregar registro
-    this.setState({ add_modal: false })
+    // Se esconde el modal para agregar
+    this.toggle_add_modal()
   };
 
   //Funcion que se utilizara para hacer PUT a la API en Camaras
@@ -231,26 +230,18 @@ class TablaCamaras extends Component {
 
           this.setState({
             table_data: updated_table_data,
-            // Se limpia la variable form_data
-            form_data: {
-            }
           })
           console.log(status_response);
           console.log(respuesta_put);
         }
         else {
           // De lo contrario se imprime el error en la consola
-          this.setState({
-            // Se limpia la variable form_data
-            form_data: {
-            }
-          })
           console.log("status: " + status_response)
           console.log(respuesta_put)
         }
       })
 
-    this.setState({ edit_modal: false })
+    this.toggle_edit_modal()
     console.log('Se va a actualizar' + id)
     console.log(this.state.form_data)
 
@@ -266,9 +257,6 @@ class TablaCamaras extends Component {
     const url = "http://127.0.0.1:8081/camaras/?" + new URLSearchParams(params);
     var status_response;
     var elemento_eliminar = this.state.table_data.findIndex(element => element['idcCamaras'] === id)
-
-    // Se esconde el mensaje de confirmacion para eliminar
-    this.setState({ delete_modal: false })
 
     //Se hace la llamada a la API
     fetch(url, {
@@ -299,6 +287,9 @@ class TablaCamaras extends Component {
           console.log(respuesta_delete)
         }
       })
+
+    // Se esconde el mensaje de confirmacion para eliminar
+    this.toggle_delete_modal()
   };
 
   // Funcion que crea la tabla con los datos que se hayan recolectado de la API
@@ -334,43 +325,47 @@ class TablaCamaras extends Component {
           <td>{camara.resolucion}</td>
           <td>{print_is_active(camara.is_active)}</td>
           <td className="text-right">
-            <UncontrolledDropdown>
-              <DropdownToggle
-                className="btn-icon-only text-light"
-                href="#pablo"
-                role="button"
-                size="m"
-                color=""
-                onClick={(e) => e.preventDefault()}
-              >
-                <i className="fas fa-ellipsis-v" />
-              </DropdownToggle>
-              <DropdownMenu className="dropdown-menu-arrow" container="body" right>
-                <DropdownItem
+            {this.state.user_data.data.is_superuser ?
+              <UncontrolledDropdown>
+                <DropdownToggle
+                  className="btn-icon-only text-light"
                   href="#pablo"
-                  onClick={() => {
-                    this.toggle_edit_modal();
-                    this.setState({
-                      camara_seleccionada: camara.idcCamaras,
-                      form_data: {
-                        marca: camara.marca,
-                        foco: camara.foco,
-                        resolucion: camara.resolucion,
-                        idEstereoscopios: camara.idEstereoscopios,
-                      }
-                    });
-                  }}
+                  role="button"
+                  size="m"
+                  color=""
+                  onClick={(e) => e.preventDefault()}
                 >
-                  Editar
-                </DropdownItem>
-                <DropdownItem
-                  href="#pablo"
-                  onClick={() => this.setState({ delete_modal: true, camara_seleccionada: camara.idcCamaras })}
-                >
-                  Dar de baja
-                </DropdownItem>
-              </DropdownMenu>
-            </UncontrolledDropdown>
+                  <i className="fas fa-ellipsis-v" />
+                </DropdownToggle>
+                <DropdownMenu className="dropdown-menu-arrow" container="body" right>
+                  <DropdownItem
+                    href="#pablo"
+                    onClick={() => {
+                      this.toggle_edit_modal();
+                      this.setState({
+                        camara_seleccionada: camara.idcCamaras,
+                        form_data: {
+                          marca: camara.marca,
+                          foco: camara.foco,
+                          resolucion: camara.resolucion,
+                          idEstereoscopios: camara.idEstereoscopios,
+                        }
+                      });
+                    }}
+                  >
+                    Editar
+                  </DropdownItem>
+                  <DropdownItem
+                    href="#pablo"
+                    onClick={() => this.setState({ delete_modal: true, camara_seleccionada: camara.idcCamaras })}
+                  >
+                    Dar de baja
+                  </DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
+              :
+              <></>
+            }
           </td>
         </tr>
       );
@@ -485,7 +480,7 @@ class TablaCamaras extends Component {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder={this.state.form_data.marca}
+                    value={this.state.form_data.marca}
                     type="text"
                     name="marca"
                     onChange={this.handleInputChange} />
@@ -499,7 +494,7 @@ class TablaCamaras extends Component {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder={this.state.form_data.foco}
+                    value={this.state.form_data.foco}
                     type="text"
                     name="foco"
                     onChange={this.handleInputChange} />
@@ -513,7 +508,7 @@ class TablaCamaras extends Component {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder={this.state.form_data.resolucion}
+                    value={this.state.form_data.resolucion}
                     type="text"
                     name="resolucion"
                     onChange={this.handleInputChange} />
@@ -563,9 +558,12 @@ class TablaCamaras extends Component {
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
                     <h3 className="mb-0 ml-2">Camaras</h3>
-                    <Button className="ml-3" color="success" type="button" size="sm" onClick={() => this.toggle_add_modal()}>
-                      <i className="ni ni-fat-add mt-1"></i>
-                    </Button>
+                    {this.state.user_data.data.is_superuser ?
+                      <Button className="ml-3" color="success" type="button" size="sm" onClick={() => this.toggle_add_modal()}>
+                        <i className="ni ni-fat-add mt-1"></i>
+                      </Button>
+                      :
+                      <></>}
                   </Row>
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>

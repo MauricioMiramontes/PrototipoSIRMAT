@@ -456,13 +456,13 @@ class TablaMuestras extends Component {
     // De los registros que contenga la lista "muestras" usando una funcion map()
     return muestrass.map((muestra) => {
       return (
-        <tr key={muestra.idtMuestra} onClick={(e) => this.ir_detalles_Muestra(muestra)}>
-          <th scope="row">{muestra.NombreMuestra}</th>
-          <td>{muestra.horaFechainicio}</td>
-          <td>{muestra.horaFechaFin}</td>
-          <td>{muestra.idTrampas}</td>
-          <td>{muestra.idUsuario}</td>
-          <td>{print_is_active(muestra.is_active)}</td>
+        <tr key={muestra.idtMuestra}>
+          <th scope="row" onClick={(e) => this.ir_detalles_Muestra(muestra)}>{muestra.NombreMuestra}</th>
+          <td onClick={(e) => this.ir_detalles_Muestra(muestra)}>{muestra.horaFechainicio}</td>
+          <td onClick={(e) => this.ir_detalles_Muestra(muestra)}>{muestra.horaFechaFin}</td>
+          <td onClick={(e) => this.ir_detalles_Muestra(muestra)}>{muestra.idTrampas}</td>
+          <td onClick={(e) => this.ir_detalles_Muestra(muestra)}>{muestra.idUsuario}</td>
+          <td onClick={(e) => this.ir_detalles_Muestra(muestra)}>{print_is_active(muestra.is_active)}</td>
           <td className="text-right">
             <UncontrolledDropdown>
               <DropdownToggle
@@ -773,7 +773,7 @@ class TablaMuestras extends Component {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder={this.state.form_data.NombreMuestra}
+                    value={this.state.form_data.NombreMuestra}
                     type="text"
                     name="NombreMuestra"
                     onChange={this.handleInputChange}
@@ -788,7 +788,7 @@ class TablaMuestras extends Component {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder={this.state.form_data.horaFechainicio}
+                    value={this.state.form_data.horaFechainicio}
                     type="text"
                     name="hora fecha Inicio"
                     onChange={this.handleInputChange}
@@ -803,7 +803,7 @@ class TablaMuestras extends Component {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder={this.state.form_data.horaFechaFin}
+                    value={this.state.form_data.horaFechaFin}
                     type="text"
                     name="hora fecha fin"
                     onChange={this.handleInputChange}

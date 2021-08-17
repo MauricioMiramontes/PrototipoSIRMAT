@@ -72,6 +72,7 @@ class TablaTrampas extends Component {
     this.DELETE_trampas = this.DELETE_trampas.bind(this);
     this.POST_trampas = this.POST_trampas.bind(this);
     this.PUT_trampas = this.PUT_trampas.bind(this);
+    this.clearState = this.clearState.bind(this);
     this.toggle_add_modal = this.toggle_add_modal.bind(this);
     this.toggle_edit_modal = this.toggle_edit_modal.bind(this);
     this.toggle_delete_modal = this.toggle_delete_modal.bind(this);
@@ -100,20 +101,28 @@ class TablaTrampas extends Component {
     this.setState({ form_data: updated_form_data });
   }
 
+    // Limpia el state de form_data
+  clearState() {
+    this.setState({ form_data: {}, trampa_seleccionada: null })
+  }
+
   // Muestra u Oculta el modal para agregar registro
   toggle_add_modal() {
+    this.clearState()  
     var value = this.state.add_modal;
     this.setState({ add_modal: !value });
   }
 
   // Muestra u Oculta el modal para editar registro
   toggle_edit_modal() {
+    this.clearState()  
     var value = this.state.edit_modal;
     this.setState({ edit_modal: !value });
   }
 
   // Muestra u Oculta el modal para eliminar un registro
   toggle_delete_modal() {
+    this.clearState()
     var value = this.state.delete_modal;
     this.setState({ delete_modal: !value });
   }
@@ -161,25 +170,18 @@ class TablaTrampas extends Component {
           // Si la peticion a la API fue un exito
           this.setState({
             table_data: this.state.table_data.concat(respuesta_post),
-
-            // Se limpia la variable form_data
-            form_data: {},
           });
           console.log("status: " + status_response);
           console.log(respuesta_post);
         } else {
           // De lo contrario se imprime el error en la consola
-          this.setState({
-            // Se limpia la variable form_data
-            form_data: {},
-          });
           console.log("status: " + status_response);
           console.log(respuesta_post);
         }
       });
 
     // Se esconde el modal de agregar registro
-    this.setState({ add_modal: false });
+    this.toggle_add_modal()
   }
 
   //Funcion que se utilizara para hacer PUT a la API en Trampas
@@ -225,23 +227,17 @@ class TablaTrampas extends Component {
 
           this.setState({
             table_data: updated_table_data,
-            // Se limpia la variable form_data
-            form_data: {},
           });
           console.log(status_response);
           console.log(respuesta_put);
         } else {
           // De lo contrario se imprime el error en la consola
-          this.setState({
-            // Se limpia la variable form_data
-            form_data: {},
-          });
           console.log("status: " + status_response);
           console.log(respuesta_put);
         }
       });
 
-    this.setState({ edit_modal: false });
+    this.toggle_edit_modal()
     console.log("Se va a actualizar" + id);
     console.log(this.state.form_data);
   }
@@ -257,9 +253,6 @@ class TablaTrampas extends Component {
     var elemento_eliminar = this.state.table_data.findIndex(
       (element) => element["idcTrampas"] === id
     );
-
-    // Se esconde el mensaje de confirmacion para eliminar
-    this.setState({ delete_modal: false });
 
     //Se hace la llamada a la API
     fetch(url, {
@@ -287,8 +280,10 @@ class TablaTrampas extends Component {
           console.log("status: " + status_response);
           console.log(respuesta_delete);
         }
-      });
-  }
+      })
+    // Se esconde el mensaje de confirmacion para eliminar
+    this.toggle_delete_modal()
+  };
 
   // Funcion que crea la tabla con los datos que se hayan recolectado de la API
   create_table = (trampas) => {
@@ -321,51 +316,56 @@ class TablaTrampas extends Component {
           <td>{trampa.coordenadas}</td>
           <td>{print_is_active(trampa.is_active)}</td>
           <td className="text-right">
-            <UncontrolledDropdown>
-              <DropdownToggle
-                className="btn-icon-only text-light"
-                href="#pablo"
-                role="button"
-                size="m"
-                color=""
-                onClick={(e) => e.preventDefault()}
-              >
-                <i className="fas fa-ellipsis-v" />
-              </DropdownToggle>
-              <DropdownMenu
-                className="dropdown-menu-arrow"
-                container="body"
-                right
-              >
-                <DropdownItem
+            {this.state.user_data.data.is_superuser ?
+              <UncontrolledDropdown>
+                <DropdownToggle
+                  className="btn-icon-only text-light"
                   href="#pablo"
-                  onClick={() => {
-                    this.toggle_edit_modal();
-                    this.setState({
-                      trampa_seleccionada: trampa.idcTrampas,
-                      form_data: {
-                        nombre: trampa.nombre,
-                        direccion: trampa.direccion,
-                        coordenadas: trampa.coordenadas,
-                      },
-                    });
-                  }}
+                  role="button"
+                  size="m"
+                  color=""
+                  onClick={(e) => e.preventDefault()}
                 >
-                  Editar
-                </DropdownItem>
-                <DropdownItem
-                  href="#pablo"
-                  onClick={() =>
-                    this.setState({
-                      delete_modal: true,
-                      trampa_seleccionada: trampa.idcTrampas,
-                    })
-                  }
+                  <i className="fas fa-ellipsis-v" />
+                </DropdownToggle>
+                <DropdownMenu
+                  className="dropdown-menu-arrow"
+                  container="body"
+                  right
                 >
-                  Dar de baja
-                </DropdownItem>
-              </DropdownMenu>
-            </UncontrolledDropdown>
+                  <DropdownItem
+                    href="#pablo"
+                    onClick={() => {
+                      this.toggle_edit_modal();
+                      this.setState({
+                        trampa_seleccionada: trampa.idcTrampas,
+                        form_data: {
+                          nombre: trampa.nombre,
+                          direccion: trampa.direccion,
+                          coordenadas: trampa.coordenadas,
+                        },
+                      });
+                    }}
+                  >
+                    Editar
+                  </DropdownItem>
+                  <DropdownItem
+                    href="#pablo"
+                    onClick={() =>
+                      this.setState({
+                        delete_modal: true,
+                        trampa_seleccionada: trampa.idcTrampas,
+                      })
+                    }
+                  >
+                    Dar de baja
+                  </DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
+              :
+              <></>
+            }
+
           </td>
         </tr>
       );
@@ -478,7 +478,7 @@ class TablaTrampas extends Component {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder={this.state.form_data.nombre}
+                    value={this.state.form_data.nombre}
                     type="text"
                     name="nombre"
                     onChange={this.handleInputChange}
@@ -493,7 +493,7 @@ class TablaTrampas extends Component {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder={this.state.form_data.direccion}
+                    value={this.state.form_data.direccion}
                     type="text"
                     name="direccion"
                     onChange={this.handleInputChange}
@@ -508,7 +508,7 @@ class TablaTrampas extends Component {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder={this.state.form_data.coordenadas}
+                    value={this.state.form_data.coordenadas}
                     type="text"
                     name="coordenadas"
                     onChange={this.handleInputChange}
