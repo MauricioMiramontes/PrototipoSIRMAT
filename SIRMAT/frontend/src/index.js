@@ -26,13 +26,19 @@ import "assets/scss/argon-dashboard-react.scss";
 import AdminLayout from "layouts/Admin.js";
 import AuthLayout from "layouts/Auth.js";
 
+// Importes del store
+import store from './app/store.js'
+import { Provider } from 'react-redux'
+
 ReactDOM.render(
-  <BrowserRouter>
-    <Switch>
-      <Route path="/superu/" render={(props) => <AdminLayout {...props} />} />
-      <Route path="/auth/" render={(props) => <AuthLayout {...props} />} />
-      <Redirect from="/" to="/superu/Inicio" />
-    </Switch>
-  </BrowserRouter>,
+  <Provider store = {store}>
+    <BrowserRouter>
+      <Switch>
+        <Route path="/superu/" render={(props) => <AdminLayout {...props} />} />
+        <Route path="/auth/" render={(props) => <AuthLayout {...props} />} />
+        <Redirect from="/" to="/superu/Inicio" />
+      </Switch>
+    </BrowserRouter>
+  </Provider>,
   document.getElementById("root")
 );

@@ -17,6 +17,7 @@
 */
 import Inicio from "views/Inicio.js";
 import Profile from "views/examples/Profile.js";
+import Test from "views/examples/Test.js";
 import Register from "views/examples/Register.js";
 import Login from "views/examples/Login.js";
 import Tables from "views/examples/Tables.js";
@@ -99,6 +100,13 @@ var routes = [
     name: "Usuarios",
     icon: "ni ni-single-02 text-info",
     component: TablaUsuarios,
+    layout: "/superu",
+  },
+  {
+    path: "/test",
+    name: "Cajita",
+    icon: "ni ni-single-02 text-info",
+    component: Test,
     layout: "/superu",
   },
 ];
