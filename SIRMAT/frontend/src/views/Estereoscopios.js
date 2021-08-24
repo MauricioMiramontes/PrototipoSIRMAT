@@ -21,7 +21,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 // Esta importacion solo sera necesaria para Trampas, Estereoscopios y Camaras
-import { update_estereoscopeos_data } from '../app/slices/estereoscopeosSlice.js'
+import { update_estereoscopios_data } from '../app/slices/estereoscopiosSlice.js'
 
 // Necesitamos esto para poder usar la funcion "history"
 import { withRouter } from "react-router";
@@ -175,7 +175,7 @@ class TablaEstereoscopios extends Component {
     // Variables utiles
     var status_response
     const url = "http://127.0.0.1:8081/estereoscopios/";
-    const { update_estereoscopeos_data } = this.props;
+    const { update_estereoscopios_data } = this.props;
 
     // Peticion a la API
     fetch(url, {
@@ -223,7 +223,7 @@ class TablaEstereoscopios extends Component {
           console.log(updated_store)
 
           // Actualizamos la lista con la copia nueva
-          update_estereoscopeos_data(updated_store)
+          update_estereoscopios_data(updated_store)
 
           console.log("status: " + status_response)
           console.log(respuesta_post)
@@ -629,14 +629,14 @@ class TablaEstereoscopios extends Component {
 const TablaEstereoscopiosConectado = withRouter(TablaEstereoscopios)
 
 const mapStateToProps = (state) => ({
-  estereoscopios: state.estereoscopeos.estereoscopeos_data,
+  estereoscopios: state.estereoscopios.estereoscopios_data,
   user_data: state.user.user_data
 })
 
 // Esta funcion solamente sera en Trampas, Estereoscopios y Camaras
 function mapDispatchToProps(dispatch) {
   return {
-    update_estereoscopeos_data: (...args) => dispatch(update_estereoscopeos_data(...args)),
+    update_estereoscopios_data: (...args) => dispatch(update_estereoscopios_data(...args)),
   };
 }
 

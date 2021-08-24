@@ -21,7 +21,7 @@ import { connect } from "react-redux";
 import { update_user_data } from '../../app/slices/user_data.js'
 import { update_camara_data } from '../../app/slices/camarasSlice.js'
 import { update_trampa_data } from '../../app/slices/trampasSlice.js'
-import { update_estereoscopeos_data } from '../../app/slices/estereoscopeosSlice.js'
+import { update_estereoscopios_data } from '../../app/slices/estereoscopiosSlice.js'
 import { update_especies_data } from '../../app/slices/especiesSlice.js'
 
 // Necesitamos esto para poder usar la funcion "history"
@@ -81,13 +81,13 @@ class Login extends Component {
     const url = "http://127.0.0.1:8081/usuarios/login/";
     const urlCamaras = "http://127.0.0.1:8081/camaras/";
     const urlTrampas = "http://127.0.0.1:8081/trampas/";
-    const urlEstereoscopeos = "http://127.0.0.1:8081/estereoscopios/";
+    const urlestereoscopios = "http://127.0.0.1:8081/estereoscopios/";
     const urlEspecies = "http://127.0.0.1:8081/especies/";
     const { 
       update_user_data, 
       update_camara_data, 
       update_trampa_data, 
-      update_estereoscopeos_data, 
+      update_estereoscopios_data, 
       update_especies_data,
       history } = this.props;
 
@@ -199,8 +199,8 @@ class Login extends Component {
 
 
 
-          // Fetch de estereoscopeos
-          fetch(urlEstereoscopeos, {
+          // Fetch de estereoscopios
+          fetch(urlestereoscopios, {
             method: 'GET',
             headers: {
               'Authorization': 'Token ' + respuesta_login.token,
@@ -212,29 +212,29 @@ class Login extends Component {
               status_response = response.status;
               return response.json()
             })
-            .then((estereoscopeosJson) => {
+            .then((estereoscopiosJson) => {
               if (status_response === 200) {
-                console.log("status Estereoscopeos: " + status_response)
-                console.log(estereoscopeosJson)
+                console.log("status estereoscopios: " + status_response)
+                console.log(estereoscopiosJson)
 
-                var listaEstereoscopeos = []
+                var listaestereoscopios = []
 
-                for (let i = 0; i < estereoscopeosJson.length; i++) {
-                  const nombre = estereoscopeosJson[i].marca;
-                  const id = estereoscopeosJson[i].idcEstereoscopios
-                  const is_active = estereoscopeosJson[i].is_active
+                for (let i = 0; i < estereoscopiosJson.length; i++) {
+                  const nombre = estereoscopiosJson[i].marca;
+                  const id = estereoscopiosJson[i].idcEstereoscopios
+                  const is_active = estereoscopiosJson[i].is_active
                   var elemento = {
                     'nombre': nombre,
                     'id': id,
                     'is_active' : is_active
                   }
-                  listaEstereoscopeos.push(elemento)
+                  listaestereoscopios.push(elemento)
                 }
-                update_estereoscopeos_data(listaEstereoscopeos)
+                update_estereoscopios_data(listaestereoscopios)
               }
               else {
-                console.log("status Estereoscopeos: " + status_response)
-                console.log(estereoscopeosJson)
+                console.log("status estereoscopios: " + status_response)
+                console.log(estereoscopiosJson)
               }
             })
 
@@ -391,7 +391,7 @@ function mapDispatchToProps(dispatch) {
     update_user_data: (...args) => dispatch(update_user_data(...args)),
     update_camara_data: (...args) => dispatch(update_camara_data(...args)),
     update_trampa_data: (...args) => dispatch(update_trampa_data(...args)),
-    update_estereoscopeos_data: (...args) => dispatch(update_estereoscopeos_data(...args)),
+    update_estereoscopios_data: (...args) => dispatch(update_estereoscopios_data(...args)),
     update_especies_data : (...args) => dispatch(update_especies_data(...args)),
   };
 }

@@ -11,7 +11,7 @@ import {
 function Test(props) {
     const mensaje = useSelector((state) => state.user.user_data)
     const trampas = useSelector((state) => state.trampas.trampas_data)
-    const estereoscopeos = useSelector((state) => state.estereoscopeos.estereoscopeos_data)
+    const estereoscopios = useSelector((state) => state.estereoscopios.estereoscopios_data)
     const camaras = useSelector((state) => state.camaras.camaras_data)
     const especies = useSelector((state) => state.especies.especies_data)
     return (
@@ -43,9 +43,9 @@ function Test(props) {
                 <Button
                     color="primary"
                     onClick={() => {
-                        console.log(estereoscopeos)
+                        console.log(estereoscopios)
                     }}>
-                    Estereoscopeos
+                    estereoscopios
                 </Button>
                 <Button
                     color="primary"

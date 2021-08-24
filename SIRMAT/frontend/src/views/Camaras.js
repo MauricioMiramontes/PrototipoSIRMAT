@@ -496,7 +496,7 @@ class TablaCamaras extends Component {
                     name="idEstereoscopios"
                     onChange={this.handleInputChange}>
                     <option value = "0">Seleccione un estereoscopio</option>
-                    {this.props.estereoscopeos.map((estereoscopio) => {
+                    {this.props.estereoscopios.map((estereoscopio) => {
                       if (estereoscopio.is_active === true) {
                         return (
                           <option key={estereoscopio.id} value={estereoscopio.id}>{estereoscopio.nombre}</option>
@@ -586,7 +586,7 @@ class TablaCamaras extends Component {
                     name="idEstereoscopios"
                     onChange={this.handleInputChange}>
                     <option value = "0">Seleccione un estereoscopio</option>
-                    {this.props.estereoscopeos.map((estereoscopio) => {
+                    {this.props.estereoscopios.map((estereoscopio) => {
                       if (estereoscopio.is_active === true) {
                         return (
                           <option key={estereoscopio.id} value={estereoscopio.id}>{estereoscopio.nombre}</option>
@@ -710,7 +710,7 @@ class TablaCamaras extends Component {
 const TablaCamarasConectado = withRouter(TablaCamaras)
 
 const mapStateToProps = (state) => ({
-  estereoscopeos: state.estereoscopeos.estereoscopeos_data,
+  estereoscopios: state.estereoscopios.estereoscopios_data,
   camaras: state.camaras.camaras_data,
   user_data: state.user.user_data
 })
