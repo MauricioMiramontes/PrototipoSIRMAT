@@ -17,6 +17,15 @@
 */
 import React, { Component } from "react";
 
+// Esta importacion se tiene que hacer en todas las tablas
+import { connect } from "react-redux";
+
+// Esta importacion solo sera necesaria para Trampas, Estereoscopios y Camaras
+import { update_estereoscopeos_data } from '../app/slices/estereoscopeosSlice.js'
+
+// Necesitamos esto para poder usar la funcion "history"
+import { withRouter } from "react-router";
+
 // reactstrap components
 import {
   Badge,
@@ -48,17 +57,12 @@ import {
 import Header from "components/Headers/Header.js";
 import DeleteModal from "components/Modals/DeleteModal.js";
 
-
-// Se importan los datos de prueba para la tabla
-import user from "datos_prueba/datos_Sesion.js"
-
 class TablaEstereoscopios extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
       table_data: [],
-      user_data: user,
       estereoscopio_seleccionado: null,
 
       // Determina si esta o no mostrandose los modales
@@ -131,18 +135,36 @@ class TablaEstereoscopios extends Component {
     this.setState({ delete_modal: !value })
   }
 
-  // Funcion que se utilizara para hacer un GET a la API en Estereoscopios
+  // Funcion que se utilizara para hacer un GET a la API en Camaras
   GET_estereoscopios = (ruta) => {
+
+    const { history } = this.props;
+
+    var status_response = null
+
     fetch(ruta, {
       method: 'GET',
       headers: {
-        'Authorization': 'Token ' + this.state.user_data.token,
+        'Authorization': 'Token ' + this.props.user_data.token,
       },
-
     })
-      .then(response => response.json())
-      .then(estereoscopiosJson => this.setState({ table_data: estereoscopiosJson }))
+      .then(response => {
+        status_response = response.status;
+        return response.json()
+      })
+      .then(estereoscopiosJson => {
+        console.log(status_response)
+        console.log(estereoscopiosJson)
+
+        if (status_response === 200) {
+          this.setState({ table_data: estereoscopiosJson })
+        }
+        else if (status_response === 401 || status_response === 403) {
+          history.push("/auth/login/")
+        }
+      })
   };
+
 
   //Funcion que se utilizara para hacer POST a la API en estereoscopios
   POST_estereoscopios(event) {
@@ -153,12 +175,13 @@ class TablaEstereoscopios extends Component {
     // Variables utiles
     var status_response
     const url = "http://127.0.0.1:8081/estereoscopios/";
+    const { update_estereoscopeos_data } = this.props;
 
     // Peticion a la API
     fetch(url, {
       method: 'POST',
       headers: {
-        'Authorization': 'Token ' + this.state.user_data.token,
+        'Authorization': 'Token ' + this.props.user_data.token,
         'Content-Type': 'application/json'
       },
       // Se toman los datos de la variable form_data del estado 
@@ -176,6 +199,32 @@ class TablaEstereoscopios extends Component {
           this.setState({
             table_data: this.state.table_data.concat(respuesta_post),
           })
+
+          // Se crea una copia de la cajita
+          var updated_store = this.props.estereoscopios
+
+          console.log("Copia de la caja")
+          console.log(updated_store)
+
+          // Creamos el elemento a agregar a la cajita 
+          // Usando los datos de le nuevo estereoscopio agregado
+          var elemento = [{
+            'nombre': respuesta_post.marca,
+            'id': respuesta_post.idcEstereoscopios
+          }]
+
+          console.log("Elemento nuevo")
+          console.log(elemento)
+
+          // Agregamos el nuevo elmento a la copia de lista
+          var updated_store = updated_store.concat(elemento)
+
+          console.log("Copia actualizada")
+          console.log(updated_store)
+
+          // Actualizamos la lista con la copia nueva
+          update_estereoscopeos_data(updated_store)
+
           console.log("status: " + status_response)
           console.log(respuesta_post)
         }
@@ -213,7 +262,7 @@ class TablaEstereoscopios extends Component {
     fetch(url, {
       method: 'PUT',
       headers: {
-        'Authorization': 'Token ' + this.state.user_data.token,
+        'Authorization': 'Token ' + this.props.user_data.token,
         'Content-Type': 'application/json'
       },
       // Se toman los datos de la variable form_data del estado 
@@ -266,7 +315,7 @@ class TablaEstereoscopios extends Component {
     fetch(url, {
       method: 'DELETE',
       headers: {
-        'Authorization': 'Token ' + this.state.user_data.token,
+        'Authorization': 'Token ' + this.props.user_data.token,
       },
     })
       .then(response => {
@@ -328,7 +377,7 @@ class TablaEstereoscopios extends Component {
           <td>{estereoscopio.caracteristicas}</td>
           <td>{print_is_active(estereoscopio.is_active)}</td>
           <td className="text-right">
-            {this.state.user_data.data.is_superuser ?
+            {this.props.user_data.data.is_superuser ?
               <UncontrolledDropdown>
                 <DropdownToggle
                   className="btn-icon-only text-light"
@@ -493,7 +542,7 @@ class TablaEstereoscopios extends Component {
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
                     <h3 className="mb-0 ml-2">Estereoscopios</h3>
-                    {this.state.user_data.data.is_superuser ?
+                    {this.props.user_data.data.is_superuser ?
                       <Button className="ml-3" color="success" type="button" size="sm" onClick={() => this.toggle_add_modal()}>
                         <i className="ni ni-fat-add mt-1"></i>
                       </Button>
@@ -577,4 +626,20 @@ class TablaEstereoscopios extends Component {
   }
 };
 
-export default TablaEstereoscopios;
+const TablaEstereoscopiosConectado = withRouter(TablaEstereoscopios)
+
+const mapStateToProps = (state) => ({
+  estereoscopios: state.estereoscopeos.estereoscopeos_data,
+  user_data: state.user.user_data
+})
+
+// Esta funcion solamente sera en Trampas, Estereoscopios y Camaras
+function mapDispatchToProps(dispatch) {
+  return {
+    update_estereoscopeos_data: (...args) => dispatch(update_estereoscopeos_data(...args)),
+  };
+}
+
+// Si no se tiene mapDispatchToProps entonces se use null como segundo parametro
+export default connect(mapStateToProps, mapDispatchToProps)(TablaEstereoscopiosConectado);
+

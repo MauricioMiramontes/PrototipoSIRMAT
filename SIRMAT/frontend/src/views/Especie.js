@@ -15,7 +15,16 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React, {Component}  from "react";
+import React, { Component } from "react";
+
+// Esta importacion se tiene que hacer en todas las tablas
+import { connect } from "react-redux";
+
+// Esta importacion solo sera necesaria para Trampas, Estereoscopios y Camaras
+import { update_especies_data } from '../app/slices/especiesSlice.js'
+
+// Necesitamos esto para poder usar la funcion "history"
+import { withRouter } from "react-router";
 
 // reactstrap components
 import {
@@ -84,12 +93,12 @@ class TablaEspecie extends Component {
 
   }
 
-  componentDidMount(){
+  componentDidMount() {
     const url = "http://127.0.0.1:8081/especies/";
     this.GET_especies(url);
 
   }
-  
+
   // Funcion para manejar los cambios en el formulario del modal
   handleInputChange(event) {
     // Cada vez que haya un cambio en el formulario se actualizara la variable form_data del estado
@@ -100,7 +109,7 @@ class TablaEspecie extends Component {
     // Se crea una copia de la variable form_data del estado
     var updated_form_data = this.state.form_data;
 
-    updated_form_data['idUsuario'] = this.state.user_data.data.id;
+    updated_form_data['idUsuario'] = this.props.user_data.data.id;
     // Se actualiza la copia con los nuevos valores
     updated_form_data[name] = value;
 
@@ -139,31 +148,49 @@ class TablaEspecie extends Component {
 
   // Funcion que se utilizara para hacer un GET a la API en etiquetado
   GET_especies = (ruta) => {
+
+    const { history } = this.props;
+
+    var status_response = null
+
     fetch(ruta, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        //Cambiar token dependiendo a quien este manipulando las pruebas
-        Authorization: "Token " + this.state.user_data.token,
+        'Authorization': 'Token ' + this.props.user_data.token,
       },
     })
-      .then((response) => response.json())
-      .then((especiesJson) => this.setState({ table_data: especiesJson }));
+      .then(response => {
+        status_response = response.status;
+        return response.json()
+      })
+      .then(especiesJson => {
+        console.log(status_response)
+        console.log(especiesJson)
+
+        if (status_response === 200) {
+          this.setState({ table_data: especiesJson })
+        }
+        else if (status_response === 401 || status_response === 403) {
+          history.push("/auth/login/")
+        }
+      })
   };
 
   //Funcion que se utilizara para hacer POST a la API en etiquetado
-  POST_especies (event) {
+  POST_especies(event) {
     // Esto solo es pare que no se recargue la pagina cuando mandamos el formulario
     event.preventDefault();
 
     // Variables utiles
     var status_response;
     const url = "http://127.0.0.1:8081/especies/";
+    const { update_especies_data } = this.props;
 
     // Peticion a la API
     fetch(url, {
       method: "POST",
       headers: {
-        Authorization: "Token " + this.state.user_data.token,
+        Authorization: "Token " + this.props.user_data.token,
         "Content-Type": "application/json",
       },
       // Se toman los datos de la variable form_data del estado
@@ -178,12 +205,35 @@ class TablaEspecie extends Component {
           // Para evitar recargar la pagina se toma la respuesta de la API y
           // se agrega directamente al estado.
           // Si la peticion a la API fue un exito
-          this.setState({
-            table_data: this.state.table_data.concat(respuesta_post),
+          
+          this.setState({table_data: this.state.table_data.concat(respuesta_post) });
 
-            // Se limpia la variable form_data
-            form_data: {},
-          });
+          // Se crea una copia de la cajita
+          var updated_store = this.props.especies
+
+          console.log("Copia de la caja")
+          console.log(updated_store)
+
+          // Creamos el elemento a agregar a la cajita 
+          // Usando los datos de le nueva camara agregada
+          var elemento = [{
+            'nombre': respuesta_post.especie,
+            'id': respuesta_post.idcEspecie
+          }]
+
+          console.log("Elemento nuevo")
+          console.log(elemento)
+
+          // Agregamos el nuevo elmento a la copia de lista
+          var updated_store = updated_store.concat(elemento)
+
+          console.log("Copia actualizada")
+          console.log(updated_store)
+
+          // Actualizamos la lista con la copia nueva
+          update_especies_data(updated_store)
+
+          
           console.log("status: " + status_response);
           console.log(respuesta_post);
         } else {
@@ -198,13 +248,14 @@ class TablaEspecie extends Component {
       });
 
     // Se esconde el modal de agregar registro
-    this.setState({ add_modal: false });
-  
-  
+    this.toggle_add_modal()
+    
+
+
   };
 
   //Funcion que se utilizara para hacer PUT a la API en etiquetado
-  PUT_especies(event,id) {
+  PUT_especies(event, id) {
 
     event.preventDefault()
 
@@ -226,7 +277,7 @@ class TablaEspecie extends Component {
     fetch(url, {
       method: 'PUT',
       headers: {
-        'Authorization': 'Token ' + this.state.user_data.token,
+        'Authorization': 'Token ' + this.props.user_data.token,
         'Content-Type': 'application/json'
       },
       // Se toman los datos de la variable form_data del estado 
@@ -290,7 +341,7 @@ class TablaEspecie extends Component {
     fetch(url, {
       method: 'DELETE',
       headers: {
-        'Authorization': 'Token ' + this.state.user_data.token,
+        'Authorization': 'Token ' + this.props.user_data.token,
       },
     })
       .then(response => {
@@ -306,8 +357,11 @@ class TablaEspecie extends Component {
           console.log("status: " + status_response)
           console.log(respuesta_delete)
           var updated_table_data = this.state.table_data;
-          updated_table_data[elemento_eliminar]['is_active'] = false;
+
+          updated_table_data.splice(elemento_eliminar, 1)
+
           this.setState({ table_data: updated_table_data })
+
         }
         else {
           // De lo contrario se imprime el error en la consola
@@ -320,7 +374,7 @@ class TablaEspecie extends Component {
 
   // Funcion que crea la tabla con los datos que se hayan recolectado de la API
   create_table = (especie) => {
-  
+
 
     //Dependiendo del valor que tenga is_active se mostrara un valor distinto en "Estado"
     const print_is_active = (is_active) => {
@@ -351,50 +405,50 @@ class TablaEspecie extends Component {
           <td>{especie.especie}</td>
           <td>{print_is_active(especie.is_active)}</td>
           <td className="text-right">
-          {this.state.user_data.data.is_superuser ?            
-            <UncontrolledDropdown>
-              <DropdownToggle
-                className="btn-icon-only text-light"
-                href="#pablo"
-                role="button"
-                size="m"
-                color=""
-                onClick={(e) => e.preventDefault()}
-              >
-                <i className="fas fa-ellipsis-v" />
-              </DropdownToggle>
-              <DropdownMenu className="dropdown-menu-arrow" container="body" right>
-                <DropdownItem
+            {this.props.user_data.data.is_superuser ?
+              <UncontrolledDropdown>
+                <DropdownToggle
+                  className="btn-icon-only text-light"
                   href="#pablo"
-                  onClick={() => {
-                    this.toggle_edit_modal();
-                    this.setState({
-                      especie_seleccionada: especie.idcEspecie,
-                      form_data: {
-                        id: especie.idcEspecie,
-                        especie: especie.especie
-                      },
-                    });
-                  }}
+                  role="button"
+                  size="m"
+                  color=""
+                  onClick={(e) => e.preventDefault()}
                 >
-                  Editar
-                </DropdownItem>
-                <DropdownItem
-                  href="#pablo"
-                  onClick={() => 
-                    this.setState({
-                      delete_modal: true,
-                      especie_seleccionada: especie.idcEspecie,
-                    })
-                  }
-                >
-                  Dar de baja
-                </DropdownItem>
-              </DropdownMenu>
-            </UncontrolledDropdown>
-            :
-            <></>
-          }
+                  <i className="fas fa-ellipsis-v" />
+                </DropdownToggle>
+                <DropdownMenu className="dropdown-menu-arrow" container="body" right>
+                  <DropdownItem
+                    href="#pablo"
+                    onClick={() => {
+                      this.toggle_edit_modal();
+                      this.setState({
+                        especie_seleccionada: especie.idcEspecie,
+                        form_data: {
+                          id: especie.idcEspecie,
+                          especie: especie.especie
+                        },
+                      });
+                    }}
+                  >
+                    Editar
+                  </DropdownItem>
+                  <DropdownItem
+                    href="#pablo"
+                    onClick={() =>
+                      this.setState({
+                        delete_modal: true,
+                        especie_seleccionada: especie.idcEspecie,
+                      })
+                    }
+                  >
+                    Dar de baja
+                  </DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
+              :
+              <></>
+            }
           </td>
         </tr>
       );
@@ -402,7 +456,7 @@ class TablaEspecie extends Component {
   };
 
   render() {
-    
+
     return (
       <>
         <Header />
@@ -517,13 +571,13 @@ class TablaEspecie extends Component {
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
                     <h3 className="mb-0 ml-2">Especies</h3>
-                  {this.state.user_data.data.is_superuser ?
-                    <Button className="ml-3" color="success" type="button" size="sm" onClick={() => this.toggle_add_modal()}>
-                      <i className="ni ni-fat-add mt-1"></i>
-                    </Button>
-                    :
-                    <></>
-                  }
+                    {this.props.user_data.data.is_superuser ?
+                      <Button className="ml-3" color="success" type="button" size="sm" onClick={() => this.toggle_add_modal()}>
+                        <i className="ni ni-fat-add mt-1"></i>
+                      </Button>
+                      :
+                      <></>
+                    }
                   </Row>
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>
@@ -601,4 +655,18 @@ class TablaEspecie extends Component {
   }
 };
 
-export default TablaEspecie;
+const TablaEspecieConectado = withRouter(TablaEspecie)
+
+const mapStateToProps = (state) => ({
+  especies: state.especies.especies_data,
+  user_data: state.user.user_data
+})
+// Esta funcion solamente sera en Trampas, Estereoscopios y Camaras
+function mapDispatchToProps(dispatch) {
+  return {
+    update_especies_data: (...args) => dispatch(update_especies_data(...args)),
+  };
+}
+
+// Si no se tiene mapDispatchToProps entonces se use null como segundo parametro
+export default connect(mapStateToProps, mapDispatchToProps)(TablaEspecieConectado);
