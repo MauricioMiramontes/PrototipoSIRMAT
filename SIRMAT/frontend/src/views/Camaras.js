@@ -16,6 +16,11 @@
 
 */
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import { update_camara_data } from '../app/slices/camarasSlice.js'
+
+// Necesitamos esto para poder usar la funcion "history"
+import { withRouter } from "react-router";
 
 // reactstrap components
 import {
@@ -102,6 +107,7 @@ class TablaCamaras extends Component {
 
     // Se actualiza el valor de la variable vieja con el de la copia actualizada
     this.setState({ form_data: updated_form_data });
+    console.log(this.state.form_data)
   }
 
   // Limpia el state de form_data
@@ -132,15 +138,33 @@ class TablaCamaras extends Component {
 
   // Funcion que se utilizara para hacer un GET a la API en Camaras
   GET_camaras = (ruta) => {
+
+    const { history } = this.props;
+
+    var status_response = null
+
     fetch(ruta, {
       method: 'GET',
       headers: {
-        'Authorization': 'Token ' + this.state.user_data.token,
+        'Authorization': 'Token ' + this.props.user_data.token,
       },
 
     })
-      .then(response => response.json())
-      .then(camarasJson => this.setState({ table_data: camarasJson }))
+      .then(response => {
+        status_response = response.status;
+        return response.json()
+      })
+      .then(camarasJson => {
+        console.log(status_response)
+        console.log(camarasJson)
+
+        if (status_response === 200) {
+          this.setState({ table_data: camarasJson })
+        }
+        else if (status_response === 401 || status_response === 403) {
+          history.push("/auth/login/")
+        }
+      })
   };
 
   //Funcion que se utilizara para hacer POST a la API en Camaras
@@ -152,12 +176,13 @@ class TablaCamaras extends Component {
     // Variables utiles
     var status_response
     const url = "http://127.0.0.1:8081/camaras/";
+    const { update_camara_data } = this.props;
 
     // Peticion a la API
     fetch(url, {
       method: 'POST',
       headers: {
-        'Authorization': 'Token ' + this.state.user_data.token,
+        'Authorization': 'Token ' + this.props.user_data.token,
         'Content-Type': 'application/json'
       },
       // Se toman los datos de la variable form_data del estado 
@@ -175,6 +200,32 @@ class TablaCamaras extends Component {
           this.setState({
             table_data: this.state.table_data.concat(respuesta_post),
           })
+
+          // Se crea una copia de la cajita
+          var updated_store = this.props.camaras
+
+          console.log("Copia de la caja")
+          console.log(updated_store)
+
+          // Creamos el elemento a agregar a la cajita 
+          // Usando los datos de le nueva camara agregada
+          var elemento = [{
+            'nombre': respuesta_post.marca,
+            'id': respuesta_post.idcCamaras
+          }]
+
+          console.log("Elemento nuevo")
+          console.log(elemento)
+
+          // Agregamos el nuevo elmento a la copia de lista
+          var updated_store = updated_store.concat(elemento)
+
+          console.log("Copia actualizada")
+          console.log(updated_store)
+
+          // Actualizamos la lista con la copia nueva
+          update_camara_data(updated_store)
+
           console.log("status: " + status_response)
           console.log(respuesta_post)
         }
@@ -209,7 +260,7 @@ class TablaCamaras extends Component {
     fetch(url, {
       method: 'PUT',
       headers: {
-        'Authorization': 'Token ' + this.state.user_data.token,
+        'Authorization': 'Token ' + this.props.user_data.token,
         'Content-Type': 'application/json'
       },
       // Se toman los datos de la variable form_data del estado 
@@ -227,7 +278,7 @@ class TablaCamaras extends Component {
           var updated_table_data = this.state.table_data;
 
           updated_table_data[elemento_eliminar] = respuesta_put;
-
+          
           this.setState({
             table_data: updated_table_data,
           })
@@ -262,7 +313,7 @@ class TablaCamaras extends Component {
     fetch(url, {
       method: 'DELETE',
       headers: {
-        'Authorization': 'Token ' + this.state.user_data.token,
+        'Authorization': 'Token ' + this.props.user_data.token,
       },
     })
       .then(response => {
@@ -325,7 +376,7 @@ class TablaCamaras extends Component {
           <td>{camara.resolucion}</td>
           <td>{print_is_active(camara.is_active)}</td>
           <td className="text-right">
-            {this.state.user_data.data.is_superuser ?
+            {this.props.user_data.data.is_superuser ?
               <UncontrolledDropdown>
                 <DropdownToggle
                   className="btn-icon-only text-light"
@@ -444,12 +495,19 @@ class TablaCamaras extends Component {
                     type="select"
                     name="idEstereoscopios"
                     onChange={this.handleInputChange}>
-                    <option>Aqui</option>
-                    <option>Iran</option>
-                    <option>Los</option>
-                    <option>Estereoscopios</option>
-                    <option>Registrados</option>
-                    <option>1</option>
+                    <option value = "0">Seleccione un estereoscopio</option>
+                    {this.props.estereoscopeos.map((estereoscopio) => {
+                      if (estereoscopio.is_active === true) {
+                        return (
+                          <option key={estereoscopio.id} value={estereoscopio.id}>{estereoscopio.nombre}</option>
+                        )
+                      }
+                      else {
+                        return (
+                          <></>
+                        )
+                      }
+                    })}
                   </Input>
                 </InputGroup>
               </FormGroup>
@@ -527,12 +585,19 @@ class TablaCamaras extends Component {
                     type="select"
                     name="idEstereoscopios"
                     onChange={this.handleInputChange}>
-                    <option>Aqui</option>
-                    <option>Iran</option>
-                    <option>Los</option>
-                    <option>Estereoscopios</option>
-                    <option>Registrados</option>
-                    <option>1</option>
+                    <option value = "0">Seleccione un estereoscopio</option>
+                    {this.props.estereoscopeos.map((estereoscopio) => {
+                      if (estereoscopio.is_active === true) {
+                        return (
+                          <option key={estereoscopio.id} value={estereoscopio.id}>{estereoscopio.nombre}</option>
+                        )
+                      }
+                      else {
+                        return (
+                          <></>
+                        )
+                      }
+                    })}
                   </Input>
                 </InputGroup>
               </FormGroup>
@@ -558,7 +623,7 @@ class TablaCamaras extends Component {
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
                     <h3 className="mb-0 ml-2">Camaras</h3>
-                    {this.state.user_data.data.is_superuser ?
+                    {this.props.user_data.data.is_superuser ?
                       <Button className="ml-3" color="success" type="button" size="sm" onClick={() => this.toggle_add_modal()}>
                         <i className="ni ni-fat-add mt-1"></i>
                       </Button>
@@ -642,4 +707,19 @@ class TablaCamaras extends Component {
   }
 };
 
-export default TablaCamaras;
+const TablaCamarasConectado = withRouter(TablaCamaras)
+
+const mapStateToProps = (state) => ({
+  estereoscopeos: state.estereoscopeos.estereoscopeos_data,
+  camaras: state.camaras.camaras_data,
+  user_data: state.user.user_data
+})
+
+function mapDispatchToProps(dispatch) {
+  return {
+    update_camara_data: (...args) => dispatch(update_camara_data(...args)),
+  };
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(TablaCamarasConectado);

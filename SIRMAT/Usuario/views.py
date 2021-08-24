@@ -204,7 +204,7 @@ class UsuariosSingUp(APIView):
 
             datos_respuesta['message'] = 'Usuario registrado de forma exitosa'
             datos_respuesta['token'] = token
-            datos_respuesta['user_data'] = {
+            datos_respuesta['data'] = {
                 "id": nuevo_usuario.id,
                 "email": nuevo_usuario.email,
                 "first_name": nuevo_usuario.first_name,
@@ -242,7 +242,7 @@ class CustomAuthToken(ObtainAuthToken):
 
         datos_respuesta['response'] = 'Inicio de Sesión Exitoso'
         datos_respuesta['token'] = token.key
-        datos_respuesta['user_data'] = {
+        datos_respuesta['data'] = {
             "id": user.pk,
             "email": user.email,
             "first_name": user.first_name,
@@ -300,7 +300,7 @@ class UsuariosSignUpAdmin(APIView):
 
             datos_respuesta['message'] = 'Administrador registrado de forma exitosa'
             datos_respuesta['token'] = token
-            datos_respuesta['user_data'] = {
+            datos_respuesta['data'] = {
                 "id": nuevo_usuario.id,
                 "email": nuevo_usuario.email,
                 "first_name": nuevo_usuario.first_name,
@@ -349,7 +349,7 @@ class UsuariosSignUpStaff(APIView):
 
             datos_respuesta['message'] = 'Empleado registrado de forma exitosa'
             datos_respuesta['token'] = token
-            datos_respuesta['user_data'] = {
+            datos_respuesta['data'] = {
                 "id": nuevo_usuario.id,
                 "email": nuevo_usuario.email,
                 "first_name": nuevo_usuario.first_name,
