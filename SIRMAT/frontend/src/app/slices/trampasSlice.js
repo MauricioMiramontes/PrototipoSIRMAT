@@ -7,11 +7,11 @@ export const trampasSlice = createSlice({
     },
 
     reducers: {
-        update_data: (state, action) => {    
+        update_trampa_data: (state, action) => {    
             state.trampas_data = action.payload
         },
     },
 })
 // Action creators are generated for each case reducer function
-export const { update_data } = trampasSlice.actions
+export const { update_trampa_data } = trampasSlice.actions
 export default trampasSlice.reducer

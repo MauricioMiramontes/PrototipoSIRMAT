@@ -7,11 +7,11 @@ export const camarasSlice = createSlice({
     },
 
     reducers: {
-        update_data: (state, action) => {    
-            state.user_data = action.payload
+        update_camara_data: (state, action) => {    
+            state.camaras_data = action.payload
         },
     },
 })
 // Action creators are generated for each case reducer function
-export const { update_data } = camarasSlice.actions
+export const { update_camara_data } = camarasSlice.actions
 export default camarasSlice.reducer

@@ -18,7 +18,7 @@
 import React, { Component } from "react";
 
 import { connect } from "react-redux";
-import { update_data } from '../../app/slices/user_data.js'
+import { update_user_data } from '../../app/slices/user_data.js'
 
 // Necesitamos esto para poder usar la funcion "history"
 import { withRouter } from "react-router";
@@ -73,7 +73,7 @@ class Register extends Component {
   post_Register() {
     var status_response
     const url = "http://127.0.0.1:8081/usuarios/signup/";
-    const { update_data, history } = this.props;
+    const { update_user_data, history } = this.props;
 
     // Peticion a la API
     fetch(url, {
@@ -98,7 +98,7 @@ class Register extends Component {
           console.log("status: " + status_response)
           console.log(respuesta_register)
 
-          update_data(respuesta_register)
+          update_user_data(respuesta_register)
 
           // History nos deja redirijir a otra liga sin recargar la pagina
           // En este caso redirigimos a la pantalla de inicio
@@ -232,7 +232,7 @@ const RegisterConectado = withRouter(Register);
 
 function mapDispatchToProps(dispatch) {
   return {
-    update_data: (...args) => dispatch(update_data(...args))
+    update_user_data: (...args) => dispatch(update_user_data(...args))
   };
 }
 export default connect(null, mapDispatchToProps)(RegisterConectado);
