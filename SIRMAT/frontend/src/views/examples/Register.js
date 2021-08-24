@@ -19,6 +19,10 @@ import React, { Component } from "react";
 
 import { connect } from "react-redux";
 import { update_user_data } from '../../app/slices/user_data.js'
+import { update_camara_data } from '../../app/slices/camarasSlice.js'
+import { update_trampa_data } from '../../app/slices/trampasSlice.js'
+import { update_estereoscopeos_data } from '../../app/slices/estereoscopeosSlice.js'
+import { update_especies_data } from '../../app/slices/especiesSlice.js'
 
 // Necesitamos esto para poder usar la funcion "history"
 import { withRouter } from "react-router";
@@ -73,7 +77,17 @@ class Register extends Component {
   post_Register() {
     var status_response
     const url = "http://127.0.0.1:8081/usuarios/signup/";
-    const { update_user_data, history } = this.props;
+    const urlCamaras = "http://127.0.0.1:8081/camaras/";
+    const urlTrampas = "http://127.0.0.1:8081/trampas/";
+    const urlEstereoscopeos = "http://127.0.0.1:8081/estereoscopios/";
+    const urlEspecies = "http://127.0.0.1:8081/especies/";
+    const {
+      update_user_data,
+      update_camara_data,
+      update_trampa_data,
+      update_estereoscopeos_data,
+      update_especies_data,
+      history } = this.props;
 
     // Peticion a la API
     fetch(url, {
@@ -100,6 +114,172 @@ class Register extends Component {
 
           update_user_data(respuesta_register)
 
+
+          fetch(urlCamaras, {
+            method: 'GET',
+            headers: {
+              'Authorization': 'Token ' + respuesta_register.token,
+              'Content-Type': 'application/json'
+            },
+            // Se toman los datos de la variable form_data del estado 
+          })
+            .then((response) => {
+              status_response = response.status;
+              return response.json()
+            })
+            .then((camarasJson) => {
+              if (status_response === 200) {
+                console.log("status camaras: " + status_response)
+                console.log(camarasJson)
+
+                var listaCamaras = []
+
+                for (let i = 0; i < camarasJson.length; i++) {
+                  const nombre = camarasJson[i].marca;
+                  const id = camarasJson[i].idcCamaras
+                  const is_active = camarasJson[i].is_active
+                  var elemento = {
+                    'nombre': nombre,
+                    'id': id,
+                    'is_active': is_active
+                  }
+                  listaCamaras.push(elemento)
+                }
+
+                update_camara_data(listaCamaras)
+              }
+              else {
+                console.log("status camaras: " + status_response)
+                console.log(camarasJson)
+              }
+            })
+
+          // Fetch de trampas
+          fetch(urlTrampas, {
+            method: 'GET',
+            headers: {
+              'Authorization': 'Token ' + respuesta_register.token,
+              'Content-Type': 'application/json'
+            },
+            // Se toman los datos de la variable form_data del estado 
+          })
+            .then((response) => {
+              status_response = response.status;
+              return response.json()
+            })
+            .then((trampasJson) => {
+              if (status_response === 200) {
+                console.log("status trampas: " + status_response)
+                console.log(trampasJson)
+
+                var listaTrampas = []
+
+                for (let i = 0; i < trampasJson.length; i++) {
+                  const nombre = trampasJson[i].nombre;
+                  const id = trampasJson[i].idcTrampas
+                  const is_active = trampasJson[i].is_active
+                  var elemento = {
+                    'nombre': nombre,
+                    'id': id,
+                    'is_active': is_active
+                  }
+
+                  listaTrampas.push(elemento)
+                }
+
+
+                update_trampa_data(listaTrampas)
+              }
+              else {
+                console.log("status trampas: " + status_response)
+                console.log(trampasJson)
+              }
+            })
+
+
+
+
+          // Fetch de estereoscopeos
+          fetch(urlEstereoscopeos, {
+            method: 'GET',
+            headers: {
+              'Authorization': 'Token ' + respuesta_register.token,
+              'Content-Type': 'application/json'
+            },
+            // Se toman los datos de la variable form_data del estado 
+          })
+            .then((response) => {
+              status_response = response.status;
+              return response.json()
+            })
+            .then((estereoscopeosJson) => {
+              if (status_response === 200) {
+                console.log("status Estereoscopeos: " + status_response)
+                console.log(estereoscopeosJson)
+
+                var listaEstereoscopeos = []
+
+                for (let i = 0; i < estereoscopeosJson.length; i++) {
+                  const nombre = estereoscopeosJson[i].marca;
+                  const id = estereoscopeosJson[i].idcEstereoscopios
+                  const is_active = estereoscopeosJson[i].is_active
+                  var elemento = {
+                    'nombre': nombre,
+                    'id': id,
+                    'is_active': is_active
+                  }
+                  listaEstereoscopeos.push(elemento)
+                }
+                update_estereoscopeos_data(listaEstereoscopeos)
+              }
+              else {
+                console.log("status Estereoscopeos: " + status_response)
+                console.log(estereoscopeosJson)
+              }
+            })
+
+
+          //Fetch especies
+          fetch(urlEspecies, {
+            method: 'GET',
+            headers: {
+              'Authorization': 'Token ' + respuesta_register.token,
+              'Content-Type': 'application/json'
+            },
+            // Se toman los datos de la variable form_data del estado 
+          })
+            .then((response) => {
+              status_response = response.status;
+              return response.json()
+            })
+            .then((especiesJson) => {
+              if (status_response === 200) {
+                console.log("status Especies : " + status_response)
+                console.log(especiesJson)
+
+                var listaEspecies = []
+
+                for (let i = 0; i < especiesJson.length; i++) {
+                  const nombre = especiesJson[i].especie;
+                  const id = especiesJson[i].idcEspecies
+                 
+                  var elemento = {
+                    'nombre': nombre,
+                    'id': id,
+                   
+                  }
+                  listaEspecies.push(elemento)
+                }
+                update_especies_data(listaEspecies)
+              }
+              else {
+                console.log("status Especies: " + status_response)
+                console.log(especiesJson)
+              }
+            })
+
+
+
           // History nos deja redirijir a otra liga sin recargar la pagina
           // En este caso redirigimos a la pantalla de inicio
           history.push('/')
@@ -124,7 +304,7 @@ class Register extends Component {
               </div>
             </CardHeader>
             <CardBody className="px-lg-5 py-lg-5">
-            {this.state.registro_exitoso ?
+              {this.state.registro_exitoso ?
                 <></>
                 :
                 <h5 style={{ color: 'red' }} className="mb-4">
@@ -139,11 +319,11 @@ class Register extends Component {
                         <i className="ni ni-hat-3" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input 
-                    placeholder="Nombre" 
-                    type="text" 
-                    name="first_name"
-                    onChange={this.handleInputChange}
+                    <Input
+                      placeholder="Nombre"
+                      type="text"
+                      name="first_name"
+                      onChange={this.handleInputChange}
                     />
                   </InputGroup>
                 </FormGroup>
@@ -151,14 +331,14 @@ class Register extends Component {
                   <InputGroup className="input-group-alternative mb-3">
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText>
-                        <i className="ni ni-hat-3"/>
+                        <i className="ni ni-hat-3" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input 
-                    placeholder="Apellido" 
-                    type="text" 
-                    name="last_name"
-                    onChange={this.handleInputChange}
+                    <Input
+                      placeholder="Apellido"
+                      type="text"
+                      name="last_name"
+                      onChange={this.handleInputChange}
                     />
                   </InputGroup>
                 </FormGroup>
@@ -169,11 +349,11 @@ class Register extends Component {
                         <i className="ni ni-mobile-button" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input 
-                    placeholder="Telefono" 
-                    type="text" 
-                    name="telefono"
-                    onChange={this.handleInputChange}
+                    <Input
+                      placeholder="Telefono"
+                      type="text"
+                      name="telefono"
+                      onChange={this.handleInputChange}
                     />
                   </InputGroup>
                 </FormGroup>
@@ -232,7 +412,11 @@ const RegisterConectado = withRouter(Register);
 
 function mapDispatchToProps(dispatch) {
   return {
-    update_user_data: (...args) => dispatch(update_user_data(...args))
+    update_user_data: (...args) => dispatch(update_user_data(...args)),
+    update_camara_data: (...args) => dispatch(update_camara_data(...args)),
+    update_trampa_data: (...args) => dispatch(update_trampa_data(...args)),
+    update_estereoscopeos_data: (...args) => dispatch(update_estereoscopeos_data(...args)),
+    update_especies_data: (...args) => dispatch(update_especies_data(...args)),
   };
 }
 export default connect(null, mapDispatchToProps)(RegisterConectado);

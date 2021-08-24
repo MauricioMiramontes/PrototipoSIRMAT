@@ -13,6 +13,7 @@ function Test(props) {
     const trampas = useSelector((state) => state.trampas.trampas_data)
     const estereoscopeos = useSelector((state) => state.estereoscopeos.estereoscopeos_data)
     const camaras = useSelector((state) => state.camaras.camaras_data)
+    const especies = useSelector((state) => state.especies.especies_data)
     return (
         <>
             <Header></Header>
@@ -45,6 +46,13 @@ function Test(props) {
                         console.log(estereoscopeos)
                     }}>
                     Estereoscopeos
+                </Button>
+                <Button
+                    color="primary"
+                    onClick={() => {
+                        console.log(especies)
+                    }}>
+                    Especies
                 </Button>
             </Container>
 

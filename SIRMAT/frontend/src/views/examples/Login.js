@@ -22,6 +22,7 @@ import { update_user_data } from '../../app/slices/user_data.js'
 import { update_camara_data } from '../../app/slices/camarasSlice.js'
 import { update_trampa_data } from '../../app/slices/trampasSlice.js'
 import { update_estereoscopeos_data } from '../../app/slices/estereoscopeosSlice.js'
+import { update_especies_data } from '../../app/slices/especiesSlice.js'
 
 // Necesitamos esto para poder usar la funcion "history"
 import { withRouter } from "react-router";
@@ -81,7 +82,14 @@ class Login extends Component {
     const urlCamaras = "http://127.0.0.1:8081/camaras/";
     const urlTrampas = "http://127.0.0.1:8081/trampas/";
     const urlEstereoscopeos = "http://127.0.0.1:8081/estereoscopios/";
-    const { update_user_data, update_camara_data, update_trampa_data, update_estereoscopeos_data, history } = this.props;
+    const urlEspecies = "http://127.0.0.1:8081/especies/";
+    const { 
+      update_user_data, 
+      update_camara_data, 
+      update_trampa_data, 
+      update_estereoscopeos_data, 
+      update_especies_data,
+      history } = this.props;
 
     // Peticion a la API
     fetch(url, {
@@ -229,6 +237,46 @@ class Login extends Component {
                 console.log(estereoscopeosJson)
               }
             })
+
+            // Fetch para especies
+            fetch(urlEspecies, {
+              method: 'GET',
+              headers: {
+                'Authorization': 'Token ' + respuesta_login.token,
+                'Content-Type': 'application/json'
+              },
+              // Se toman los datos de la variable form_data del estado 
+            })
+              .then((response) => {
+                status_response = response.status;
+                return response.json()
+              })
+              .then((especiesJson) => {
+                if (status_response === 200) {
+                  console.log("status especies: " + status_response)
+                  console.log(especiesJson)
+  
+                  var listaEspecies = []
+  
+                  for (let i = 0; i < especiesJson.length; i++) {
+                    const nombre = especiesJson[i].especie;
+                    const id = especiesJson[i].idcEspecie
+                  
+                    var elemento = {
+                      'nombre': nombre,
+                      'id': id,
+                    }
+
+                    listaEspecies.push(elemento)
+                  }
+  
+                  update_especies_data(listaEspecies)
+                }
+                else {
+                  console.log("status especies: " + status_response)
+                  console.log(especiesJson)
+                }
+              })
           // History nos deja redirijir a otra liga sin recargar la pagina
           // En este caso redirigimos a la pantalla de inicio
           history.push('/')
@@ -344,6 +392,7 @@ function mapDispatchToProps(dispatch) {
     update_camara_data: (...args) => dispatch(update_camara_data(...args)),
     update_trampa_data: (...args) => dispatch(update_trampa_data(...args)),
     update_estereoscopeos_data: (...args) => dispatch(update_estereoscopeos_data(...args)),
+    update_especies_data : (...args) => dispatch(update_especies_data(...args)),
   };
 }
 export default connect(null, mapDispatchToProps)(LoginConectado);
