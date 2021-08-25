@@ -17,6 +17,12 @@
 */
 import React, { Component } from "react";
 
+// Esta importacion se tiene que hacer en todas las tablas
+import { connect } from "react-redux";
+
+// Importamos la funcion necesaria para agregar history a el componente con estado
+import { withRouter } from "react-router";
+
 import {
   Badge,
   Button,
@@ -131,20 +137,39 @@ class TablaUsuarios extends Component {
 
   // Funcion que se utilizara para hacer un GET a la API en Trampas
   GET_usuarios = (ruta) => {
+
+    const { history } = this.props;
+
+    var status_response = null
+
     fetch(ruta, {
       method: 'GET',
       headers: {
-        //Cambiar token dependiendo a quien este manipulando las pruebas
-        'Authorization': 'Token ' + this.state.user_data.token,
+        'Authorization': 'Token ' + this.props.user_data.token,
       },
-
     })
-      .then(response => response.json())
-      .then(usuariosJson => this.setState({ table_data: usuariosJson }))
+      .then(response => {
+        status_response = response.status;
+        return response.json()
+      })
+      .then(usuariosJson => {
+        console.log(status_response)
+        console.log(usuariosJson)
+
+        if (status_response === 200) {
+          this.setState({ table_data: usuariosJson })
+        }
+        else if (status_response === 401 || status_response === 403) {
+          history.push("/auth/login/")
+        }
+      })
   };
 
   //Funcion que se utilizara para hacer POST a la API en Usuarios
   POST_usuarios(event) {
+
+    // Esto solo es pare que no se recargue la pagina cuando mandamos el formulario
+    event.preventDefault()
 
     var url = "http://127.0.0.1:8081/usuarios/signup/";
 
@@ -155,8 +180,6 @@ class TablaUsuarios extends Component {
       url = "http://127.0.0.1:8081/usuarios/signup_staff/";
     }
 
-    // Esto solo es pare que no se recargue la pagina cuando mandamos el formulario
-    event.preventDefault()
 
     // Variables utiles
     var status_response
@@ -165,7 +188,7 @@ class TablaUsuarios extends Component {
     fetch(url, {
       method: 'POST',
       headers: {
-        'Authorization': 'Token ' + this.state.user_data.token,
+        'Authorization': 'Token ' + this.props.user_data.token,
         'Content-Type': 'application/json'
       },
       // Se toman los datos de la variable form_data del estado 
@@ -181,7 +204,7 @@ class TablaUsuarios extends Component {
           // se agrega directamente al estado.
           // Si la peticion a la API fue un exito
           this.setState({
-            table_data: this.state.table_data.concat(respuesta_post.user_data),
+            table_data: this.state.table_data.concat(respuesta_post.data),
           })
           console.log("status: " + status_response)
           console.log(respuesta_post)
@@ -253,7 +276,7 @@ class TablaUsuarios extends Component {
     fetch(url, {
       method: 'PUT',
       headers: {
-        'Authorization': 'Token ' + this.state.user_data.token,
+        'Authorization': 'Token ' + this.props.user_data.token,
         'Content-Type': 'application/json'
       },
       // Se toman los datos de la variable form_data del estado 
@@ -301,13 +324,13 @@ class TablaUsuarios extends Component {
     var status_response;
     var elemento_eliminar = this.state.table_data.findIndex(element => element['id'] === id)
 
-    
+
 
     //Se hace la llamada a la API
     fetch(url, {
       method: 'DELETE',
       headers: {
-        'Authorization': 'Token ' + this.state.user_data.token,
+        'Authorization': 'Token ' + this.props.user_data.token,
       },
     })
       .then(response => {
@@ -385,7 +408,7 @@ class TablaUsuarios extends Component {
           <td>{usuario.email}</td>
           <td>{print_tipo_usuario(usuario.is_superuser, usuario.is_staff, usuario.is_active)}</td>
           <td className="text-right">
-            {this.state.user_data.data.is_superuser ?
+            {this.props.user_data.data.is_superuser ?
               <UncontrolledDropdown>
                 <DropdownToggle
                   className="btn-icon-only text-light"
@@ -659,7 +682,7 @@ class TablaUsuarios extends Component {
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
                     <h3 className="mb-0 ml-2">Usuarios</h3>
-                    {this.state.user_data.data.is_superuser ?
+                    {this.props.user_data.data.is_superuser ?
                       <Button className="ml-3" color="success" type="button" size="sm" onClick={this.toggle_add_modal}>
                         <i className="ni ni-fat-add mt-1"></i>
                       </Button>
@@ -742,4 +765,11 @@ class TablaUsuarios extends Component {
   }
 };
 
-export default TablaUsuarios;
+// Creamos un componente conectado que nos proporciona la funcion history
+const TablaUsuariosConectado = withRouter(TablaUsuarios);
+
+const mapStateToProps = (state) => ({
+  user_data: state.user.user_data
+  })
+  // Si no se tiene mapDispatchToProps entonces se use null como segundo parametro
+export default connect(mapStateToProps, null)(TablaUsuariosConectado);

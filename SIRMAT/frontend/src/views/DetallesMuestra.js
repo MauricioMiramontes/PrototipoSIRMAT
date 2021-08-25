@@ -1,3 +1,8 @@
+// Importamos la funcion necesaria para agregar history a el componente con estado
+import { withRouter } from "react-router";
+// Esta importacion se tiene que hacer en todas las tablas
+import { connect } from "react-redux";
+
 import React, { Component } from 'react';
 // reactstrap components
 import {
@@ -35,16 +40,11 @@ import datos_detallesmuestra from "datos_prueba/datos_DetallesMuestra.js";
 import datos_fotografias from "datos_prueba/datos_Fotografias.js";
 import TablaFotografias from "components/Tables/Tablas_fotografias.js"
 
-// Se importan los datos de prueba para la tabla
-import user from "datos_prueba/datos_Sesion.js";
-
-
 class DetallesMuestra extends Component {
   constructor(props) {
     super(props);
     this.state = {
       data: datos_detallesmuestra,
-      user_data: user,
     };
   }
 
@@ -60,19 +60,29 @@ class DetallesMuestra extends Component {
     // Se de la formato a el parametro id
     var params = { id: this.props.muestra }
 
+
     // Se crea la URL para mandar a la API
     const ruta_detalles = "http://127.0.0.1:8081/detallesmuestra/?" + new URLSearchParams(params);
+    var status_response
+    const { history } = this.props;
 
     fetch(ruta_detalles, {
       method: "GET",
       headers: {
-        Authorization: "Token " + this.state.user_data.token,
+        Authorization: "Token " + this.props.user_data.token,
       },
     })
-      .then((response) => response.json())
+      .then((response) => {
+        status_response = response.status;
+        return response.json()
+      })
       .then((detallesmuestrasJson) => {
-        this.setState({ data: detallesmuestrasJson })
-        console.log(this.state.data)
+        if (status_response === 200) {
+          this.setState({ data: detallesmuestrasJson })
+        }
+        else if (status_response === 401 || status_response === 403) {
+          history.push("/auth/login/")
+        }
       });
   }
 
@@ -123,7 +133,7 @@ class DetallesMuestra extends Component {
                         </>
                       )
                     })}
-                  </div>
+                  </div> 
                 </CardBody>
               </Card>
             </Col>
@@ -137,4 +147,12 @@ class DetallesMuestra extends Component {
   }
 }
 
-export default DetallesMuestra;
+// Creamos un componente conectado que nos proporciona la funcion history
+const DestallesMuestraConectado = withRouter(DetallesMuestra);
+
+const mapStateToProps = (state) => ({
+  user_data: state.user.user_data
+ })
+
+// Si no se tiene mapDispatchToProps entonces se use null como segundo parametro
+export default connect(mapStateToProps, null)(DestallesMuestraConectado);

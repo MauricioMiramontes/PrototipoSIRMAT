@@ -17,6 +17,12 @@
 */
 import React, { Component } from "react";
 
+// Esta importacion se tiene que hacer en todas las tablas
+import { connect } from "react-redux";
+
+// Importamos la funcion necesaria para agregar history a el componente con estado
+import { withRouter } from "react-router";
+
 // reactstrap components
 import {
   Badge,
@@ -139,7 +145,7 @@ class TablaMuestras extends Component {
     // Se crea una copia de la variable form_data del estado
     var updated_form_data = this.state.form_data;
 
-    updated_form_data['idUsuario'] = this.state.user_data.data.id;
+    updated_form_data['idUsuario'] = this.props.user_data.data.id;
     // Se actualiza la copia con los nuevos valores
     updated_form_data[name] = value;
 
@@ -207,16 +213,34 @@ class TablaMuestras extends Component {
     }
   };
 
-  // Funcion que se utilizara para hacer un GET a la API en Muestras
+  // Funcion que se utilizara para hacer un GET a la API en Camaras
   GET_muestras = (ruta) => {
+
+    const { history } = this.props;
+
+    var status_response = null
+
     fetch(ruta, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        Authorization: "Token " + this.state.user_data.token,
+        'Authorization': 'Token ' + this.props.user_data.token,
       },
     })
-      .then((response) => response.json())
-      .then((MuestrasJson) => this.setState({ table_data: MuestrasJson }));
+      .then(response => {
+        status_response = response.status;
+        return response.json()
+      })
+      .then(muestrasJson => {
+        console.log(status_response)
+        console.log(muestrasJson)
+
+        if (status_response === 200) {
+          this.setState({ table_data: muestrasJson });
+        }
+        else if (status_response === 401 || status_response === 403) {
+          history.push("/auth/login/")
+        }
+      })
   };
 
   //Funcion que se utilizara para hacer POST a la API en Muestras
@@ -233,7 +257,7 @@ class TablaMuestras extends Component {
     fetch(url, {
       method: "POST",
       headers: {
-        Authorization: "Token " + this.state.user_data.token,
+        Authorization: "Token " + this.props.user_data.token,
         "Content-Type": "application/json",
       },
       // Se toman los datos de la variable form_data del estado
@@ -264,7 +288,7 @@ class TablaMuestras extends Component {
           fetch(urlD, {
             method: "POST",
             headers: {
-              Authorization: "Token " + this.state.user_data.token,
+              Authorization: "Token " + this.props.user_data.token,
               "Content-Type": "application/json",
             },
             // Se toman los datos de la variable form_data del estado
@@ -315,7 +339,7 @@ class TablaMuestras extends Component {
     fetch(url, {
       method: "PUT",
       headers: {
-        Authorization: "Token " + this.state.user_data.token,
+        Authorization: "Token " + this.props.user_data.token,
         "Content-Type": "application/json",
       },
       // Se toman los datos de la variable form_data del estado
@@ -376,7 +400,7 @@ class TablaMuestras extends Component {
     fetch(url, {
       method: "DELETE",
       headers: {
-        Authorization: "Token " + this.state.user_data.token,
+        Authorization: "Token " + this.props.user_data.token,
       },
     })
       .then((response) => {
@@ -491,7 +515,7 @@ class TablaMuestras extends Component {
                         horaFechainicio: muestra.horaFechainicio,
                         horaFechaFin: muestra.horaFechaFin,
                         idTrampas: muestra.idTrampas,
-                        idUsuario: this.state.user_data.data.id,
+                        idUsuario: this.props.user_data.data.id,
                       },
                     });
                   }}
@@ -601,12 +625,19 @@ class TablaMuestras extends Component {
                     name="idTrampas"
                     onChange={this.handleInputChange}
                   >
-                    <option>Aqui</option>
-                    <option>Iran</option>
-                    <option>Las</option>
-                    <option>Trampas</option>
-                    <option>Registrados</option>
-                    <option>1</option>
+                    <option value="0">Seleccione una trampa: </option>
+                    {this.props.trampas.map((trampa) => {
+                      if (trampa.is_active === true) {
+                        return (
+                          <option key={trampa.id} value={trampa.id}>{trampa.nombre}</option>
+                        )
+                      }
+                      else {
+                        return (
+                          <></>
+                        )
+                      }
+                    })}
                   </Input>
                 </InputGroup>
               </FormGroup>
@@ -683,14 +714,14 @@ class TablaMuestras extends Component {
                           placeholder="Especie"
                           type="select"
                           name="especie"
-                          onChange={(e) => this.handleDetailInputChange(e, index)}
+                          onChange={this.handleDetailInputChange}
                         >
-                          <option>Aqui</option>
-                          <option>Iran</option>
-                          <option>Las</option>
-                          <option>Especies</option>
-                          <option>Registrados</option>
-                          <option>1</option>
+                          <option value="0">Especie: </option>
+                          {this.props.especies.map((especie) => {
+                            return (
+                              <option value={especie.nombre}>{especie.nombre}</option>
+                            )
+                          })}
                         </Input>
                       </InputGroup>
                     </FormGroup>
@@ -824,12 +855,19 @@ class TablaMuestras extends Component {
                     name="idTrampas"
                     onChange={this.handleInputChange}
                   >
-                    <option>Aqui</option>
-                    <option>Iran</option>
-                    <option>Las</option>
-                    <option>Trampas</option>
-                    <option>Registrados</option>
-                    <option>1</option>
+                    <option value="0">Seleccione una trampa: </option>
+                    {this.props.trampas.map((trampa) => {
+                      if (trampa.is_active === true) {
+                        return (
+                          <option key={trampa.id} value={trampa.id}>{trampa.nombre}</option>
+                        )
+                      }
+                      else {
+                        return (
+                          <></>
+                        )
+                      }
+                    })}
                   </Input>
                 </InputGroup>
               </FormGroup>
@@ -863,7 +901,7 @@ class TablaMuestras extends Component {
               muestra={this.state.muestra_seleccionada.idtMuestra}
               regresar={() => this.ir_detalles_Muestra()}
               nombre_muestra={this.state.muestra_seleccionada.NombreMuestra}
-              etiquetado = {this.state.muestra_seleccionada.etiquetado}
+              etiquetado={this.state.muestra_seleccionada.etiquetado}
             />
           </Container>
           :
@@ -876,15 +914,30 @@ class TablaMuestras extends Component {
                   <CardHeader className="border-0">
                     <Row className="align-items-center">
                       <h3 className="mb-0 ml-2">Muestras</h3>
-                      <Button
-                        className="ml-3"
-                        color="success"
-                        type="button"
-                        size="sm"
-                        onClick={() => this.toggle_add_modal()}
-                      >
-                        <i className="ni ni-fat-add mt-1"></i>
-                      </Button>
+                      {this.props.user_data.data.is_superuser ?
+                        <Button
+                          className="ml-3"
+                          color="success"
+                          type="button"
+                          size="sm"
+                          onClick={() => this.toggle_add_modal()}
+                        >
+                          <i className="ni ni-fat-add mt-1"></i>
+                        </Button>
+                        :
+                        this.props.user_data.data.is_staff ?
+                          <Button
+                            className="ml-3"
+                            color="success"
+                            type="button"
+                            size="sm"
+                            onClick={() => this.toggle_add_modal()}
+                          >
+                            <i className="ni ni-fat-add mt-1"></i>
+                          </Button>
+                          :
+                          <></>
+                      }
                     </Row>
                   </CardHeader>
                   <Table className="align-items-center table-flush" responsive>
@@ -966,4 +1019,16 @@ class TablaMuestras extends Component {
   }
 }
 
-export default TablaMuestras;
+// Creamos un componente conectado que nos proporciona la funcion history
+const TablaMuestrasConectado = withRouter(TablaMuestras);
+
+
+const mapStateToProps = (state) => ({
+  trampas: state.trampas.trampas_data,
+  especies: state.especies.especies_data,
+  user_data: state.user.user_data
+})
+
+// Si no se tiene mapDispatchToProps entonces se use null como segundo parametro
+export default connect(mapStateToProps, null)(TablaMuestrasConectado);
+

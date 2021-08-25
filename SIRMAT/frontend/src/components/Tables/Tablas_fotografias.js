@@ -1,3 +1,9 @@
+// Esta importacion se tiene que hacer en todas las tablas
+import { connect } from "react-redux";
+
+// Importamos la funcion necesaria para agregar history a el componente con estado
+import { withRouter } from "react-router";
+
 import React, { Component } from "react";
 import {
   Badge,
@@ -26,8 +32,7 @@ import {
   InputGroup,
 } from "reactstrap";
 
-// Se importan los datos de prueba para la tabla
-import user from "datos_prueba/datos_Sesion.js";
+
 import DeleteModal from "components/Modals/DeleteModal.js";
 
 class TablaFotografias extends Component {
@@ -36,7 +41,6 @@ class TablaFotografias extends Component {
     this.state = {
       table_data: [],
       fotografia_seleccionada: null,
-      user_data: user,
 
       // Determina si esta o no mostrandose los modales
       add_modal: false,
@@ -132,6 +136,7 @@ class TablaFotografias extends Component {
   // Funcion que se utilizara para hacer GET a la API en fotografias
   GET_fotografias() {
 
+    const { history } = this.props;
     // Se de la formato a el parametro id
     var params = { muestra: this.props.muestra }
 
@@ -144,7 +149,7 @@ class TablaFotografias extends Component {
     fetch(ruta_fotografias, {
       method: "GET",
       headers: {
-        Authorization: "Token " + this.state.user_data.token,
+        Authorization: "Token " + this.props.user_data.token,
       },
     })
       .then((response) => {
@@ -154,6 +159,9 @@ class TablaFotografias extends Component {
       .then((fotografiasJson) => {
         if (status_response === 200) {
           this.setState({ table_data: fotografiasJson })
+        }
+        else if (status_response === 401 || status_response === 403) {
+          history.push("/auth/login/")
         }
       });
   }
@@ -184,7 +192,7 @@ class TablaFotografias extends Component {
     fetch(url, {
       method: 'POST',
       headers: {
-        'Authorization': 'Token ' + this.state.user_data.token,
+        'Authorization': 'Token ' + this.props.user_data.token,
       },
       // Se toman los datos de la variable form_data del estado 
       body: datos_formulario
@@ -241,7 +249,7 @@ class TablaFotografias extends Component {
     fetch(url, {
       method: 'PUT',
       headers: {
-        'Authorization': 'Token ' + this.state.user_data.token,
+        'Authorization': 'Token ' + this.props.user_data.token,
       },
       // Se toman los datos de la variable form_data del estado 
       body: datos_formulario,
@@ -294,7 +302,7 @@ class TablaFotografias extends Component {
     fetch(url, {
       method: 'DELETE',
       headers: {
-        'Authorization': 'Token ' + this.state.user_data.token,
+        'Authorization': 'Token ' + this.props.user_data.token,
       },
     })
       .then(response => {
@@ -505,12 +513,19 @@ class TablaFotografias extends Component {
                     type="select"
                     name="idCamara"
                     onChange={this.handleInputChange}>
-                    <option>Aqui</option>
-                    <option>Iran</option>
-                    <option>Las</option>
-                    <option>Camaras</option>
-                    <option>Registradas</option>
-                    <option>1</option>
+                    <option value="0">Seleccione una camara</option>
+                    {this.props.camaras.map((camara) => {
+                      if (camara.is_active === true) {
+                        return (
+                          <option key={camara.id} value={camara.id}>{camara.nombre}</option>
+                        )
+                      }
+                      else {
+                        return (
+                          <></>
+                        )
+                      }
+                    })}
                   </Input>
                 </InputGroup>
               </FormGroup>
@@ -582,12 +597,19 @@ class TablaFotografias extends Component {
                       type="select"
                       name="idCamara"
                       onChange={this.handleInputChange}>
-                      <option>Aqui</option>
-                      <option>Iran</option>
-                      <option>Las</option>
-                      <option>Camaras</option>
-                      <option>Registradas</option>
-                      <option>1</option>
+                      <option value="0">Seleccione una camara</option>
+                      {this.props.camaras.map((camara) => {
+                        if (camara.is_active === true) {
+                          return (
+                            <option key={camara.id} value={camara.id}>{camara.nombre}</option>
+                          )
+                        }
+                        else {
+                          return (
+                            <></>
+                          )
+                        }
+                      })}
                     </Input>
                   </InputGroup>
                 </FormGroup>
@@ -640,4 +662,12 @@ class TablaFotografias extends Component {
   }
 }
 
-export default TablaFotografias;
+const TablaFotografiasConectado = withRouter(TablaFotografias)
+
+const mapStateToProps = (state) => ({
+  camaras: state.camaras.camaras_data,
+  user_data: state.user.user_data
+})
+
+// Si no se tiene mapDispatchToProps entonces se use null como segundo parametro
+export default connect(mapStateToProps, null)(TablaFotografiasConectado);

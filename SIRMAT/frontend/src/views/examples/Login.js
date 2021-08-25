@@ -370,6 +370,7 @@ class Login extends Component {
                 href="#pablo"
                 onClick={(e) => {
                   e.preventDefault()
+                  this.props.history.push('/auth/register')
 
                 }}
               >

@@ -17,6 +17,15 @@
 */
 import React, { Component } from "react";
 
+// Importamos la funcion necesaria para agregar history a el componente con estado
+import { withRouter } from "react-router";
+
+// Esta importacion se tiene que hacer en todas las tablas
+import { connect } from "react-redux";
+
+// Esta importacion solo sera necesaria para Trampas, Estereoscopios y Camaras
+import { update_trampa_data } from '../app/slices/trampasSlice.js'
+
 // reactstrap components
 import {
   Badge,
@@ -127,18 +136,36 @@ class TablaTrampas extends Component {
     this.setState({ delete_modal: !value });
   }
 
-  // Funcion que se utilizara para hacer un GET a la API en Trampas
-  GET_trampas = (ruta) => {
-    fetch(ruta, {
-      method: "GET",
-      headers: {
-        //Cambiar token dependiendo a quien este manipulando las pruebas
-        Authorization: "Token " + this.state.user_data.token,
-      },
+// Funcion que se utilizara para hacer un GET a la API en Camaras
+GET_trampas = (ruta) => {
+
+  const { history } = this.props;
+ 
+  var status_response = null
+ 
+  fetch(ruta, {
+    method: 'GET',
+    headers: {
+      'Authorization': 'Token ' + this.props.user_data.token,
+    },
+  })
+    .then(response => {
+      status_response = response.status;
+      return response.json()
     })
-      .then((response) => response.json())
-      .then((trampasJson) => this.setState({ table_data: trampasJson }));
-  };
+    .then(trampasJson => {
+      console.log(status_response)
+      console.log(trampasJson)
+ 
+      if (status_response === 200) {
+        this.setState({ table_data: trampasJson })
+      }
+      else if (status_response === 401 || status_response === 403) {
+        history.push("/auth/login/")
+      }
+    })
+ };
+ 
 
   //Funcion que se utilizara para hacer POST a la API en Trampas
   POST_trampas(event) {
@@ -153,7 +180,7 @@ class TablaTrampas extends Component {
     fetch(url, {
       method: "POST",
       headers: {
-        Authorization: "Token " + this.state.user_data.token,
+        Authorization: "Token " + this.props.user_data.token,
         "Content-Type": "application/json",
       },
       // Se toman los datos de la variable form_data del estado
@@ -206,7 +233,7 @@ class TablaTrampas extends Component {
     fetch(url, {
       method: "PUT",
       headers: {
-        Authorization: "Token " + this.state.user_data.token,
+        Authorization: "Token " + this.props.user_data.token,
         "Content-Type": "application/json",
       },
       // Se toman los datos de la variable form_data del estado
@@ -258,7 +285,7 @@ class TablaTrampas extends Component {
     fetch(url, {
       method: "DELETE",
       headers: {
-        Authorization: "Token " + this.state.user_data.token,
+        Authorization: "Token " + this.props.user_data.token,
       },
     })
       .then((response) => {
@@ -316,7 +343,7 @@ class TablaTrampas extends Component {
           <td>{trampa.coordenadas}</td>
           <td>{print_is_active(trampa.is_active)}</td>
           <td className="text-right">
-            {this.state.user_data.data.is_superuser ?
+            {this.props.user_data.data.is_superuser ?
               <UncontrolledDropdown>
                 <DropdownToggle
                   className="btn-icon-only text-light"
@@ -547,7 +574,7 @@ class TablaTrampas extends Component {
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
                     <h3 className="mb-0 ml-2">Trampas</h3>
-                    {this.state.user_data.data.is_superuser ?
+                    {this.props.user_data.data.is_superuser ?
                       <Button className="ml-3" color="success" type="button" size="sm" onClick={this.toggle_add_modal}>
                         <i className="ni ni-fat-add mt-1"></i>
                       </Button>
@@ -631,4 +658,19 @@ class TablaTrampas extends Component {
   }
 }
 
-export default TablaTrampas;
+// Creamos un componente conectado que nos proporciona la funcion history
+const TablaTrampasConectado = withRouter(TablaTrampas);
+
+const mapStateToProps = (state) => ({
+  user_data: state.user.user_data
+ })
+ 
+ // Esta funcion solamente sera en Trampas, Estereoscopios y Camaras
+ function mapDispatchToProps(dispatch) {
+  return {
+    update_trampa_data: (...args) => dispatch(update_trampa_data(...args)),
+  };
+ }
+
+// Si no se tiene mapDispatchToProps entonces se use null como segundo parametro
+export default connect(mapStateToProps, mapDispatchToProps)(TablaTrampasConectado);
