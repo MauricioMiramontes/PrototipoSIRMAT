@@ -392,6 +392,7 @@ class TablaFotografias extends Component {
                 <a
                   className="avatar rounded-circle mr-3"
                   onClick={(e) => e.preventDefault()}
+                  href="#"
                 >
                   <img
                     alt={foto.fileFoto}

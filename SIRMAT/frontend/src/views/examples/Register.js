@@ -49,7 +49,7 @@ class Register extends Component {
 
     this.state = {
       form_data: {},
-      registro_exitoso: true
+      respuesta_api: true
     }
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -262,11 +262,10 @@ class Register extends Component {
                 for (let i = 0; i < especiesJson.length; i++) {
                   const nombre = especiesJson[i].especie;
                   const id = especiesJson[i].idcEspecies
-                 
+
                   var elemento = {
                     'nombre': nombre,
                     'id': id,
-                   
                   }
                   listaEspecies.push(elemento)
                 }
@@ -286,7 +285,7 @@ class Register extends Component {
 
         }
         else {
-          this.setState({ registro_exitoso: false })
+          this.setState({ respuesta_api: respuesta_register })
           console.log("status: " + status_response)
           console.log(respuesta_register)
         }
@@ -300,19 +299,19 @@ class Register extends Component {
           <Card className="bg-secondary shadow border-0">
             <CardHeader className="bg-transparent pb-2">
               <div className="text-muted text-center mt-2 mb-1">
-                <small>Registrarse</small>
+                <h3>Registrarse</h3>
               </div>
             </CardHeader>
             <CardBody className="px-lg-5 py-lg-5">
-              {this.state.registro_exitoso ?
-                <></>
-                :
-                <h5 style={{ color: 'red' }} className="mb-4">
-                  No se pude registrar el usuario por error en uno de los campos
-                </h5>
-              }
               <Form role="form">
                 <FormGroup>
+                  {(typeof (this.state.respuesta_api.first_name) === "undefined") ?
+                    <></>
+                    :
+                    <h5 style={{ color: 'red' }} className="mt--2">
+                      {this.state.respuesta_api.first_name[0]}
+                    </h5>
+                  }
                   <InputGroup className="input-group-alternative mb-3">
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText>
@@ -328,6 +327,13 @@ class Register extends Component {
                   </InputGroup>
                 </FormGroup>
                 <FormGroup>
+                  {(typeof (this.state.respuesta_api.last_name) === "undefined") ?
+                    <></>
+                    :
+                    <h5 style={{ color: 'red' }} className="mt--2">
+                      {this.state.respuesta_api.last_name[0]}
+                    </h5>
+                  }
                   <InputGroup className="input-group-alternative mb-3">
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText>
@@ -343,6 +349,13 @@ class Register extends Component {
                   </InputGroup>
                 </FormGroup>
                 <FormGroup>
+                  {(typeof (this.state.respuesta_api.telefono) === "undefined") ?
+                    <></>
+                    :
+                    <h5 style={{ color: 'red' }} className="mt--2">
+                      {this.state.respuesta_api.telefono[0]}
+                    </h5>
+                  }
                   <InputGroup className="input-group-alternative mb-3">
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText>
@@ -358,6 +371,13 @@ class Register extends Component {
                   </InputGroup>
                 </FormGroup>
                 <FormGroup>
+                  {(typeof (this.state.respuesta_api.email) === "undefined") ?
+                    <></>
+                    :
+                    <h5 style={{ color: 'red' }} className="mt--2">
+                      {this.state.respuesta_api.email[0]}
+                    </h5>
+                  }
                   <InputGroup className="input-group-alternative mb-3">
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText>
@@ -373,6 +393,17 @@ class Register extends Component {
                   </InputGroup>
                 </FormGroup>
                 <FormGroup>
+                  {(typeof (this.state.respuesta_api.password) === "undefined") ?
+                    <></>
+                    :
+                    this.state.respuesta_api.password.map((mensaje) => {
+                      return (
+                        <h5 style={{ color: 'red' }} className="mt--2">
+                          {mensaje}
+                        </h5>
+                      )
+                    })
+                  }
                   <InputGroup className="input-group-alternative">
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText>
@@ -380,19 +411,13 @@ class Register extends Component {
                       </InputGroupText>
                     </InputGroupAddon>
                     <Input
-                      placeholder="Password"
+                      placeholder="Contraseña"
                       type="password"
                       name="password"
                       onChange={this.handleInputChange}
                     />
                   </InputGroup>
                 </FormGroup>
-                <div className="text-muted font-italic">
-                  <small>
-                    password strength:{" "}
-                    <span className="text-success font-weight-700">strong</span>
-                  </small>
-                </div>
                 <div className="text-center">
                   <Button className="mt-4" color="primary" type="button" onClick={() => this.post_Register()}>
                     Crear cuenta

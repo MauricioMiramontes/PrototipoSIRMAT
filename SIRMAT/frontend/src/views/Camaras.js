@@ -218,7 +218,7 @@ class TablaCamaras extends Component {
           console.log(elemento)
 
           // Agregamos el nuevo elmento a la copia de lista
-          var updated_store = updated_store.concat(elemento)
+          updated_store = updated_store.concat(elemento)
 
           console.log("Copia actualizada")
           console.log(updated_store)
