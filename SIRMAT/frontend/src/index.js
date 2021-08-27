@@ -25,6 +25,7 @@ import "assets/scss/argon-dashboard-react.scss";
 
 import AdminLayout from "layouts/Admin.js";
 import AuthLayout from "layouts/Auth.js";
+import Loading from 'views/Loading.js'
 
 // Importes del store
 import store from './app/store.js'
@@ -38,7 +39,7 @@ let persistor = persistStore(store);
 
 ReactDOM.render(
   <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
+    <PersistGate loading={<Loading/>} persistor={persistor}>
       <BrowserRouter>
         <Switch>
           <Route path="/superu/" render={(props) => <AdminLayout {...props} />} />
