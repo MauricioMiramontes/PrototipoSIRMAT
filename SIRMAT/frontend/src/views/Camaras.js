@@ -211,7 +211,8 @@ class TablaCamaras extends Component {
           // Usando los datos de le nueva camara agregada
           var elemento = [{
             'nombre': respuesta_post.marca,
-            'id': respuesta_post.idcCamaras
+            'id': respuesta_post.idcCamaras,
+            'is_active': respuesta_post.is_active,
           }]
 
           console.log("Elemento nuevo")

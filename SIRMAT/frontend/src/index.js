@@ -30,15 +30,23 @@ import AuthLayout from "layouts/Auth.js";
 import store from './app/store.js'
 import { Provider } from 'react-redux'
 
+// Importes para que la store sea persistente
+import { PersistGate } from 'redux-persist/integration/react'
+import { persistStore } from 'redux-persist'
+
+let persistor = persistStore(store);
+
 ReactDOM.render(
-  <Provider store = {store}>
-    <BrowserRouter>
-      <Switch>
-        <Route path="/superu/" render={(props) => <AdminLayout {...props} />} />
-        <Route path="/auth/" render={(props) => <AuthLayout {...props} />} />
-        <Redirect from="/" to="/superu/Inicio" />
-      </Switch>
-    </BrowserRouter>
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <BrowserRouter>
+        <Switch>
+          <Route path="/superu/" render={(props) => <AdminLayout {...props} />} />
+          <Route path="/auth/" render={(props) => <AuthLayout {...props} />} />
+          <Redirect from="/" to="/superu/Inicio" />
+        </Switch>
+      </BrowserRouter>
+    </PersistGate>
   </Provider>,
   document.getElementById("root")
 );
