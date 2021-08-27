@@ -367,6 +367,13 @@ class TablaUsuarios extends Component {
   };
 
 
+  // Da formato a la fecha antes de mostrarla
+  format_date(string_date) {
+    var obj_fecha = new Date(string_date)
+    var fecha = obj_fecha.toLocaleString("es-MX", { timezone: "GMT-5" })
+    return fecha
+  }
+
   // Funcion que crea la tabla con los datos que se hayan recolectado de la API
   create_table = (usuarios) => {
 
@@ -407,6 +414,7 @@ class TablaUsuarios extends Component {
           <th scope="row">{usuario.first_name} {usuario.last_name}</th>
           <td>{usuario.email}</td>
           <td>{print_tipo_usuario(usuario.is_superuser, usuario.is_staff, usuario.is_active)}</td>
+          <td>{this.format_date(usuario.last_login)}</td>
           <td className="text-right">
             {this.props.user_data.data.is_superuser ?
               <UncontrolledDropdown>
@@ -694,8 +702,9 @@ class TablaUsuarios extends Component {
                   <thead className="thead-light">
                     <tr>
                       <th scope="col">Nombre</th>
-                      <th scope="col">email</th>
+                      <th scope="col">Email</th>
                       <th scope="col">Tipo</th>
+                      <th scope="col">Ultima Sesion</th>
                       <th scope="col" />
                     </tr>
                   </thead>
@@ -770,6 +779,6 @@ const TablaUsuariosConectado = withRouter(TablaUsuarios);
 
 const mapStateToProps = (state) => ({
   user_data: state.user.user_data
-  })
-  // Si no se tiene mapDispatchToProps entonces se use null como segundo parametro
+})
+// Si no se tiene mapDispatchToProps entonces se use null como segundo parametro
 export default connect(mapStateToProps, null)(TablaUsuariosConectado);

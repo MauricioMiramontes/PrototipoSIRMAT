@@ -20,6 +20,8 @@ import React, { useState } from "react";
 import { NavLink as NavLinkRRD, Link } from "react-router-dom";
 // nodejs library to set properties for components
 import { PropTypes } from "prop-types";
+import { useSelector } from 'react-redux'
+
 
 // reactstrap components
 import {
@@ -55,7 +57,10 @@ import {
 var ps;
 
 const Sidebar = (props) => {
+
   const [collapseOpen, setCollapseOpen] = useState();
+  const user_data = useSelector((state) => state.user.user_data)
+
   // verifies if routeName is the one active (in browser input)
   const activeRoute = (routeName) => {
     return props.location.pathname.indexOf(routeName) > -1 ? "active" : "";
@@ -71,19 +76,45 @@ const Sidebar = (props) => {
   // creates the links that appear in the left menu / Sidebar
   const createLinks = (routes) => {
     return routes.map((prop, key) => {
-      return (
-        <NavItem key={key}>
-          <NavLink
-            to={prop.layout + prop.path}
-            tag={NavLinkRRD}
-            onClick={closeCollapse}
-            activeClassName="active"
-          >
-            <i className={prop.icon} />
-            {prop.name}
-          </NavLink>
-        </NavItem>
-      );
+      if (user_data.data.is_superuser === true && prop.name === "Usuarios") {
+        return (
+          <NavItem key={key}>
+            <NavLink
+              to={prop.layout + prop.path}
+              tag={NavLinkRRD}
+              onClick={closeCollapse}
+              activeClassName="active"
+            >
+              <i className={prop.icon} />
+              {prop.name}
+            </NavLink>
+          </NavItem>
+        );
+      }
+      else if (
+        (user_data.data.is_superuser === false && prop.name === "Usuarios") ||
+        prop.name === "Register" ||
+        prop.name === "Login") {
+          
+        return (
+          <></>
+        );
+      }
+      else {
+        return (
+          <NavItem key={key}>
+            <NavLink
+              to={prop.layout + prop.path}
+              tag={NavLinkRRD}
+              onClick={closeCollapse}
+              activeClassName="active"
+            >
+              <i className={prop.icon} />
+              {prop.name}
+            </NavLink>
+          </NavItem>
+        );
+      }
     });
   };
 
@@ -128,21 +159,6 @@ const Sidebar = (props) => {
         ) : null}
         {/* User */}
         <Nav className="align-items-center d-md-none">
-          <UncontrolledDropdown nav>
-            <DropdownToggle nav className="nav-link-icon">
-              <i className="ni ni-bell-55" />
-            </DropdownToggle>
-            <DropdownMenu
-              aria-labelledby="navbar-default_dropdown_1"
-              className="dropdown-menu-arrow"
-              right
-            >
-              <DropdownItem>Action</DropdownItem>
-              <DropdownItem>Another action</DropdownItem>
-              <DropdownItem divider />
-              <DropdownItem>Something else here</DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
           <UncontrolledDropdown nav>
             <DropdownToggle nav>
               <Media className="align-items-center">

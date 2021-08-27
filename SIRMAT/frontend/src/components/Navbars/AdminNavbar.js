@@ -17,27 +17,75 @@
 */
 import React from "react";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from 'react-redux'
+import { useHistory } from 'react-router-dom'
+import { update_user_data } from '../../app/slices/user_data.js'
+
 // reactstrap components
 import {
   DropdownMenu,
   DropdownItem,
   UncontrolledDropdown,
   DropdownToggle,
-  Form,
-  FormGroup,
-  InputGroupAddon,
-  InputGroupText,
-  Input,
-  InputGroup,
   Navbar,
   Nav,
   Container,
   Media,
 } from "reactstrap";
 
-const AdminNavbar = (props) => {
+function AdminNavbar(props) {
+
+  const user_data = useSelector((state) => state.user.user_data)
+  const dispatch = useDispatch()
+  const history = useHistory();
+
+  function logOut(event) {
+    event.preventDefault();
+    console.log("Cerramos sesion")
+
+    var ruta = "http://127.0.0.1:8081/usuarios/logout/";
+
+    fetch(ruta, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Token ' + user_data.token,
+      },
+    })
+      .then(response => {
+        return response.json()
+      })
+      .then(logoutJson => {
+        console.log(logoutJson)
+        dispatch(update_user_data({ data: [] }))
+        history.push('/auth/login/')
+      })
+
+  }
+
+  function Redirect(event) {
+    // Va a checar si hay o no datos de usuario en cajita y si no los hay
+    //redirecciona a Login
+    (typeof (user_data.token) === "undefined") ?
+      <>
+        {console.log("No hay token")}
+        {history.push('/auth/login/')}
+      </>
+      :
+      <></>
+  }
+
+  // Da formato a la fecha antes de mostrarla
+  function format_date(string_date) {
+
+    var obj_fecha = new Date(string_date)
+    var fecha = obj_fecha.toLocaleString("es-MX", { timezone: "GMT-5" })
+    return fecha
+
+  }
+
   return (
     <>
+      {Redirect()}
       <Navbar className="navbar-top navbar-dark" expand="md" id="navbar-main">
         <Container fluid>
           <Link
@@ -51,37 +99,65 @@ const AdminNavbar = (props) => {
               <DropdownToggle className="pr-0" nav>
                 <Media className="align-items-center">
                   <Media className="ml-2 d-none d-lg-block">
-                    <i className="ni ni-hat-3" />
+                    <i className="ni ni-circle-08" />{" "}
                     <span className="mb-0 text-sm font-weight-bold">
-                      Mauricio Miramontes
+                      {user_data.data.first_name}
                     </span>
                   </Media>
                 </Media>
               </DropdownToggle>
               <DropdownMenu className="dropdown-menu-arrow" right>
                 <DropdownItem className="noti-title" header tag="div">
-                  <h6 className="text-overflow m-0">Welcome!</h6>
+                  <h6 className="text-overflow m-0">Informacion del usuario</h6>
                 </DropdownItem>
-                <DropdownItem to="/admin/user-profile" tag={Link}>
-                  <i className="ni ni-single-02" />
-                  <span>My profile</span>
+                <DropdownItem>
+                  <i className="ni ni-single-02" onClick={(e) => e.preventDefault()}/>
+                  <span className="mb-0 text-sm font-weight-bold">
+                    {user_data.data.first_name + " " + user_data.data.last_name}
+                  </span>
                 </DropdownItem>
-                <DropdownItem to="/admin/user-profile" tag={Link}>
-                  <i className="ni ni-settings-gear-65" />
-                  <span>Settings</span>
+                <DropdownItem>
+                  <i className="ni ni-email-83" />
+                  <span className="mb-0 text-sm font-weight-bold">
+                    {user_data.data.email}
+                  </span>
                 </DropdownItem>
-                <DropdownItem to="/admin/user-profile" tag={Link}>
+                <DropdownItem>
+                  {user_data.data.is_superuser ?
+                    <>
+                      <i className="ni ni-money-coins" />
+                      <span className="mb-0 text-sm font-weight-bold">
+                        Administrador
+                      </span>
+                    </>
+                    :
+                    user_data.data.is_staff ?
+                      <>
+                        <i className="ni ni-money-coins" />
+                        <span className="mb-0 text-sm font-weight-bold">
+                          Empleado
+                        </span>
+                      </>
+                      :
+                      <>
+                        <i className="ni ni-money-coins" />
+                        <span className="mb-0 text-sm font-weight-bold">
+                          Usuario
+                        </span>
+                      </>
+                  }
+
+                </DropdownItem>
+                <DropdownItem>
                   <i className="ni ni-calendar-grid-58" />
-                  <span>Activity</span>
-                </DropdownItem>
-                <DropdownItem to="/admin/user-profile" tag={Link}>
-                  <i className="ni ni-support-16" />
-                  <span>Support</span>
+                  <span>
+                    {format_date(user_data.data.last_login)}
+                  </span>
                 </DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem href="#pablo" onClick={(e) => e.preventDefault()}>
+                <DropdownItem onClick={(e) => logOut(e)}>
                   <i className="ni ni-user-run" />
-                  <span>Logout</span>
+                  <span className="font-weight-bold">Cerrar sesion</span>
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
