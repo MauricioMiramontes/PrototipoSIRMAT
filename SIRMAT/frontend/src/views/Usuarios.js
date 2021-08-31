@@ -53,8 +53,6 @@ import {
 import Header from "components/Headers/Header.js";
 import DeleteModal from "components/Modals/DeleteModal.js";
 
-// Se importan los datos de prueba para la tabla
-import user from "datos_prueba/datos_Sesion.js"
 
 class TablaUsuarios extends Component {
 
@@ -63,8 +61,8 @@ class TablaUsuarios extends Component {
     this.state = {
 
       table_data: [],
-      user_data: user,
       usuario_seleccionado: null,
+      url_delete: false,
 
       // Determina si esta o no mostrandose los modales
       add_modal: false,
@@ -111,7 +109,7 @@ class TablaUsuarios extends Component {
 
   // Limpia el state de form_data
   clearState() {
-    this.setState({ form_data: {}, usuario_seleccionado: null })
+    this.setState({ form_data: {}, usuario_seleccionado: null, url_delete: false })
   }
 
   // Muestra u Oculta el modal para agregar registro
@@ -319,8 +317,17 @@ class TablaUsuarios extends Component {
     // Se de la formato a el parametro id
     var params = { "id": id };
 
+    // Se crea una copia de la variable url_delete del estado
+    const se_va_a_eliminar = this.state.url_delete
+
     // Se crea la URL para mandar a la API
-    const url = "http://127.0.0.1:8081/usuarios/?" + new URLSearchParams(params);
+    var url = "http://127.0.0.1:8081/usuarios/?" + new URLSearchParams(params);
+
+    // Si se va a eliminar el usuario en lugar de darlo de baja se cambia la url de destino
+    if(se_va_a_eliminar === true){
+      url = "http://127.0.0.1:8081/usuarios/delete_user/?" + new URLSearchParams(params);
+    }
+
     var status_response;
     var elemento_eliminar = this.state.table_data.findIndex(element => element['id'] === id)
 
@@ -349,8 +356,13 @@ class TablaUsuarios extends Component {
           // Se crea una copia del estado
           var updated_table_data = this.state.table_data;
 
-          // Se actualiza esa copia con el registro actualizado
-          updated_table_data[elemento_eliminar]['is_active'] = false;
+          if(se_va_a_eliminar === true) {
+            updated_table_data.splice(elemento_eliminar, 1)
+          }
+          else{
+            // Se actualiza esa copia con el registro actualizado
+            updated_table_data[elemento_eliminar]['is_active'] = false;
+          }
 
           // Se reemplaza el valor anterior con la copia actualizada 
           this.setState({ table_data: updated_table_data })
@@ -458,6 +470,12 @@ class TablaUsuarios extends Component {
                   >
                     Dar de baja
                   </DropdownItem>
+                  <DropdownItem
+                    href="#pablo"
+                    onClick={() => this.setState({ delete_modal: true, usuario_seleccionado: usuario.id, url_delete : true})}
+                  >
+                    Eliminar usuario
+                  </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
               :
@@ -481,6 +499,7 @@ class TablaUsuarios extends Component {
           isOpen={this.state.delete_modal}
           toggle={() => this.toggle_delete_modal()}
           onConfirm={() => this.DELETE_usuarios(this.state.usuario_seleccionado)}
+          url_delete={this.state.url_delete}
         />
 
         {/* Modal para agregar nuevo registro */}

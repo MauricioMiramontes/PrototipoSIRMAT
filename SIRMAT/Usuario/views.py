@@ -83,7 +83,7 @@ class UsuariosAPI(APIView):
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idcUsuario que se desea actualizar
         # ejmpl: usuarios/?id=1
 
-        # Revisamos que la accion sea realizada por un super usuario o si el usuario se edita si mismo
+        # Revisamos que la accion sea realizada por un super usuario o si el usuario se edita a si mismo
         if request.user.is_superuser or str(request.user.id) == request.query_params['id']:
 
             if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
@@ -170,7 +170,7 @@ class UsuariosAPI(APIView):
                 eliminar_usuario_ls(usuario.id)
                 # Enviamos mensaje de éxito
                 return Response({
-                    'message': 'Usuario eliminado correctamente'
+                    'message': 'Usuario dado de baja correctamente'
                 }, status=status.HTTP_200_OK)
 
             else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
@@ -369,3 +369,64 @@ class UsuariosSignUpStaff(APIView):
                 serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+
+class DeleteUser(APIView):
+    # Vistas de la API para la elminiar un registro 'usuarios' de la base de datos
+
+    # Pedimos autenticacion por Token (LMRG)
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        # Logica para peticiones tipo DELETE
+        # Es necesario proporcionar un parametro llamado 'id' con el valor del idcUsuario que se desea eliminar
+        # ejmpl: usuarios/?id=1
+
+        # Revisamos que la accion sea realizada por un super usuario o si el usuario se esta intentando eliminar a si mismo
+        if request.user.is_superuser or str(request.user.id) == request.query_params['id']:
+
+            if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
+
+                # Se verifica que exista el parametro con llave 'id'
+                try:
+                    request.query_params['id']
+                except:
+                    return Response({
+                        "message": "La unica llave de parametros aceptada 'id'"
+                    },  status=status.HTTP_400_BAD_REQUEST)
+
+                # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id'
+                try:
+                    usuario = User.objects.get(id=request.query_params['id'])
+                # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
+                except:
+                    return Response({
+                        'message': 'No se encontro ningun elemento que coincida con ese id'
+                    },  status=status.HTTP_404_NOT_FOUND)
+
+                # eliminamos usuario de LabelStudio
+                eliminar_usuario_ls(usuario.id)
+
+                # Eliminamos el usuario de los registros
+                usuario.delete()
+
+                # Se responde con un mensaje de exito
+                # Enviamos mensaje de éxito
+                return Response({
+                    'message': 'Usuario eliminado correctamente'
+                }, status=status.HTTP_200_OK)
+
+
+            else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
+                return Response({
+                    'message': 'DELETE debe proporcionar parametro "id"'
+                },  status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({
+                "error": "El usuario no tiene permisos para realizar esta accion"
+            },  status=status.HTTP_403_FORBIDDEN)
+
+    # --------------------------------------------------------------------------------------------------------------
+
+    print("Hola")
