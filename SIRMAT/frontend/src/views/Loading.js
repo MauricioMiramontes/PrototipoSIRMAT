@@ -1,11 +1,13 @@
 import React, { Component } from "react";
-import Header from "components/Headers/Header.js";
+
+import { Container, Row, Col } from 'reactstrap'
 
 class Loading extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      rotation: 0
+      rotation: 0,
+      rotate: true
     }
 
     this.rotate = this.rotate.bind(this);
@@ -16,12 +18,17 @@ class Loading extends Component {
     this.rotate()
   }
 
+  componentWillUnmount() {
+    this.setState({ rotate: false })
+  }
+
+
   sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   async rotate() {
-    while (true) {
+    while (this.state.rotate === true) {
       await this.sleep(5)
       if (this.state.rotation >= 360) {
         this.setState({
@@ -38,14 +45,17 @@ class Loading extends Component {
     const { rotation } = this.state;
     return (
       <>
-        <Header></Header>
-        <div>
-          <img style={{ transform: `rotate(${rotation}deg)` } } backgroundColor = 'transparent'
-            src={
-              require("../assets/img/brand/LoadingBackworoundless-removebg-preview.png")
-                .default
-            } width="100" />
-        </div>
+        <Container className="mt-6" fluid>
+          <Row>
+            <Col xs={{ size: 1, offset: 4 }} md={{ size: 2, offset: 5 }}>
+              <img style={{ transform: `rotate(${rotation}deg)` }} backgroundColor='transparent'
+                src={
+                  require("../assets/img/brand/LoadingBackworoundless-removebg-preview.png")
+                    .default
+                } width="90" />
+            </Col>
+          </Row>
+        </Container>
       </>
     )
   }
