@@ -487,55 +487,61 @@ class TablaMuestras extends Component {
           <td onClick={(e) => this.ir_detalles_Muestra(muestra)}>{muestra.idTrampas}</td>
           <td onClick={(e) => this.ir_detalles_Muestra(muestra)}>{muestra.idUsuario}</td>
           <td onClick={(e) => this.ir_detalles_Muestra(muestra)}>{print_is_active(muestra.is_active)}</td>
-          <td className="text-right">
-            <UncontrolledDropdown>
-              <DropdownToggle
-                className="btn-icon-only text-light"
-                href="#pablo"
-                role="button"
-                size="m"
-                color=""
-                onClick={(e) => e.preventDefault()}
-              >
-                <i className="fas fa-ellipsis-v" />
-              </DropdownToggle>
-              <DropdownMenu
-                className="dropdown-menu-arrow"
-                container="body"
-                right
-              >
-                <DropdownItem
-                  href="#pablo"
-                  onClick={() => {
-                    this.toggle_edit_modal();
-                    this.setState({
-                      muestra_seleccionada: muestra.idtMuestra,
-                      form_data: {
-                        NombreMuestra: muestra.NombreMuestra,
-                        horaFechainicio: muestra.horaFechainicio,
-                        horaFechaFin: muestra.horaFechaFin,
-                        idTrampas: muestra.idTrampas,
-                        idUsuario: this.props.user_data.data.id,
-                      },
-                    });
-                  }}
-                >
-                  Editar
-                </DropdownItem>
-                <DropdownItem
-                  href="#pablo"
-                  onClick={() =>
-                    this.setState({
-                      delete_modal: true,
-                      muestra_seleccionada: muestra.idtMuestra,
-                    })
-                  }
-                >
-                  Dar de baja
-                </DropdownItem>
-              </DropdownMenu>
-            </UncontrolledDropdown>
-          </td>
+          {(this.props.user_data.data.is_superuser || this.props.user_data.data.is_staff) ?
+            <>
+              <td className="text-right">
+                <UncontrolledDropdown>
+                  <DropdownToggle
+                    className="btn-icon-only text-light"
+                    href="#pablo"
+                    role="button"
+                    size="m"
+                    color=""
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <i className="fas fa-ellipsis-v" />
+                  </DropdownToggle>
+                  <DropdownMenu
+                    className="dropdown-menu-arrow"
+                    container="body"
+                    right
+                  >
+                    <DropdownItem
+                      href="#pablo"
+                      onClick={() => {
+                        this.toggle_edit_modal();
+                        this.setState({
+                          muestra_seleccionada: muestra.idtMuestra,
+                          form_data: {
+                            NombreMuestra: muestra.NombreMuestra,
+                            horaFechainicio: muestra.horaFechainicio,
+                            horaFechaFin: muestra.horaFechaFin,
+                            idTrampas: muestra.idTrampas,
+                            idUsuario: this.props.user_data.data.id,
+                          },
+                        });
+                      }}
+                    >
+                      Editar
+                    </DropdownItem>
+                    <DropdownItem
+                      href="#pablo"
+                      onClick={() =>
+                        this.setState({
+                          delete_modal: true,
+                          muestra_seleccionada: muestra.idtMuestra,
+                        })
+                      }
+                    >
+                      Dar de baja
+                    </DropdownItem>
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+              </td>
+            </>
+            :
+            <></>
+          }
         </tr>
       );
     });

@@ -405,52 +405,58 @@ class TablaFotografias extends Component {
               onClick={() => window.open("http://127.0.0.1:8080/projects/" + this.props.muestra + "/data?task=" + foto.idFotografias, "_blank")}>
               {print_estado_etiquetado(foto.etiquetado)}
             </td>
-            <td className="text-right" >
-              <UncontrolledDropdown>
-                <DropdownToggle
-                  className="btn-icon-only text-light"
-                  href="#pablo"
-                  role="button"
-                  size="m"
-                  color=""
-                  onClick={(e) => e.preventDefault()}
-                >
-                  <i className="fas fa-ellipsis-v" />
-                </DropdownToggle>
-                <DropdownMenu className="dropdown-menu-arrow" container="body" right>
-                  <DropdownItem
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      this.toggle_edit_modal()
-                      this.setState({
-                        fotografia_seleccionada: foto.idFotografias,
-                        form_data: {
-                          zoom: foto.zoom,
-                          resolucion: foto.resolucion,
-                          idCamara: foto.idCamara,
-                          fileFoto: foto.fileFoto,
-                          etiquetado: foto.etiquetado,
-                          idMuestra: foto.idMuestra
-                        }
-                      })
-                    }}
-                  >
-                    Editar
-                  </DropdownItem>
-                  <DropdownItem
-                    href="#pablo"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      this.toggle_delete_modal()
-                      this.setState({ fotografia_seleccionada: foto.idFotografias })
-                    }}
-                  >
-                    Eliminar
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
-            </td>
+            {(this.props.user_data.data.is_superuser || this.props.user_data.data.is_staff) ?
+              <>
+                <td className="text-right" >
+                  <UncontrolledDropdown>
+                    <DropdownToggle
+                      className="btn-icon-only text-light"
+                      href="#pablo"
+                      role="button"
+                      size="m"
+                      color=""
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      <i className="fas fa-ellipsis-v" />
+                    </DropdownToggle>
+                    <DropdownMenu className="dropdown-menu-arrow" container="body" right>
+                      <DropdownItem
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          this.toggle_edit_modal()
+                          this.setState({
+                            fotografia_seleccionada: foto.idFotografias,
+                            form_data: {
+                              zoom: foto.zoom,
+                              resolucion: foto.resolucion,
+                              idCamara: foto.idCamara,
+                              fileFoto: foto.fileFoto,
+                              etiquetado: foto.etiquetado,
+                              idMuestra: foto.idMuestra
+                            }
+                          })
+                        }}
+                      >
+                        Editar
+                      </DropdownItem>
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          this.toggle_delete_modal()
+                          this.setState({ fotografia_seleccionada: foto.idFotografias })
+                        }}
+                      >
+                        Eliminar
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                </td>
+              </>
+              :
+              <></>
+            }
           </tr>
         );
       });
@@ -639,9 +645,30 @@ class TablaFotografias extends Component {
           <CardHeader className="bg-white border-0">
             <Row className="align-items-center">
               <h3 className="mb-0 ml-2">Fotografias</h3>
-              <Button className="ml-3" color="success" type="button" size="sm" onClick={() => this.toggle_add_modal()}>
-                <i className="ni ni-fat-add mt-1"></i>
-              </Button>
+              {this.props.user_data.data.is_superuser ?
+                <Button
+                  className="ml-3"
+                  color="success"
+                  type="button"
+                  size="sm"
+                  onClick={() => this.toggle_add_modal()}
+                >
+                  <i className="ni ni-fat-add mt-1"></i>
+                </Button>
+                :
+                this.props.user_data.data.is_staff ?
+                  <Button
+                    className="ml-3"
+                    color="success"
+                    type="button"
+                    size="sm"
+                    onClick={() => this.toggle_add_modal()}
+                  >
+                    <i className="ni ni-fat-add mt-1"></i>
+                  </Button>
+                  :
+                  <></>
+              }
             </Row>
           </CardHeader>
           <Table className="align-items-center table-flush" responsive>

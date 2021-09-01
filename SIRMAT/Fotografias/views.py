@@ -165,7 +165,7 @@ class FotografiaAPI(APIView):
 
             # Se definen los permisos para peticiones tipo PUT 
             if request.user.is_superuser or request.user.is_staff:
-                if not request.user.is_superuser and request.user.id != fotografia.idUsuario.id:
+                if not request.user.is_superuser and request.user.id != fotografia.idMuestra.idUsuario.id:
                     return Response({
                             "error" : "Solo puede realizar esta operación el dueño este registro"
                         },  status=status.HTTP_403_FORBIDDEN)
@@ -221,7 +221,7 @@ class FotografiaAPI(APIView):
 
             # Se definen los permisos para peticiones tipo PUT 
             if request.user.is_superuser or request.user.is_staff:
-                if not request.user.is_superuser and request.user.id != fotografia.idUsuario.id:
+                if not request.user.is_superuser and request.user.id != fotografia.idMuestra.idUsuario.id:
                     return Response({
                             "error" : "Solo puede realizar esta operación el dueño este registro"
                         },  status=status.HTTP_403_FORBIDDEN)
