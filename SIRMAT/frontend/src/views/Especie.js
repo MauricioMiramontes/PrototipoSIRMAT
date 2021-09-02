@@ -26,6 +26,8 @@ import { update_especies_data } from '../app/slices/especiesSlice.js'
 // Necesitamos esto para poder usar la funcion "history"
 import { withRouter } from "react-router";
 
+import Loading from './Loading.js'
+
 // reactstrap components
 import {
   Badge,
@@ -68,7 +70,7 @@ class TablaEspecie extends Component {
       table_data: [],
       user_data: user,
       especie_seleccionada: null,
-
+      loading: true,
       // Determina si esta o no mostrandose los modales
       add_modal: false,
       edit_modal: false,
@@ -173,6 +175,7 @@ class TablaEspecie extends Component {
         else if (status_response === 401 || status_response === 403) {
           history.push("/auth/login/")
         }
+        this.setState({ loading: false })
       })
   };
 
@@ -205,8 +208,8 @@ class TablaEspecie extends Component {
           // Para evitar recargar la pagina se toma la respuesta de la API y
           // se agrega directamente al estado.
           // Si la peticion a la API fue un exito
-          
-          this.setState({table_data: this.state.table_data.concat(respuesta_post) });
+
+          this.setState({ table_data: this.state.table_data.concat(respuesta_post) });
 
           // Se crea una copia de la cajita
           var updated_store = this.props.especies
@@ -233,7 +236,7 @@ class TablaEspecie extends Component {
           // Actualizamos la lista con la copia nueva
           update_especies_data(updated_store)
 
-          
+
           console.log("status: " + status_response);
           console.log(respuesta_post);
         } else {
@@ -249,7 +252,7 @@ class TablaEspecie extends Component {
 
     // Se esconde el modal de agregar registro
     this.toggle_add_modal()
-    
+
 
 
   };
@@ -563,93 +566,98 @@ class TablaEspecie extends Component {
           </ModalBody>
         </Modal>
 
-        <Container className="mt--7" fluid>
-          {/* Tabla */}
-          <Row>
-            <div className="col">
-              <Card className="shadow">
-                <CardHeader className="border-0">
-                  <Row className="align-items-center">
-                    <h3 className="mb-0 ml-2">Especies</h3>
-                    {this.props.user_data.data.is_superuser ?
-                      <Button className="ml-3" color="success" type="button" size="sm" onClick={() => this.toggle_add_modal()}>
-                        <i className="ni ni-fat-add mt-1"></i>
-                      </Button>
-                      :
-                      <></>
-                    }
-                  </Row>
-                </CardHeader>
-                <Table className="align-items-center table-flush" responsive>
-                  <thead className="thead-light">
-                    <tr>
-                      <th scope="col">id</th>
-                      <th scope="col">Especie</th>
-                      <th scope="col">Estado</th>
-                      <th scope="col" />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* Se llama a la funcion que crea la tabla */}
-                    {this.create_table(this.state.table_data)}
-                  </tbody>
-                </Table>
-                <CardFooter className="py-4">
-                  <nav aria-label="...">
-                    <Pagination
-                      className="pagination justify-content-end mb-0"
-                      listClassName="justify-content-end mb-0"
-                    >
-                      <PaginationItem className="disabled">
-                        <PaginationLink
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                          tabIndex="-1"
-                        >
-                          <i className="fas fa-angle-left" />
-                          <span className="sr-only">Previous</span>
-                        </PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem className="active">
-                        <PaginationLink
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          1
-                        </PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationLink
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          2 <span className="sr-only">(current)</span>
-                        </PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationLink
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          3
-                        </PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationLink
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <i className="fas fa-angle-right" />
-                          <span className="sr-only">Next</span>
-                        </PaginationLink>
-                      </PaginationItem>
-                    </Pagination>
-                  </nav>
-                </CardFooter>
-              </Card>
-            </div>
-          </Row>
-        </Container>
+        {/* Tabla */}
+        {this.state.loading ?
+          <Loading />
+          :
+
+          <Container className="mt--7" fluid>
+            <Row>
+              <div className="col">
+                <Card className="shadow">
+                  <CardHeader className="border-0">
+                    <Row className="align-items-center">
+                      <h3 className="mb-0 ml-2">Especies</h3>
+                      {this.props.user_data.data.is_superuser ?
+                        <Button className="ml-3" color="success" type="button" size="sm" onClick={() => this.toggle_add_modal()}>
+                          <i className="ni ni-fat-add mt-1"></i>
+                        </Button>
+                        :
+                        <></>
+                      }
+                    </Row>
+                  </CardHeader>
+                  <Table className="align-items-center table-flush" responsive>
+                    <thead className="thead-light">
+                      <tr>
+                        <th scope="col">id</th>
+                        <th scope="col">Especie</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col" />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {/* Se llama a la funcion que crea la tabla */}
+                      {this.create_table(this.state.table_data)}
+                    </tbody>
+                  </Table>
+                  <CardFooter className="py-4">
+                    <nav aria-label="...">
+                      <Pagination
+                        className="pagination justify-content-end mb-0"
+                        listClassName="justify-content-end mb-0"
+                      >
+                        <PaginationItem className="disabled">
+                          <PaginationLink
+                            href="#pablo"
+                            onClick={(e) => e.preventDefault()}
+                            tabIndex="-1"
+                          >
+                            <i className="fas fa-angle-left" />
+                            <span className="sr-only">Previous</span>
+                          </PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem className="active">
+                          <PaginationLink
+                            href="#pablo"
+                            onClick={(e) => e.preventDefault()}
+                          >
+                            1
+                          </PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                          <PaginationLink
+                            href="#pablo"
+                            onClick={(e) => e.preventDefault()}
+                          >
+                            2 <span className="sr-only">(current)</span>
+                          </PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                          <PaginationLink
+                            href="#pablo"
+                            onClick={(e) => e.preventDefault()}
+                          >
+                            3
+                          </PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                          <PaginationLink
+                            href="#pablo"
+                            onClick={(e) => e.preventDefault()}
+                          >
+                            <i className="fas fa-angle-right" />
+                            <span className="sr-only">Next</span>
+                          </PaginationLink>
+                        </PaginationItem>
+                      </Pagination>
+                    </nav>
+                  </CardFooter>
+                </Card>
+              </div>
+            </Row>
+          </Container>
+        }
       </>
     );
   }

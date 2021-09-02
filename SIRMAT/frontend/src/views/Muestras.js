@@ -55,21 +55,21 @@ import {
 import { Link } from "react-router-dom";
 // core components
 import Header from "components/Headers/Header.js";
+import Loading from './Loading.js'
 import DeleteModal from "components/Modals/DeleteModal.js";
 import DetallesMuestra from "./DetallesMuestra.js"
 
-// Se importan los datos de prueba para la tabla
-import user from "datos_prueba/datos_Sesion.js";
 
 class TablaMuestras extends Component {
   constructor(props) {
     super(props);
     this.state = {
       table_data: [],
-      user_data: user,
+      
       muestra_seleccionada: null,
       nombre_muestra_seleccionada: null,
       mostrar_detalles: false,
+      loading: true,
 
       // Determina si esta o no mostrandose los modales
       add_modal: false,
@@ -240,6 +240,7 @@ class TablaMuestras extends Component {
         else if (status_response === 401 || status_response === 403) {
           history.push("/auth/login/")
         }
+        this.setState({ loading: false });
       })
   };
 
@@ -720,7 +721,7 @@ class TablaMuestras extends Component {
                           placeholder="Especie"
                           type="select"
                           name="especie"
-                          onChange={this.handleDetailInputChange}
+                          onChange={(e) => this.handleDetailInputChange(e, index)}
                         >
                           <option value="0">Especie: </option>
                           {this.props.especies.map((especie) => {
@@ -912,113 +913,120 @@ class TablaMuestras extends Component {
           </Container>
           :
           /*De lo contrario mostramos la tabla de todas las muestras*/
-          <Container className="mt--7" fluid>
-            {/* Tabla */}
-            <Row>
-              <div className="col">
-                <Card className="shadow">
-                  <CardHeader className="border-0">
-                    <Row className="align-items-center">
-                      <h3 className="mb-0 ml-2">Muestras</h3>
-                      {this.props.user_data.data.is_superuser ?
-                        <Button
-                          className="ml-3"
-                          color="success"
-                          type="button"
-                          size="sm"
-                          onClick={() => this.toggle_add_modal()}
-                        >
-                          <i className="ni ni-fat-add mt-1"></i>
-                        </Button>
-                        :
-                        this.props.user_data.data.is_staff ?
-                          <Button
-                            className="ml-3"
-                            color="success"
-                            type="button"
-                            size="sm"
-                            onClick={() => this.toggle_add_modal()}
+          <>
+            {this.state.loading ?
+              <Loading />
+              :
+
+              <Container className="mt--7" fluid>
+                {/* Tabla */}
+                <Row>
+                  <div className="col">
+                    <Card className="shadow">
+                      <CardHeader className="border-0">
+                        <Row className="align-items-center">
+                          <h3 className="mb-0 ml-2">Muestras</h3>
+                          {this.props.user_data.data.is_superuser ?
+                            <Button
+                              className="ml-3"
+                              color="success"
+                              type="button"
+                              size="sm"
+                              onClick={() => this.toggle_add_modal()}
+                            >
+                              <i className="ni ni-fat-add mt-1"></i>
+                            </Button>
+                            :
+                            this.props.user_data.data.is_staff ?
+                              <Button
+                                className="ml-3"
+                                color="success"
+                                type="button"
+                                size="sm"
+                                onClick={() => this.toggle_add_modal()}
+                              >
+                                <i className="ni ni-fat-add mt-1"></i>
+                              </Button>
+                              :
+                              <></>
+                          }
+                        </Row>
+                      </CardHeader>
+                      <Table className="align-items-center table-flush" responsive>
+                        <thead className="thead-light">
+                          <tr>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Fecha</th>
+                            <th scope="col">Etiquetado</th>
+                            <th scope="col">Trampa</th>
+                            <th scope="col">Usuario</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col" />
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {/* Se llama a la funcion que crea la tabla */}
+                          {this.create_table(this.state.table_data)}
+                        </tbody>
+                      </Table>
+                      <CardFooter className="py-4">
+                        <nav aria-label="...">
+                          <Pagination
+                            className="pagination justify-content-end mb-0"
+                            listClassName="justify-content-end mb-0"
                           >
-                            <i className="ni ni-fat-add mt-1"></i>
-                          </Button>
-                          :
-                          <></>
-                      }
-                    </Row>
-                  </CardHeader>
-                  <Table className="align-items-center table-flush" responsive>
-                    <thead className="thead-light">
-                      <tr>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Fecha</th>
-                        <th scope="col">Etiquetado</th>
-                        <th scope="col">Trampa</th>
-                        <th scope="col">Usuario</th>
-                        <th scope="col">Estado</th>
-                        <th scope="col" />
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {/* Se llama a la funcion que crea la tabla */}
-                      {this.create_table(this.state.table_data)}
-                    </tbody>
-                  </Table>
-                  <CardFooter className="py-4">
-                    <nav aria-label="...">
-                      <Pagination
-                        className="pagination justify-content-end mb-0"
-                        listClassName="justify-content-end mb-0"
-                      >
-                        <PaginationItem className="disabled">
-                          <PaginationLink
-                            href="#pablo"
-                            onClick={(e) => e.preventDefault()}
-                            tabIndex="-1"
-                          >
-                            <i className="fas fa-angle-left" />
-                            <span className="sr-only">Previous</span>
-                          </PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem className="active">
-                          <PaginationLink
-                            href="#pablo"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            1
-                          </PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                          <PaginationLink
-                            href="#pablo"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            2 <span className="sr-only">(current)</span>
-                          </PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                          <PaginationLink
-                            href="#pablo"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            3
-                          </PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                          <PaginationLink
-                            href="#pablo"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            <i className="fas fa-angle-right" />
-                            <span className="sr-only">Next</span>
-                          </PaginationLink>
-                        </PaginationItem>
-                      </Pagination>
-                    </nav>
-                  </CardFooter>
-                </Card>
-              </div>
-            </Row>
-          </Container>
+                            <PaginationItem className="disabled">
+                              <PaginationLink
+                                href="#pablo"
+                                onClick={(e) => e.preventDefault()}
+                                tabIndex="-1"
+                              >
+                                <i className="fas fa-angle-left" />
+                                <span className="sr-only">Previous</span>
+                              </PaginationLink>
+                            </PaginationItem>
+                            <PaginationItem className="active">
+                              <PaginationLink
+                                href="#pablo"
+                                onClick={(e) => e.preventDefault()}
+                              >
+                                1
+                              </PaginationLink>
+                            </PaginationItem>
+                            <PaginationItem>
+                              <PaginationLink
+                                href="#pablo"
+                                onClick={(e) => e.preventDefault()}
+                              >
+                                2 <span className="sr-only">(current)</span>
+                              </PaginationLink>
+                            </PaginationItem>
+                            <PaginationItem>
+                              <PaginationLink
+                                href="#pablo"
+                                onClick={(e) => e.preventDefault()}
+                              >
+                                3
+                              </PaginationLink>
+                            </PaginationItem>
+                            <PaginationItem>
+                              <PaginationLink
+                                href="#pablo"
+                                onClick={(e) => e.preventDefault()}
+                              >
+                                <i className="fas fa-angle-right" />
+                                <span className="sr-only">Next</span>
+                              </PaginationLink>
+                            </PaginationItem>
+                          </Pagination>
+                        </nav>
+                      </CardFooter>
+                    </Card>
+                  </div>
+                </Row>
+              </Container>
+            }
+          </>
         }
       </>
     );
