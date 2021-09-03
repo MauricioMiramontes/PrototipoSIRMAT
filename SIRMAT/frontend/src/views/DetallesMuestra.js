@@ -168,7 +168,7 @@ class DetallesMuestra extends Component {
             detail_form_data: {
               observaciones: detallesmuestrasJson.observaciones,
               horaFecha: detallesmuestrasJson.horaFecha,
-              Especies: detallesmuestrasJson.Especies 
+              Especies: detallesmuestrasJson.Especies
             }
           })
         }
@@ -180,8 +180,64 @@ class DetallesMuestra extends Component {
       });
   }
 
-  PUT_detalles() {
-    console.log("Editar")
+  PUT_detalles(event, id) {
+
+    event.preventDefault()
+
+    // Se de la formato a el parametro id
+    var params = { "id": id };
+
+    // Variables utiles
+    var status_response;
+
+    var body = this.state.detail_form_data
+
+    body["idMuestra"] = this.state.data.idMuestra
+
+    // Esta variable determina la URL a la que se hara la peticion a la API
+    const url = "http://127.0.0.1:8081/detallesmuestra/?" + new URLSearchParams(params);
+
+    console.log(url)
+
+    // Peticion a la API
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Token ' + this.props.user_data.token,
+        'Content-Type': 'application/json'
+      },
+      // Se toman los datos de la variable form_data del estado 
+      body: JSON.stringify(body)
+    })
+      .then((response) => {
+        status_response = response.status;
+        return response.json()
+      })
+      .then(respuesta_put => {
+        if (status_response === 200) {
+          // Para evitar recargar la pagina se toma la respuesta de la API y 
+          // se agrega directamente al estado.
+          // Si la peticion a la API fue un exito
+          var updated_data = this.state.data;
+
+          updated_data = respuesta_put;
+
+          this.setState({
+            data: updated_data,
+          })
+          console.log(status_response);
+          console.log(respuesta_put);
+        }
+        else {
+          // De lo contrario se imprime el error en la consola
+          console.log("status: " + status_response)
+          console.log(respuesta_put)
+        }
+      })
+
+    this.toggle_edit_modal()
+    console.log('Se va a actualizar' + id)
+    console.log(this.state.form_data)
   }
 
   // Da formato a la fecha antes de mostrarla
@@ -212,21 +268,6 @@ class DetallesMuestra extends Component {
                     value={this.state.detail_form_data.observaciones}
                     type="textarea"
                     name="observaciones"
-                    onChange={this.handleDetailInputChange}
-                  />
-                </InputGroup>
-              </FormGroup>
-              <FormGroup>
-                <InputGroup className="input-group-alternative mb-3">
-                  <InputGroupAddon addonType="prepend">
-                    <InputGroupText>
-                      <i className="ni ni-calendar-grid-58" />
-                    </InputGroupText>
-                  </InputGroupAddon>
-                  <Input
-                    value={this.state.detail_form_data.horaFecha}
-                    type="text"
-                    name="horaFecha"
                     onChange={this.handleDetailInputChange}
                   />
                 </InputGroup>
@@ -298,8 +339,7 @@ class DetallesMuestra extends Component {
                   color="primary"
                   type="submit"
                   onClick={(e) => {
-                    e.preventDefault();
-                    this.POST_muestras(e)
+                    this.PUT_detalles(e, this.state.data.idtDetallesMuestra)
                   }}
                 >
                   Editar
@@ -334,9 +374,15 @@ class DetallesMuestra extends Component {
                 <Card className="card-profile shadow">
                   <CardHeader className="text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
                     <h3>Detalles Muestra: {this.props.nombre_muestra}</h3>
-                    <Button outline color="secondary" size="sm" onClick={(e) => this.toggle_edit_modal(e)}>
-                      Editar detalles
-                    </Button>
+                    {(this.props.user_data.data.is_superuser || this.props.user_data.data.is_staff) ?
+                      <>
+                        <Button outline color="secondary" size="sm" onClick={(e) => this.toggle_edit_modal(e)}>
+                          Editar detalles
+                        </Button>
+                      </>
+                      :
+                      <></>
+                    }
                   </CardHeader>
                   <CardBody className="pt-0 pt-md-1">
                     <div className="text-center">
