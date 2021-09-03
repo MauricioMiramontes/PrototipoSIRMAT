@@ -34,6 +34,7 @@ import {
 
 
 import DeleteModal from "components/Modals/DeleteModal.js";
+import EtiquetadoListoModal from "components/Modals/EtiquetadoListoModal.js"
 
 class TablaFotografias extends Component {
   constructor(props) {
@@ -47,6 +48,7 @@ class TablaFotografias extends Component {
       edit_modal: false,
       delete_modal: false,
       detail_modal: false,
+      label_ready_modal: false,
 
       //Datos del formulario
       form_data: {
@@ -56,10 +58,12 @@ class TablaFotografias extends Component {
     //Funciones 
     this.POST_fotografias = this.POST_fotografias.bind(this);
     this.PUT_fotografias = this.PUT_fotografias.bind(this);
+    this.PUT_etiquetado_listo = this.PUT_etiquetado_listo.bind(this);
     this.DELETE_fotografias = this.DELETE_fotografias.bind(this);
     this.toggle_add_modal = this.toggle_add_modal.bind(this);
     this.toggle_edit_modal = this.toggle_edit_modal.bind(this);
     this.toggle_delete_modal = this.toggle_delete_modal.bind(this);
+    this.toggle_label_ready_modal = this.toggle_label_ready_modal.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleImageChange = this.handleImageChange.bind(this);
     this.clearState = this.clearState.bind(this);
@@ -131,6 +135,13 @@ class TablaFotografias extends Component {
     this.clearState()
     var value = this.state.delete_modal
     this.setState({ delete_modal: !value })
+  }
+
+  // Muestra u Oculta el modal para indicar que el etiquetado esta listo para calificar
+  toggle_label_ready_modal() {
+    this.clearState()
+    var value = this.state.label_ready_modal
+    this.setState({ label_ready_modal: !value })
   }
 
   // Funcion que se utilizara para hacer GET a la API en fotografias
@@ -335,9 +346,68 @@ class TablaFotografias extends Component {
       })
   }
 
+  //Funcion que se utilizara para indicar a la API que se termino un etiquetado
+  PUT_etiquetado_listo(event) {
+    event.preventDefault()
+
+    // Se de la formato a el parametro id
+    var params = { "id": this.state.fotografia_seleccionada };
+
+    // Variables utiles
+    var status_response;
+
+    // Esta variable determina la URL a la que se hara la peticion a la API
+    const url = "http://127.0.0.1:8081/fotografias/?" + new URLSearchParams(params);
+
+    // Esta variable determina cual elemento de la lista es el que se va a editar
+    var elemento_editar = this.state.table_data.findIndex(element => element['idFotografias'] === this.state.fotografia_seleccionada)
+    // Datos del formulario
+    const datos_formulario = new FormData()
+
+    for (const name in this.state.form_data) {
+      datos_formulario.append(name, this.state.form_data[name])
+    }
+
+    console.log(datos_formulario)
+    // Peticion a la API
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Token ' + this.props.user_data.token,
+      },
+      // Se toman los datos de la variable form_data del estado 
+      body: datos_formulario,
+    })
+      .then((response) => {
+        status_response = response.status;
+        return response.json()
+      })
+      .then(respuesta_put => {
+        if (status_response === 200) {
+          // Para evitar recargar la pagina se toma la respuesta de la API y 
+          // se agrega directamente al estado.
+          // Si la peticion a la API fue un exito
+          var updated_table_data = this.state.table_data;
+
+          updated_table_data[elemento_editar] = respuesta_put;
+
+          this.setState({ table_data: updated_table_data })
+          console.log(status_response);
+          console.log(respuesta_put);
+        }
+        else {
+          console.log("status: " + status_response)
+          console.log(respuesta_put)
+        }
+      })
+
+    console.log('Se va a actualizar' + this.state.fotografia_seleccionada)
+    console.log(this.state.form_data)
+    this.toggle_label_ready_modal()
+  }
+
   format_image(string_image) {
-    const base_url = "http://127.0.0.1:8081";
-    var string_correcta = base_url + string_image
+    var string_correcta = string_image.replace("/frontend/src/Label_Studio_Data/media/upload/", "")
     return string_correcta
   }
 
@@ -387,7 +457,23 @@ class TablaFotografias extends Component {
           <tr key={foto.idFotografias} >
             <th
               scope="row"
-              onClick={() => window.open("http://127.0.0.1:8080/projects/" + this.props.muestra + "/data?task=" + foto.idFotografias, "_blank")}>
+              onClick={(e) => {
+                // Se abre el modal primero
+                this.toggle_label_ready_modal(e)
+                this.setState({
+                  fotografia_seleccionada: foto.idFotografias,
+                  form_data: {
+                    zoom: foto.zoom,
+                    resolucion: foto.resolucion,
+                    idCamara: foto.idCamara,
+                    fileFoto: this.format_image(foto.fileFoto),
+                    etiquetado: "Pendiente a revision",
+                    idMuestra: foto.idMuestra
+                  }
+                })
+                window.open("http://127.0.0.1:8080/projects/" + this.props.muestra + "/data?task=" + foto.idFotografias, "_blank")
+              }
+              }>
               <Media>
                 <a
                   className="avatar rounded-circle mr-3"
@@ -395,14 +481,29 @@ class TablaFotografias extends Component {
                   href="#"
                 >
                   <img
-                    alt={foto.fileFoto}
-                    src={this.format_image(foto.fileFoto)}
+                    alt={this.format_image(foto.fileFoto)}
+                    src={require(`../../Label_Studio_Data/media/upload/${this.format_image(foto.fileFoto)}`).default} 
                   />
                 </a>
               </Media>
             </th>
             <td
-              onClick={() => window.open("http://127.0.0.1:8080/projects/" + this.props.muestra + "/data?task=" + foto.idFotografias, "_blank")}>
+              onClick={(e) => {
+                this.toggle_label_ready_modal(e, foto.idFotografias)
+                this.setState({
+                  fotografia_seleccionada: foto.idFotografias,
+                  form_data: {
+                    zoom: foto.zoom,
+                    resolucion: foto.resolucion,
+                    idCamara: foto.idCamara,
+                    fileFoto: foto.fileFoto,
+                    etiquetado: "Pendiente a revision",
+                    idMuestra: foto.idMuestra
+                  }
+                })
+                window.open("http://127.0.0.1:8080/projects/" + this.props.muestra + "/data?task=" + foto.idFotografias, "_blank")
+              }
+              }>
               {print_estado_etiquetado(foto.etiquetado)}
             </td>
             {(this.props.user_data.data.is_superuser || this.props.user_data.data.is_staff) ?
@@ -471,6 +572,12 @@ class TablaFotografias extends Component {
           isOpen={this.state.delete_modal}
           toggle={() => this.toggle_delete_modal()}
           onConfirm={(e) => this.DELETE_fotografias(e, this.state.fotografia_seleccionada)}
+        />
+
+        <EtiquetadoListoModal
+          isOpen={this.state.label_ready_modal}
+          toggle={() => this.toggle_label_ready_modal()}
+          onConfirm={(e) => this.PUT_etiquetado_listo(e)}
         />
 
         {/* Modal para agregar nuevo registro */}
