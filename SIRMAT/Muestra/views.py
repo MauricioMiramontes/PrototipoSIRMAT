@@ -13,7 +13,8 @@ from rest_framework.permissions import IsAuthenticated
 
 # Importaciones de documentacion Swagger
 from drf_yasg.utils import swagger_auto_schema
-from .docs import * 
+from .docs import *
+
 
 class MuestraAPI(APIView):
     # Vistas de la API para la tabla 'muestra' de la base de datos
@@ -65,13 +66,13 @@ class MuestraAPI(APIView):
 
     # --------------------------------------------------------------------------------------------------------------
 
-    @swagger_auto_schema(responses = docs_post.respuestas, request_body=docs_post.body_valid)
+    @swagger_auto_schema(responses=docs_post.respuestas, request_body=docs_post.body_valid)
     def post(self, request):
         # Logica para una peticion tipo POST
 
         # Se definen los permisos para peticiones tipo POST
         if request.user.is_superuser or request.user.is_staff:
-        # Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
+            # Tomamos los datos que vengan en la peticion HTTP y los des-serializamos para que Python los pueda usar
             serializer = MuestraSerializer(data=request.data)
 
             if serializer.is_valid():  # Si la peticion es valida
@@ -94,12 +95,12 @@ class MuestraAPI(APIView):
                 )
         else:
             return Response({
-                        "error" : "El usuario no tiene permisos para realizar esta accion"
-                    },  status=status.HTTP_403_FORBIDDEN)
+                "error": "El usuario no tiene permisos para realizar esta accion"
+            },  status=status.HTTP_403_FORBIDDEN)
 
     # ----------------------------------------------------------------------------------------------------------------
 
-    @swagger_auto_schema(manual_parameters=[docs_put.params],responses=docs_put.respuestas, request_body=docs_put.body_valid)
+    @swagger_auto_schema(manual_parameters=[docs_put.params], responses=docs_put.respuestas, request_body=docs_put.body_valid)
     def put(self, request):
         # Logica para peticiones tipo PUT
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idtMuestra que se desea actualizar
@@ -125,16 +126,16 @@ class MuestraAPI(APIView):
                     'message': 'No se encontro ningun elemento que coincida con ese id'
                 },  status=status.HTTP_404_NOT_FOUND)
 
-            # Se definen los permisos para peticiones tipo PUT 
+            # Se definen los permisos para peticiones tipo PUT
             if request.user.is_superuser or request.user.is_staff:
                 if not request.user.is_superuser and request.user.id != muestra.idUsuario.id:
                     return Response({
-                            "error" : "Solo puede realizar esta operación el dueño este registro"
-                        },  status=status.HTTP_403_FORBIDDEN)
+                        "error": "Solo puede realizar esta operación el dueño este registro"
+                    },  status=status.HTTP_403_FORBIDDEN)
             else:
                 return Response({
-                            "error" : "El usuario no tiene permisos para realizar esta accion"
-                        },  status=status.HTTP_403_FORBIDDEN)
+                    "error": "El usuario no tiene permisos para realizar esta accion"
+                },  status=status.HTTP_403_FORBIDDEN)
 
             # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'muestra'
             serializer = MuestraSerializer(muestra, data=request.data)
@@ -157,7 +158,7 @@ class MuestraAPI(APIView):
 
     # --------------------------------------------------------------------------------------------------------------
 
-    @swagger_auto_schema(manual_parameters=[docs_delete.params],responses=docs_delete.respuestas)
+    @swagger_auto_schema(manual_parameters=[docs_delete.params], responses=docs_delete.respuestas)
     def delete(self, request):
         # Logica para una peticion DELETE
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idtMuestra que se desea eliminar
@@ -183,16 +184,16 @@ class MuestraAPI(APIView):
                     'message': 'No se encontro ningun elemento que coincida con ese id'
                 },  status=status.HTTP_404_NOT_FOUND)
 
-            # Se definen los permisos para peticiones tipo PUT 
+            # Se definen los permisos para peticiones tipo PUT
             if request.user.is_superuser or request.user.is_staff:
                 if not request.user.is_superuser and request.user.id != muestra.idUsuario.id:
                     return Response({
-                            "error" : "Solo puede realizar esta operación el dueño este registro"
-                        },  status=status.HTTP_403_FORBIDDEN)
+                        "error": "Solo puede realizar esta operación el dueño este registro"
+                    },  status=status.HTTP_403_FORBIDDEN)
             else:
                 return Response({
-                            "error" : "El usuario no tiene permisos para realizar esta accion"
-                        },  status=status.HTTP_403_FORBIDDEN)
+                    "error": "El usuario no tiene permisos para realizar esta accion"
+                },  status=status.HTTP_403_FORBIDDEN)
 
             # Si el try no falla entonces eliminamos la muestra de label studio
             eliminar_muestra_ls(muestra.idtMuestra)
@@ -209,4 +210,60 @@ class MuestraAPI(APIView):
         else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
             return Response({
                 'message': 'DELETE debe proporcionar parametro "id"'
+            },  status=status.HTTP_400_BAD_REQUEST)
+
+
+class EtiquetadoFinalizado(APIView):
+
+    # Pedimos autenticacion por Token (LMRG)
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        # Logica para una peticion PUT
+        # Es necesario proporcionar un parametro llamado 'id' con el valor del idtMuestra que se desea eliminar
+        # ejmpl: muestras/?id=1
+
+        if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
+
+            # Se verifica que exista el parametro con llave 'id'
+            try:
+                request.query_params['id']
+            except:
+                return Response({
+                    "message": "Solo se acepta un parametro con llave 'id'"
+                },  status=status.HTTP_400_BAD_REQUEST)
+
+            # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id' y lo eliminamos
+            try:
+                muestra = Muestra.objects.get(
+                    idtMuestra=request.query_params['id'])
+            # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
+            except:
+                return Response({
+                    'message': 'No se encontro ningun elemento que coincida con ese id'
+                },  status=status.HTTP_404_NOT_FOUND)
+
+            # Se definen los permisos para peticiones tipo PUT
+            if request.user.is_superuser or request.user.is_staff:
+                pass
+            else:
+                return Response({
+                    "error": "El usuario no tiene permisos para realizar esta accion"
+                },  status=status.HTTP_403_FORBIDDEN)
+
+            # cambiamos el registro is_active de la BD
+
+            muestra.etiquetado = "Finalizado"  # cambiamos is_active a False
+            muestra.save(update_fields=['etiquetado'])  # guardamos los cambios
+            # Enviamos mensaje de éxito
+
+            # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'muestra'
+            serializer = MuestraSerializer(muestra)
+
+            return Response(serializer.data)
+
+        else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
+            return Response({
+                'message': 'PUT debe proporcionar parametro "id"'
             },  status=status.HTTP_400_BAD_REQUEST)

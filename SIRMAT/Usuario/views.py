@@ -211,6 +211,7 @@ class UsuariosSingUp(APIView):
                 "last_name": nuevo_usuario.last_name,
                 "is_superuser": nuevo_usuario.is_superuser,
                 "is_staff": nuevo_usuario.is_staff,
+                "is_active": nuevo_usuario.is_active,
             }
 
             # Agregamos un nuevo usuario a Label Studio con los mismos datos
@@ -307,6 +308,7 @@ class UsuariosSignUpAdmin(APIView):
                 "last_name": nuevo_usuario.last_name,
                 "is_superuser": nuevo_usuario.is_superuser,
                 "is_staff": nuevo_usuario.is_staff,
+                "is_active": nuevo_usuario.is_active,
             }
 
             # Agregamos un nuevo usuario a Label Studio con los mismos datos
@@ -356,6 +358,7 @@ class UsuariosSignUpStaff(APIView):
                 "last_name": nuevo_usuario.last_name,
                 "is_superuser": nuevo_usuario.is_superuser,
                 "is_staff": nuevo_usuario.is_staff,
+                "is_active" : nuevo_usuario.is_active,
             }
 
             # Agregamos un nuevo usuario a Label Studio con los mismos datos

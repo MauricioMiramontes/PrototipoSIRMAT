@@ -23,11 +23,14 @@ class Fotografia(models.Model):
         max_length=45,
         help_text="Resolucion de la fotografia")
 
-    etiquetado = models.CharField(
-        max_length=45,
-        default="Pendiente",
-        help_text="Estado de Etiquetado de la fotografia ('Pendiente' o 'Finalizado')")
-
+    etiquetado = models.JSONField(
+        help_text="Estado de Etiquetado de la fotografia ('Pendiente', 'Finalizado', 'Pendiente de calificar')",
+        default = {
+            "Estado" : "Pendiente",
+            "Observaciones" : ""
+        }
+    )
+        
     idCamara = models.ForeignKey(
         Camara,
         on_delete=models.CASCADE,

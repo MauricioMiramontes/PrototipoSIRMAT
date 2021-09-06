@@ -16,9 +16,10 @@ from rest_framework.permissions import IsAuthenticated
 
 # Importaciones de documentacion Swagger
 from drf_yasg.utils import swagger_auto_schema
-from .docs import * 
+from .docs import *
 
 DIR = Path(__file__).resolve().parent.parent
+
 
 class FotografiaAPI(APIView):
     # Vistas de la API para la tabla 'Fotografia' de la base de datos
@@ -36,21 +37,21 @@ class FotografiaAPI(APIView):
         if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
 
             # Se verifica cual de los parametros fue el recibido
-            try: 
+            try:
                 id = request.query_params['id']
             except:
                 id = False
-            try: 
+            try:
                 muestra = request.query_params['muestra']
             except:
                 muestra = False
 
             # Si se recibieron parametro pero ninguno es 'id' o 'muestra' se manda un error
             if not id and not muestra:
-                 return Response({
+                return Response({
                     "message": "Solo se acepta un parametro con llave 'id' o 'muestra'"
                 },  status=status.HTTP_400_BAD_REQUEST)
-            
+
             # Si se recibieron ambos al mismo tiempo se manda un error
             if id and muestra:
                 return Response({
@@ -74,10 +75,10 @@ class FotografiaAPI(APIView):
 
             # Si se recibio parametro 'muestra'
             elif muestra:
-                 # Intentamos encontrar los elementos que pertenezcan a la muestra
+                # Intentamos encontrar los elementos que pertenezcan a la muestra
 
                 fotografias = Fotografia.objects.filter(idMuestra=muestra)
-                
+
                 # Si el filter() regresa una lista vacia se manda un mensaje de error
                 if not fotografias:
                     return Response({
@@ -90,7 +91,7 @@ class FotografiaAPI(APIView):
             fotografias = Fotografia.objects.all()
             serializer = FotografiaSerializer(fotografias, many=True)
 
-        # Si no se encuentran registros 
+        # Si no se encuentran registros
         if not serializer.data:
             # Si aun no hay registros mandamos una respuesta con el error y un mensaje con detalles
             return Response({
@@ -102,7 +103,8 @@ class FotografiaAPI(APIView):
     # --------------------------------------------------------------------------------------------------------------
 
     parser_classes = [MultiPartParser]
-    @swagger_auto_schema(responses = docs_post.respuestas, request_body=docs_put.body_valid)
+
+    @swagger_auto_schema(responses=docs_post.respuestas, request_body=docs_put.body_valid)
     def post(self, request):
         # Logica para una peticion tipo POST
 
@@ -114,7 +116,8 @@ class FotografiaAPI(APIView):
 
             if serializer.is_valid():  # Si la peticion es valida
                 serializer.save()  # Guardamos los datos del serializador en la base de datos y label studio
-                fotografia_guardada = Fotografia.objects.latest('idFotografias')
+                fotografia_guardada = Fotografia.objects.latest(
+                    'idFotografias')
 
                 agregar_foto_ls(
                     fotografia_guardada.idFotografias,
@@ -132,12 +135,12 @@ class FotografiaAPI(APIView):
                 )
         else:
             return Response({
-                        "error" : "El usuario no tiene permisos para realizar esta accion"
-                    },  status=status.HTTP_403_FORBIDDEN)
+                "error": "El usuario no tiene permisos para realizar esta accion"
+            },  status=status.HTTP_403_FORBIDDEN)
 
     # ----------------------------------------------------------------------------------------------------------------
 
-    @swagger_auto_schema(manual_parameters=[docs_put.params],responses=docs_put.respuestas, request_body=docs_put.body_valid)
+    @swagger_auto_schema(manual_parameters=[docs_put.params], responses=docs_put.respuestas, request_body=docs_put.body_valid)
     def put(self, request):
         # Logica para peticiones tipo PUT
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idFotografias que se desea actualizar
@@ -163,16 +166,16 @@ class FotografiaAPI(APIView):
                     'message': 'No se encontro ningun elemento que coincida con ese id'
                 },  status=status.HTTP_404_NOT_FOUND)
 
-            # Se definen los permisos para peticiones tipo PUT 
+            # Se definen los permisos para peticiones tipo PUT
             if request.user.is_superuser or request.user.is_staff:
                 if not request.user.is_superuser and request.user.id != fotografia.idMuestra.idUsuario.id:
                     return Response({
-                            "error" : "Solo puede realizar esta operación el dueño este registro"
-                        },  status=status.HTTP_403_FORBIDDEN)
+                        "error": "Solo puede realizar esta operación el dueño este registro"
+                    },  status=status.HTTP_403_FORBIDDEN)
             else:
                 return Response({
-                            "error" : "El usuario no tiene permisos para realizar esta accion"
-                        },  status=status.HTTP_403_FORBIDDEN)
+                    "error": "El usuario no tiene permisos para realizar esta accion"
+                },  status=status.HTTP_403_FORBIDDEN)
 
             # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'muestra'
             serializer = FotografiaSerializer(fotografia, data=request.data)
@@ -193,14 +196,14 @@ class FotografiaAPI(APIView):
 
     # --------------------------------------------------------------------------------------------------------------
 
-    @swagger_auto_schema(manual_parameters=[docs_delete.params],responses=docs_delete.respuestas)
+    @swagger_auto_schema(manual_parameters=[docs_delete.params], responses=docs_delete.respuestas)
     def delete(self, request):
         # Logica para una peticion DELETE
         # Es necesario proporcionar un parametro llamado 'id' con el valor del idFotografias que se desea eliminar
         # ejmpl: fotografias/?id=1
 
-        if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion 
-            
+        if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion
+
             # Se verifica que exista el parametro con llave 'id'
             try:
                 request.query_params['id']
@@ -219,16 +222,16 @@ class FotografiaAPI(APIView):
                     'message': 'No se encontro ningun elemento que coincida con ese id'
                 },  status=status.HTTP_404_NOT_FOUND)
 
-            # Se definen los permisos para peticiones tipo PUT 
+            # Se definen los permisos para peticiones tipo PUT
             if request.user.is_superuser or request.user.is_staff:
                 if not request.user.is_superuser and request.user.id != fotografia.idMuestra.idUsuario.id:
                     return Response({
-                            "error" : "Solo puede realizar esta operación el dueño este registro"
-                        },  status=status.HTTP_403_FORBIDDEN)
+                        "error": "Solo puede realizar esta operación el dueño este registro"
+                    },  status=status.HTTP_403_FORBIDDEN)
             else:
                 return Response({
-                            "error" : "El usuario no tiene permisos para realizar esta accion"
-                        },  status=status.HTTP_403_FORBIDDEN)
+                    "error": "El usuario no tiene permisos para realizar esta accion"
+                },  status=status.HTTP_403_FORBIDDEN)
 
             # Si el try no falla entonces eliminamos la muestra de label studio
             eliminar_foto_ls(fotografia.idFotografias)
@@ -246,4 +249,185 @@ class FotografiaAPI(APIView):
         else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
             return Response({
                 'message': 'DELETE debe proporcionar parametro "id"'
+            },  status=status.HTTP_400_BAD_REQUEST)
+
+
+class RevisionFinalizada(APIView):
+    # Pedimos autenticacion por Token (LMRG)
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        # Logica para una peticion PUT
+        # Es necesario proporcionar un parametro llamado 'id' con el valor del idtMuestra que se desea eliminar
+        # ejmpl: muestras/?id=1
+
+        if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
+
+            # Se verifica que exista el parametro con llave 'id'
+            try:
+                request.query_params['id']
+            except:
+                return Response({
+                    "message": "Solo se acepta un parametro con llave 'id'"
+                },  status=status.HTTP_400_BAD_REQUEST)
+
+            # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id' y lo eliminamos
+            try:
+                fotografia = Fotografia.objects.get(
+                    idFotografias=request.query_params['id'])
+            # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
+            except:
+                return Response({
+                    'message': 'No se encontro ningun elemento que coincida con ese id'
+                },  status=status.HTTP_404_NOT_FOUND)
+
+            # Se definen los permisos para peticiones tipo PUT
+            if request.user.is_superuser or request.user.is_staff:
+                pass
+            else:
+                return Response({
+                    "error": "El usuario no tiene permisos para realizar esta accion"
+                },  status=status.HTTP_403_FORBIDDEN)
+
+            # cambiamos el registro is_active de la BD
+
+            fotografia.etiquetado = {
+                'Estado': 'Finalizado',
+                'Observaciones': ''
+            }
+
+            # guardamos los cambios
+            fotografia.save(update_fields=['etiquetado'])
+            # Enviamos mensaje de éxito
+
+            # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'muestra'
+            serializer = FotografiaSerializer(fotografia)
+
+            return Response(serializer.data)
+
+        else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
+            return Response({
+                'message': 'PUT debe proporcionar parametro "id"'
+            },  status=status.HTTP_400_BAD_REQUEST)
+
+
+class EtiquetadoFinalizado(APIView):
+
+    # Pedimos autenticacion por Token (LMRG)
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        # Logica para una peticion PUT
+        # Es necesario proporcionar un parametro llamado 'id' con el valor del idtMuestra que se desea eliminar
+        # ejmpl: muestras/?id=1
+
+        if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
+
+            # Se verifica que exista el parametro con llave 'id'
+            try:
+                request.query_params['id']
+            except:
+                return Response({
+                    "message": "Solo se acepta un parametro con llave 'id'"
+                },  status=status.HTTP_400_BAD_REQUEST)
+
+            # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id' y lo eliminamos
+            try:
+                fotografia = Fotografia.objects.get(
+                    idFotografias=request.query_params['id'])
+            # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
+            except:
+                return Response({
+                    'message': 'No se encontro ningun elemento que coincida con ese id'
+                },  status=status.HTTP_404_NOT_FOUND)
+
+            fotografia.etiquetado = {
+                'Estado': 'Pendiente de revision',
+                'Observaciones': ''
+            }
+
+            # guardamos los cambios
+            fotografia.save(update_fields=['etiquetado'])
+            # Enviamos mensaje de éxito
+
+            # Si el try no falla entonces creamos el serializador utilizando el objeto guardado en 'muestra'
+            serializer = FotografiaSerializer(fotografia)
+
+            return Response(serializer.data)
+
+        else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
+            return Response({
+                'message': 'PUT debe proporcionar parametro "id"'
+            },  status=status.HTTP_400_BAD_REQUEST)
+
+
+class EtiquetadoRechazado(APIView):
+
+    # Pedimos autenticacion por Token (LMRG)
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        # Logica para una peticion PUT
+        # Es necesario proporcionar un parametro llamado 'id' con el valor del idtMuestra que se desea eliminar
+        # ejmpl: muestras/?id=1
+
+        if request.query_params:  # Revisamos si hay o no parametros dentro de la peticion HTTP
+
+            # Se verifica que exista el parametro con llave 'id'
+            try:
+                request.query_params['id']
+            except:
+                return Response({
+                    "message": "Solo se acepta un parametro con llave 'id'"
+                },  status=status.HTTP_400_BAD_REQUEST)
+
+            # Si los hay intentamos encontrar el elemento que coincida con el parametro 'id' y lo eliminamos
+            try:
+                fotografia = Fotografia.objects.get(
+                    idFotografias=request.query_params['id'])
+            # Si el try falla mandamos una respuesta con el error y un mensaje con detalles
+            except:
+                return Response({
+                    'message': 'No se encontro ningun elemento que coincida con ese id'
+                },  status=status.HTTP_404_NOT_FOUND)
+
+            # Se definen los permisos para peticiones tipo PUT
+            if request.user.is_superuser or request.user.is_staff:
+                pass
+            else:
+                return Response({
+                    "error": "El usuario no tiene permisos para realizar esta accion"
+                },  status=status.HTTP_403_FORBIDDEN)
+
+            # Se checa si existe o no la variable observaciones dentro del body
+            try:
+                request.data['observaciones']
+            except:
+                # Si no existe se contesta con un error
+                return Response({
+                    'message': "'observaciones'es un campo requerido"
+                },  status=status.HTTP_400_BAD_REQUEST)
+
+            data = {
+                "etiquetado": {
+                    'Estado': 'Etiquetado Rechazado',
+                    'Observaciones':  request.data['observaciones']
+                }
+            }
+
+            serializer = FotografiaSerializer(
+                fotografia, data=data, partial=True)
+
+            if serializer.is_valid():  # Si la peticion es valida
+                serializer.save()
+                return Response(serializer.data)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        else:  # El parametro es requerido por lo que si no se proporciona se respondera un error
+            return Response({
+                'message': 'PUT debe proporcionar parametro "id"'
             },  status=status.HTTP_400_BAD_REQUEST)
