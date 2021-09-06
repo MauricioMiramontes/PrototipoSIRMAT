@@ -163,6 +163,9 @@ class TablaEspecie extends Component {
     })
       .then(response => {
         status_response = response.status;
+        if (response.status === 204){
+          this.setState({loading: false})
+        }
         return response.json()
       })
       .then(especiesJson => {

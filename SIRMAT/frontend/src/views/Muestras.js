@@ -65,7 +65,7 @@ class TablaMuestras extends Component {
     super(props);
     this.state = {
       table_data: [],
-      
+
       muestra_seleccionada: null,
       nombre_muestra_seleccionada: null,
       mostrar_detalles: false,
@@ -93,6 +93,7 @@ class TablaMuestras extends Component {
     this.DELETE_muestras = this.DELETE_muestras.bind(this);
     this.POST_muestras = this.POST_muestras.bind(this);
     this.PUT_muestras = this.PUT_muestras.bind(this);
+    this.PUT_etiquetado_finalizado = this.PUT_etiquetado_finalizado.bind(this)
     this.toggle_add_modal = this.toggle_add_modal.bind(this);
     this.toggle_edit_modal = this.toggle_edit_modal.bind(this);
     this.toggle_delete_modal = this.toggle_delete_modal.bind(this);
@@ -102,6 +103,7 @@ class TablaMuestras extends Component {
     this.agregar_especie = this.agregar_especie.bind(this);
     this.eliminar_especie = this.eliminar_especie.bind(this);
     this.clearState = this.clearState.bind(this)
+
 
   }
 
@@ -228,6 +230,9 @@ class TablaMuestras extends Component {
     })
       .then(response => {
         status_response = response.status;
+        if (response.status === 204) {
+          this.setState({ loading: false })
+        }
         return response.json()
       })
       .then(muestrasJson => {
@@ -382,6 +387,58 @@ class TablaMuestras extends Component {
     console.log(this.state.form_data);
   }
 
+  // Funcion que se utilizara cuando el etiquetado de la muestra este terminado
+  PUT_etiquetado_finalizado(event, id) {
+    
+    event.preventDefault();
+    
+    // Se de la formato a el parametro id
+    var params = { "id": id };
+
+    // Variables utiles
+    var status_response;
+
+    // Esta variable determina la URL a la que se hara la peticion a la API
+    const url = "http://127.0.0.1:8081/muestras/etiquetado_finalizado/?" + new URLSearchParams(params);
+
+    console.log(url);
+    /// Esta variable determina cual elemento de la lista es el que se va a editar
+    var elemento_editar = this.state.table_data.findIndex(
+      (element) => element["idtMuestra"] === id
+    );
+
+    // Peticion a la API
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Token ' + this.props.user_data.token,
+      },
+    })
+      .then((response) => {
+        status_response = response.status;
+        return response.json()
+      })
+      .then(respuesta_put => {
+        if (status_response === 200) {
+          // Para evitar recargar la pagina se toma la respuesta de la API y 
+          // se agrega directamente al estado.
+          // Si la peticion a la API fue un exito
+          var updated_table_data = this.state.table_data;
+
+          updated_table_data[elemento_editar] = respuesta_put;
+
+          this.setState({ table_data: updated_table_data })
+          console.log("Todas las fotos han sido finalizadas")
+          console.log(status_response);
+          console.log(respuesta_put);
+        }
+        else {
+          console.log("status: " + status_response)
+          console.log(respuesta_put)
+        }
+      })
+  }
+
   //Funcion que se utilizara para hacer DELETE a la API en Muestras
   DELETE_muestras(id) {
     // Se de la formato a el parametro id
@@ -475,7 +532,23 @@ class TablaMuestras extends Component {
       }
     };
 
-
+    const print_estado_etiquetado = (etiquetado) => {
+      if (etiquetado === "Finalizado") {
+        return (
+          <Badge color="" className="badge-dot">
+            <i className="bg-success" />
+            Finalizado
+          </Badge>
+        );
+      } else if (etiquetado === "Pendiente") {
+        return (
+          <Badge color="" className="badge-dot">
+            <i className="bg-danger" />
+            Pendiente
+          </Badge>
+        );
+      }
+    }
 
     // Se regresa el contenido de la tabla con los datos de cada uno
     // De los registros que contenga la lista "muestras" usando una funcion map()
@@ -484,7 +557,7 @@ class TablaMuestras extends Component {
         <tr key={muestra.idtMuestra}>
           <th scope="row" onClick={(e) => this.ir_detalles_Muestra(muestra)}>{muestra.NombreMuestra}</th>
           <td onClick={(e) => this.ir_detalles_Muestra(muestra)}>{muestra.horaFechainicio}</td>
-          <td onClick={(e) => this.ir_detalles_Muestra(muestra)}>{muestra.horaFechaFin}</td>
+          <td onClick={(e) => this.ir_detalles_Muestra(muestra)}>{print_estado_etiquetado(muestra.etiquetado)}</td>
           <td onClick={(e) => this.ir_detalles_Muestra(muestra)}>{muestra.idTrampas}</td>
           <td onClick={(e) => this.ir_detalles_Muestra(muestra)}>{muestra.idUsuario}</td>
           <td onClick={(e) => this.ir_detalles_Muestra(muestra)}>{print_is_active(muestra.is_active)}</td>
@@ -909,6 +982,7 @@ class TablaMuestras extends Component {
               regresar={() => this.ir_detalles_Muestra()}
               nombre_muestra={this.state.muestra_seleccionada.NombreMuestra}
               etiquetado={this.state.muestra_seleccionada.etiquetado}
+              etiquetado_finalizado = {(e, id) => this.PUT_etiquetado_finalizado(e, id)}
             />
           </Container>
           :

@@ -35,6 +35,7 @@ import {
 
 import DeleteModal from "components/Modals/DeleteModal.js";
 import EtiquetadoListoModal from "components/Modals/EtiquetadoListoModal.js"
+import CalificacionDelEtiquetadoModal from "components/Modals/CalificacionDelEtiquetadoModal.js"
 
 class TablaFotografias extends Component {
   constructor(props) {
@@ -42,6 +43,8 @@ class TablaFotografias extends Component {
     this.state = {
       table_data: [],
       fotografia_seleccionada: null,
+      etiquetado_rechazado: false,
+      observaciones_del_rechazo : "",
 
       // Determina si esta o no mostrandose los modales
       add_modal: false,
@@ -49,6 +52,7 @@ class TablaFotografias extends Component {
       delete_modal: false,
       detail_modal: false,
       label_ready_modal: false,
+      calificacion_etiquetado_modal: false,
 
       //Datos del formulario
       form_data: {
@@ -59,11 +63,14 @@ class TablaFotografias extends Component {
     this.POST_fotografias = this.POST_fotografias.bind(this);
     this.PUT_fotografias = this.PUT_fotografias.bind(this);
     this.PUT_etiquetado_listo = this.PUT_etiquetado_listo.bind(this);
+    this.PUT_etiquetado_rechazado = this.PUT_etiquetado_rechazado.bind(this);
+    this.PUT_revision_finalizada = this.PUT_revision_finalizada.bind(this);
     this.DELETE_fotografias = this.DELETE_fotografias.bind(this);
     this.toggle_add_modal = this.toggle_add_modal.bind(this);
     this.toggle_edit_modal = this.toggle_edit_modal.bind(this);
     this.toggle_delete_modal = this.toggle_delete_modal.bind(this);
     this.toggle_label_ready_modal = this.toggle_label_ready_modal.bind(this);
+    this.toggle_calificacion_etiquetado_modal = this.toggle_calificacion_etiquetado_modal.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleImageChange = this.handleImageChange.bind(this);
     this.clearState = this.clearState.bind(this);
@@ -77,7 +84,7 @@ class TablaFotografias extends Component {
   clearState() {
     this.setState({
       form_data: {},
-      fotografia_seleccionada: null
+      fotografia_seleccionada: null,
     })
   }
 
@@ -142,6 +149,12 @@ class TablaFotografias extends Component {
     this.clearState()
     var value = this.state.label_ready_modal
     this.setState({ label_ready_modal: !value })
+  }
+
+  toggle_calificacion_etiquetado_modal() {
+    this.clearState()
+    var value = this.state.calificacion_etiquetado_modal
+    this.setState({ calificacion_etiquetado_modal: !value })
   }
 
   // Funcion que se utilizara para hacer GET a la API en fotografias
@@ -357,26 +370,17 @@ class TablaFotografias extends Component {
     var status_response;
 
     // Esta variable determina la URL a la que se hara la peticion a la API
-    const url = "http://127.0.0.1:8081/fotografias/?" + new URLSearchParams(params);
+    const url = "http://127.0.0.1:8081/fotografias/etiquetado_finalizado/?" + new URLSearchParams(params);
 
     // Esta variable determina cual elemento de la lista es el que se va a editar
     var elemento_editar = this.state.table_data.findIndex(element => element['idFotografias'] === this.state.fotografia_seleccionada)
-    // Datos del formulario
-    const datos_formulario = new FormData()
 
-    for (const name in this.state.form_data) {
-      datos_formulario.append(name, this.state.form_data[name])
-    }
-
-    console.log(datos_formulario)
     // Peticion a la API
     fetch(url, {
       method: 'PUT',
       headers: {
         'Authorization': 'Token ' + this.props.user_data.token,
       },
-      // Se toman los datos de la variable form_data del estado 
-      body: datos_formulario,
     })
       .then((response) => {
         status_response = response.status;
@@ -406,6 +410,121 @@ class TablaFotografias extends Component {
     this.toggle_label_ready_modal()
   }
 
+  PUT_etiquetado_rechazado(event, observaciones) {
+    event.preventDefault()
+    // Se de la formato a el parametro id
+    var params = { "id": this.state.fotografia_seleccionada };
+
+    // Variables utiles
+    var status_response;
+
+    // Esta variable determina la URL a la que se hara la peticion a la API
+    const url = "http://127.0.0.1:8081/fotografias/etiquetado_rechazado/?" + new URLSearchParams(params);
+
+    // Esta variable determina cual elemento de la lista es el que se va a editar
+    var elemento_editar = this.state.table_data.findIndex(element => element['idFotografias'] === this.state.fotografia_seleccionada)
+
+    // Peticion a la API
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Token ' + this.props.user_data.token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(observaciones),
+    })
+      .then((response) => {
+        status_response = response.status;
+        return response.json()
+      })
+      .then(respuesta_put => {
+        if (status_response === 200) {
+          // Para evitar recargar la pagina se toma la respuesta de la API y 
+          // se agrega directamente al estado.
+          // Si la peticion a la API fue un exito
+          var updated_table_data = this.state.table_data;
+
+          updated_table_data[elemento_editar] = respuesta_put;
+
+          this.setState({ table_data: updated_table_data })
+          console.log(status_response);
+          console.log(respuesta_put);
+        }
+        else {
+          console.log("status: " + status_response)
+          console.log(respuesta_put)
+        }
+      })
+
+    this.toggle_calificacion_etiquetado_modal()
+
+  }
+
+  PUT_revision_finalizada(event) {
+    event.preventDefault()
+
+    // Se de la formato a el parametro id
+    var params = { "id": this.state.fotografia_seleccionada };
+
+    // Variables utiles
+    var status_response;
+
+    // Esta variable determina la URL a la que se hara la peticion a la API
+    const url = "http://127.0.0.1:8081/fotografias/revision_finalizada/?" + new URLSearchParams(params);
+
+    // Esta variable determina cual elemento de la lista es el que se va a editar
+    var elemento_editar = this.state.table_data.findIndex(element => element['idFotografias'] === this.state.fotografia_seleccionada)
+
+    // Peticion a la API
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Token ' + this.props.user_data.token,
+      },
+    })
+      .then((response) => {
+        status_response = response.status;
+        return response.json()
+      })
+      .then(respuesta_put => {
+        if (status_response === 200) {
+          // Para evitar recargar la pagina se toma la respuesta de la API y 
+          // se agrega directamente al estado.
+          // Si la peticion a la API fue un exito
+          var updated_table_data = this.state.table_data;
+
+          updated_table_data[elemento_editar] = respuesta_put;
+
+          this.setState({ table_data: updated_table_data })
+
+          var todo_finalizado = true
+
+          this.state.table_data.map((foto) => {
+            if(foto.etiquetado.Estado === "Finalizado"){
+              console.log("foto finalizada")
+            }
+            else{
+              console.log("foto pendiente")
+              todo_finalizado = false
+            }
+          })
+
+          if(todo_finalizado===true) {
+            this.props.etiquetado_finalizado(event, this.props.muestra )
+          }
+          
+          console.log(status_response);
+          console.log(respuesta_put);
+        }
+        else {
+          console.log("status: " + status_response)
+          console.log(respuesta_put)
+        }
+      })
+
+    this.toggle_calificacion_etiquetado_modal()
+  }
+
   format_image(string_image) {
     var string_correcta = string_image.replace("/frontend/src/Label_Studio_Data/media/upload/", "")
     return string_correcta
@@ -423,22 +542,30 @@ class TablaFotografias extends Component {
           </Badge>
         )
       }
-      else if (estado === "Terminado") {
+      else if (estado === "Finalizado") {
         return (
           <Badge color="" className="badge-dot">
             <i className="bg-success" />
-            Terminado
+            Finalizado
           </Badge>
         )
       }
-      else if (estado === "Incompleto") {
+      else if (estado === "Pendiente de revision") {
         return (
           <Badge color="" className="badge-dot">
             <i className="bg-warning" />
-            Incompleto
+            Pendiente de revision
           </Badge>
         )
-      };
+      }
+      else if (estado === "Etiquetado Rechazado") {
+        return (
+          <Badge color="" className="badge-dot">
+            <i className="bg-warning" />
+            Etiquetado Rechazado
+          </Badge>
+        )
+      }; 
     };
 
     // // Si la variable "fotografias" del estado esta vacia se imprime un mensaje correspondiente
@@ -458,8 +585,34 @@ class TablaFotografias extends Component {
             <th
               scope="row"
               onClick={(e) => {
+                // Checar el tipo de usuario que dio cick
                 // Se abre el modal primero
-                this.toggle_label_ready_modal(e)
+                if(foto.etiquetado.Estado === "Etiquetado Rechazado"){
+                  this.setState({
+                    etiquetado_rechazado: true,
+                    observaciones_del_rechazo: foto.etiquetado.Observaciones
+                  })
+                  console.log(foto.etiquetado.Observaciones)
+                }
+                else{
+                  this.setState({
+                    etiquetado_rechazado: false,
+                    observaciones_del_rechazo: ""
+                  })
+                }
+
+                if (this.props.user_data.data.is_superuser) {
+                  this.toggle_calificacion_etiquetado_modal()
+                }
+                else {
+                  if (this.props.user_data.data.is_staff) {
+                    this.toggle_calificacion_etiquetado_modal()
+                  }
+                  else {
+                    this.toggle_label_ready_modal(e)
+                  }
+                }
+
                 this.setState({
                   fotografia_seleccionada: foto.idFotografias,
                   form_data: {
@@ -482,14 +635,26 @@ class TablaFotografias extends Component {
                 >
                   <img
                     alt={this.format_image(foto.fileFoto)}
-                    src={require(`../../Label_Studio_Data/media/upload/${this.format_image(foto.fileFoto)}`).default} 
+                    src={require(`../../Label_Studio_Data/media/upload/${this.format_image(foto.fileFoto)}`).default}
                   />
                 </a>
               </Media>
             </th>
             <td
               onClick={(e) => {
-                this.toggle_label_ready_modal(e, foto.idFotografias)
+                // Checar el tipo de usuario que dio cick
+                // Se abre el modal primero
+                if (this.props.user_data.data.is_superuser) {
+                  this.toggle_calificacion_etiquetado_modal()
+                }
+                else {
+                  if (this.props.user_data.data.is_staff) {
+                    this.toggle_calificacion_etiquetado_modal()
+                  }
+                  else {
+                    this.toggle_label_ready_modal(e)
+                  }
+                }
                 this.setState({
                   fotografia_seleccionada: foto.idFotografias,
                   form_data: {
@@ -504,7 +669,7 @@ class TablaFotografias extends Component {
                 window.open("http://127.0.0.1:8080/projects/" + this.props.muestra + "/data?task=" + foto.idFotografias, "_blank")
               }
               }>
-              {print_estado_etiquetado(foto.etiquetado)}
+              {print_estado_etiquetado(foto.etiquetado.Estado)}
             </td>
             {(this.props.user_data.data.is_superuser || this.props.user_data.data.is_staff) ?
               <>
@@ -578,6 +743,15 @@ class TablaFotografias extends Component {
           isOpen={this.state.label_ready_modal}
           toggle={() => this.toggle_label_ready_modal()}
           onConfirm={(e) => this.PUT_etiquetado_listo(e)}
+          rechazado = {this.state.etiquetado_rechazado}
+          observaciones = {this.state.observaciones_del_rechazo}
+        />
+
+        <CalificacionDelEtiquetadoModal
+          isOpen={this.state.calificacion_etiquetado_modal}
+          toggle={() => this.toggle_calificacion_etiquetado_modal()}
+          onConfirm={(e) => this.PUT_revision_finalizada(e)}
+          onReject={(e, observaciones) => this.PUT_etiquetado_rechazado(e, observaciones)}
         />
 
         {/* Modal para agregar nuevo registro */}

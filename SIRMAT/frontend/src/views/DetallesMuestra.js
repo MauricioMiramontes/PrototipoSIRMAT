@@ -57,6 +57,8 @@ class DetallesMuestra extends Component {
 
       edit_modal: false,
 
+      estado_etiquetado: this.props.etiquetado,
+
       detail_form_data: {
         Especies: [
           {
@@ -158,6 +160,9 @@ class DetallesMuestra extends Component {
     })
       .then((response) => {
         status_response = response.status;
+        if (response.status === 204) {
+          this.setState({ loading: false })
+        }
         return response.json()
       })
       .then((detallesmuestrasJson) => {
@@ -386,7 +391,7 @@ class DetallesMuestra extends Component {
                   </CardHeader>
                   <CardBody className="pt-0 pt-md-1">
                     <div className="text-center">
-                      <p>Estado del etiquetado: {this.props.etiquetado}</p>
+                      <p>Estado del etiquetado: {this.state.estado_etiquetado}</p>
                       <p>Fecha/Hora de captura: {this.format_date(this.state.data.horaFecha)}</p>
                       <p>
                         {this.state.data.observaciones}
@@ -410,7 +415,13 @@ class DetallesMuestra extends Component {
               </Col>
               <Col className="order-xl-1" xl="8">
                 {/* Tabla de fotografias de la muestra */}
-                <TablaFotografias muestra={this.props.muestra} />
+                <TablaFotografias
+                  muestra={this.props.muestra}
+                  etiquetado_finalizado={(e,id) => {
+                    this.props.etiquetado_finalizado(e, id)
+                    this.setState({estado_etiquetado: "Finalizado"})
+                  }}
+                />
               </Col>
             </Row>
           }
