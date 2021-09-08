@@ -11,7 +11,7 @@ import camarasSlice from './slices/camarasSlice.js'
 import trampasSlice from './slices/trampasSlice.js'
 import estereoscopiosSlice from './slices/estereoscopiosSlice.js'
 import especiesSlice from './slices/especiesSlice.js'
-
+import detallesSlices from './slices/detallesSlices.js'
 
 const reducers = combineReducers({
     user: userSlice,
@@ -19,6 +19,7 @@ const reducers = combineReducers({
     trampas: trampasSlice,
     estereoscopios: estereoscopiosSlice,
     especies: especiesSlice,
+    detalles : detallesSlices
 });
 
 const persistConfig = {

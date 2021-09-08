@@ -23,6 +23,7 @@ import { update_camara_data } from '../../app/slices/camarasSlice.js'
 import { update_trampa_data } from '../../app/slices/trampasSlice.js'
 import { update_estereoscopios_data } from '../../app/slices/estereoscopiosSlice.js'
 import { update_especies_data } from '../../app/slices/especiesSlice.js'
+import { update_detalles_data } from "../../app/slices/detallesSlices.js";
 
 // Necesitamos esto para poder usar la funcion "history"
 import { withRouter } from "react-router";
@@ -83,12 +84,14 @@ class Login extends Component {
     const urlTrampas = "http://127.0.0.1:8081/trampas/";
     const urlestereoscopios = "http://127.0.0.1:8081/estereoscopios/";
     const urlEspecies = "http://127.0.0.1:8081/especies/";
-    const { 
-      update_user_data, 
-      update_camara_data, 
-      update_trampa_data, 
-      update_estereoscopios_data, 
+    const urlDetalles = "http://127.0.0.1:8081/detallesmuestra/"
+    const {
+      update_user_data,
+      update_camara_data,
+      update_trampa_data,
+      update_estereoscopios_data,
       update_especies_data,
+      update_detalles_data,
       history } = this.props;
 
     // Peticion a la API
@@ -141,7 +144,7 @@ class Login extends Component {
                   var elemento = {
                     'nombre': nombre,
                     'id': id,
-                    'is_active' : is_active
+                    'is_active': is_active
                   }
                   listaCamaras.push(elemento)
                 }
@@ -181,7 +184,7 @@ class Login extends Component {
                   var elemento = {
                     'nombre': nombre,
                     'id': id,
-                    'is_active' : is_active
+                    'is_active': is_active
                   }
 
                   listaTrampas.push(elemento)
@@ -195,9 +198,6 @@ class Login extends Component {
                 console.log(trampasJson)
               }
             })
-
-
-
 
           // Fetch de estereoscopios
           fetch(urlestereoscopios, {
@@ -226,7 +226,7 @@ class Login extends Component {
                   var elemento = {
                     'nombre': nombre,
                     'id': id,
-                    'is_active' : is_active
+                    'is_active': is_active
                   }
                   listaestereoscopios.push(elemento)
                 }
@@ -238,45 +238,85 @@ class Login extends Component {
               }
             })
 
-            // Fetch para especies
-            fetch(urlEspecies, {
-              method: 'GET',
-              headers: {
-                'Authorization': 'Token ' + respuesta_login.token,
-                'Content-Type': 'application/json'
-              },
-              // Se toman los datos de la variable form_data del estado 
+          // Fetch para especies
+          fetch(urlEspecies, {
+            method: 'GET',
+            headers: {
+              'Authorization': 'Token ' + respuesta_login.token,
+              'Content-Type': 'application/json'
+            },
+            // Se toman los datos de la variable form_data del estado 
+          })
+            .then((response) => {
+              status_response = response.status;
+              return response.json()
             })
-              .then((response) => {
-                status_response = response.status;
-                return response.json()
-              })
-              .then((especiesJson) => {
-                if (status_response === 200) {
-                  console.log("status especies: " + status_response)
-                  console.log(especiesJson)
-  
-                  var listaEspecies = []
-  
-                  for (let i = 0; i < especiesJson.length; i++) {
-                    const nombre = especiesJson[i].especie;
-                    const id = especiesJson[i].idcEspecie
-                  
-                    var elemento = {
-                      'nombre': nombre,
-                      'id': id,
-                    }
+            .then((especiesJson) => {
+              if (status_response === 200) {
+                console.log("status especies: " + status_response)
+                console.log(especiesJson)
 
-                    listaEspecies.push(elemento)
+                var listaEspecies = []
+
+                for (let i = 0; i < especiesJson.length; i++) {
+                  const nombre = especiesJson[i].especie;
+                  const id = especiesJson[i].idcEspecie
+
+                  var elemento = {
+                    'nombre': nombre,
+                    'id': id,
                   }
-  
-                  update_especies_data(listaEspecies)
+
+                  listaEspecies.push(elemento)
                 }
-                else {
-                  console.log("status especies: " + status_response)
-                  console.log(especiesJson)
+
+                update_especies_data(listaEspecies)
+              }
+              else {
+                console.log("status especies: " + status_response)
+                console.log(especiesJson)
+              }
+            })
+
+          // fetch para los detalles
+          fetch(urlDetalles, {
+            method: 'GET',
+            headers: {
+              'Authorization': 'Token ' + respuesta_login.token,
+              'Content-Type': 'application/json'
+            },
+            // Se toman los datos de la variable form_data del estado 
+          })
+            .then((response) => {
+              status_response = response.status;
+              return response.json()
+            })
+            .then((detallesJson) => {
+              if (status_response === 200) {
+                console.log("status detalles: " + status_response)
+                console.log(detallesJson)
+
+                var listaDetalles = []
+
+                for (let i = 0; i < detallesJson.length; i++) {
+                  const horaFecha = detallesJson[i].horaFecha;
+                  const especies = detallesJson[i].Especies
+
+                  var elemento = {
+                    'horaFecha': horaFecha,
+                    'especies': especies,
+                  }
+
+                  listaDetalles.push(elemento)
                 }
-              })
+                
+                update_detalles_data(listaDetalles)
+              }
+              else {
+                console.log("status detalles: " + status_response)
+                console.log(detallesJson)
+              }
+            })
           // History nos deja redirijir a otra liga sin recargar la pagina
           // En este caso redirigimos a la pantalla de inicio
           history.push('/')
@@ -393,7 +433,8 @@ function mapDispatchToProps(dispatch) {
     update_camara_data: (...args) => dispatch(update_camara_data(...args)),
     update_trampa_data: (...args) => dispatch(update_trampa_data(...args)),
     update_estereoscopios_data: (...args) => dispatch(update_estereoscopios_data(...args)),
-    update_especies_data : (...args) => dispatch(update_especies_data(...args)),
+    update_especies_data: (...args) => dispatch(update_especies_data(...args)),
+    update_detalles_data: (...args) => dispatch(update_detalles_data(...args)),
   };
 }
 export default connect(null, mapDispatchToProps)(LoginConectado);
