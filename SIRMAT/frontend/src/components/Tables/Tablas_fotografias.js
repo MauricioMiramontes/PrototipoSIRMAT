@@ -36,6 +36,7 @@ import {
 import DeleteModal from "components/Modals/DeleteModal.js";
 import EtiquetadoListoModal from "components/Modals/EtiquetadoListoModal.js"
 import CalificacionDelEtiquetadoModal from "components/Modals/CalificacionDelEtiquetadoModal.js"
+import EtiquetadoIntermedioModal from "components/Modals/EtiquetadoIntermedioModal.js"
 
 class TablaFotografias extends Component {
   constructor(props) {
@@ -44,7 +45,7 @@ class TablaFotografias extends Component {
       table_data: [],
       fotografia_seleccionada: null,
       etiquetado_rechazado: false,
-      observaciones_del_rechazo : "",
+      observaciones_del_rechazo: "",
 
       // Determina si esta o no mostrandose los modales
       add_modal: false,
@@ -53,6 +54,7 @@ class TablaFotografias extends Component {
       detail_modal: false,
       label_ready_modal: false,
       calificacion_etiquetado_modal: false,
+      etiquetado_intermedio_modal: false,
 
       //Datos del formulario
       form_data: {
@@ -71,6 +73,7 @@ class TablaFotografias extends Component {
     this.toggle_delete_modal = this.toggle_delete_modal.bind(this);
     this.toggle_label_ready_modal = this.toggle_label_ready_modal.bind(this);
     this.toggle_calificacion_etiquetado_modal = this.toggle_calificacion_etiquetado_modal.bind(this);
+    this.toggle_etiquetado_intermedio_modal = this.toggle_etiquetado_intermedio_modal.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleImageChange = this.handleImageChange.bind(this);
     this.clearState = this.clearState.bind(this);
@@ -146,15 +149,18 @@ class TablaFotografias extends Component {
 
   // Muestra u Oculta el modal para indicar que el etiquetado esta listo para calificar
   toggle_label_ready_modal() {
-    this.clearState()
     var value = this.state.label_ready_modal
     this.setState({ label_ready_modal: !value })
   }
 
   toggle_calificacion_etiquetado_modal() {
-    this.clearState()
     var value = this.state.calificacion_etiquetado_modal
     this.setState({ calificacion_etiquetado_modal: !value })
+  }
+
+  toggle_etiquetado_intermedio_modal() {
+    var value = this.state.etiquetado_intermedio_modal
+    this.setState({ etiquetado_intermedio_modal: !value })
   }
 
   // Funcion que se utilizara para hacer GET a la API en fotografias
@@ -500,19 +506,19 @@ class TablaFotografias extends Component {
           var todo_finalizado = true
 
           this.state.table_data.map((foto) => {
-            if(foto.etiquetado.Estado === "Finalizado"){
+            if (foto.etiquetado.Estado === "Finalizado") {
               console.log("foto finalizada")
             }
-            else{
+            else {
               console.log("foto pendiente")
               todo_finalizado = false
             }
           })
 
-          if(todo_finalizado===true) {
-            this.props.etiquetado_finalizado(event, this.props.muestra )
+          if (todo_finalizado === true) {
+            this.props.etiquetado_finalizado(event, this.props.muestra)
           }
-          
+
           console.log(status_response);
           console.log(respuesta_put);
         }
@@ -565,7 +571,7 @@ class TablaFotografias extends Component {
             Etiquetado Rechazado
           </Badge>
         )
-      }; 
+      };
     };
 
     // // Si la variable "fotografias" del estado esta vacia se imprime un mensaje correspondiente
@@ -587,30 +593,18 @@ class TablaFotografias extends Component {
               onClick={(e) => {
                 // Checar el tipo de usuario que dio cick
                 // Se abre el modal primero
-                if(foto.etiquetado.Estado === "Etiquetado Rechazado"){
+                if (foto.etiquetado.Estado === "Etiquetado Rechazado") {
                   this.setState({
                     etiquetado_rechazado: true,
                     observaciones_del_rechazo: foto.etiquetado.Observaciones
                   })
                   console.log(foto.etiquetado.Observaciones)
                 }
-                else{
+                else {
                   this.setState({
                     etiquetado_rechazado: false,
                     observaciones_del_rechazo: ""
                   })
-                }
-
-                if (this.props.user_data.data.is_superuser) {
-                  this.toggle_calificacion_etiquetado_modal()
-                }
-                else {
-                  if (this.props.user_data.data.is_staff) {
-                    this.toggle_calificacion_etiquetado_modal()
-                  }
-                  else {
-                    this.toggle_label_ready_modal(e)
-                  }
                 }
 
                 this.setState({
@@ -624,7 +618,7 @@ class TablaFotografias extends Component {
                     idMuestra: foto.idMuestra
                   }
                 })
-                window.open("http://127.0.0.1:8080/projects/" + this.props.muestra + "/data?task=" + foto.idFotografias, "_blank")
+                this.toggle_etiquetado_intermedio_modal()
               }
               }>
               <Media>
@@ -644,17 +638,20 @@ class TablaFotografias extends Component {
               onClick={(e) => {
                 // Checar el tipo de usuario que dio cick
                 // Se abre el modal primero
-                if (this.props.user_data.data.is_superuser) {
-                  this.toggle_calificacion_etiquetado_modal()
+                if (foto.etiquetado.Estado === "Etiquetado Rechazado") {
+                  this.setState({
+                    etiquetado_rechazado: true,
+                    observaciones_del_rechazo: foto.etiquetado.Observaciones
+                  })
+                  console.log(foto.etiquetado.Observaciones)
                 }
                 else {
-                  if (this.props.user_data.data.is_staff) {
-                    this.toggle_calificacion_etiquetado_modal()
-                  }
-                  else {
-                    this.toggle_label_ready_modal(e)
-                  }
+                  this.setState({
+                    etiquetado_rechazado: false,
+                    observaciones_del_rechazo: ""
+                  })
                 }
+
                 this.setState({
                   fotografia_seleccionada: foto.idFotografias,
                   form_data: {
@@ -666,7 +663,7 @@ class TablaFotografias extends Component {
                     idMuestra: foto.idMuestra
                   }
                 })
-                window.open("http://127.0.0.1:8080/projects/" + this.props.muestra + "/data?task=" + foto.idFotografias, "_blank")
+                this.toggle_etiquetado_intermedio_modal()
               }
               }>
               {print_estado_etiquetado(foto.etiquetado.Estado)}
@@ -743,8 +740,6 @@ class TablaFotografias extends Component {
           isOpen={this.state.label_ready_modal}
           toggle={() => this.toggle_label_ready_modal()}
           onConfirm={(e) => this.PUT_etiquetado_listo(e)}
-          rechazado = {this.state.etiquetado_rechazado}
-          observaciones = {this.state.observaciones_del_rechazo}
         />
 
         <CalificacionDelEtiquetadoModal
@@ -752,6 +747,33 @@ class TablaFotografias extends Component {
           toggle={() => this.toggle_calificacion_etiquetado_modal()}
           onConfirm={(e) => this.PUT_revision_finalizada(e)}
           onReject={(e, observaciones) => this.PUT_etiquetado_rechazado(e, observaciones)}
+        />
+
+        <EtiquetadoIntermedioModal
+          isOpen={this.state.etiquetado_intermedio_modal}
+          toggle={() => this.toggle_etiquetado_intermedio_modal()}
+          onConfirm={(e) => {
+            // Checar el tipo de usuario que dio cick
+            // Se abre el modal primero
+
+            if (this.props.user_data.data.is_superuser) {
+              this.toggle_calificacion_etiquetado_modal()
+            }
+            else {
+              if (this.props.user_data.data.is_staff) {
+                this.toggle_calificacion_etiquetado_modal()
+              }
+              else {
+                this.toggle_label_ready_modal(e)
+              }
+            }
+            window.open("http://127.0.0.1:8080/projects/" + this.props.muestra + "/data?task=" + this.state.fotografia_seleccionada, "_blank")
+            this.toggle_etiquetado_intermedio_modal()
+          }}
+          rechazado={this.state.etiquetado_rechazado}
+          is_superuser = {this.props.user_data.data.is_superuser}
+          is_staff = {this.props.user_data.data.is_staff}
+          observaciones={this.state.observaciones_del_rechazo}
         />
 
         {/* Modal para agregar nuevo registro */}
