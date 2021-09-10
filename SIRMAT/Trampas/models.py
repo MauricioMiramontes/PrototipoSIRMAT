@@ -8,6 +8,10 @@ class Trampas(models.Model):
         primary_key=True, 
         help_text='Numero de identificacion del registro')
 
+    clave = models.CharField(
+        max_length=100, 
+        help_text='Clave de la trampa')
+
     nombre = models.CharField(
         max_length=45, 
         help_text='Nombre de la trampa')

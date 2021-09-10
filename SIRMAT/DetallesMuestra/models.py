@@ -9,9 +9,12 @@ class DetallesMuestra(models.Model):
     idtDetallesMuestra = models.BigAutoField(
         primary_key=True, help_text='Numero de identificacion del registro')
 
-    horaFecha = models.DateTimeField(
-        auto_now_add=True, help_text='Hora en la que se registro la Muestra')
+    horaFechaRegistro = models.DateTimeField(
+        auto_now_add=True, help_text='Hora en la que se registro la muestra')
 
+    horaFechaCaptura = models.DateTimeField(
+         help_text='Hora en la que se capturo la muestra')
+    
     observaciones = models.CharField(
         max_length=45, help_text='Observaciones del empleado sobre la muestra')
     

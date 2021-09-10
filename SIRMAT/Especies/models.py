@@ -9,7 +9,7 @@ class Especie(models.Model):
         help_text="Numero de identificacion del registro")
 
     especie = models.CharField(
-        max_length=45,
+        max_length=100,
         help_text="Nombre de la especie")
 
     is_active = models.BooleanField(
