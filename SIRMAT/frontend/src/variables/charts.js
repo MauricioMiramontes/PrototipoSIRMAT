@@ -349,7 +349,7 @@ let chartExample1 = {
       datasets: [
         {
           label: "Performance",
-          data: [0, 20, 10, 30, 15, 40, 20, 60, 60],
+          data: [0, 60, 10, 30, 15, 40, 20, 60, 60],
         },
       ],
     };
@@ -359,8 +359,8 @@ let chartExample1 = {
       labels: ["May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
       datasets: [
         {
-          label: "Performance",
-          data: [0, 20, 5, 25, 10, 30, 15, 40, 40],
+          label: "Cantidad",
+          data: [60, 20, 5, 25, 10, 30, 15, 40, 40],
         },
       ],
     };
@@ -400,12 +400,12 @@ let chartExample2 = {
     },
   },
   data: {
-    labels: ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    labels: ["orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "Sorden-familia-genero-nombre_comunep", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "bicorden-familia-genero-nombre_comunho", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun"],
     datasets: [
       {
         label: "Sales",
-        data: [25, 20, 30, 22, 17, 29],
-        maxBarThickness: 10,
+        data: [0, 20, 30, 22, 17, 29, 10, 15, 19, 20,25, 20, 30, 70, 17, 29, 10, 15, 19, 20,25, 20, 30, 22, 17, 29, 10, 15, 19, 20,],
+        maxBarThickness: 11,
       },
     ],
   },

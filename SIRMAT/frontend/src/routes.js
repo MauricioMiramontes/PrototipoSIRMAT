@@ -16,6 +16,7 @@
 
 */
 import Inicio from "views/Inicio.js";
+import InicioPrueba from "views/Inicio_Prueba.js"
 import Profile from "views/examples/Profile.js";
 import Test from "views/examples/Test.js";
 import Loading from "views/Loading.js"
@@ -38,6 +39,13 @@ var routes = [
     name: "Inicio",
     icon: "ni ni-tv-2 text-info",
     component: Inicio,
+    layout: "/superu",
+  },
+  {
+    path: "/Inicio_Prueba",
+    name: "InicioPrueba",
+    icon: "ni ni-tv-2 text-info",
+    component: InicioPrueba,
     layout: "/superu",
   },
   {
