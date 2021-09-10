@@ -135,14 +135,14 @@ function AdminNavbar(props) {
                       <>
                         <i className="ni ni-money-coins" />
                         <span className="mb-0 text-sm font-weight-bold">
-                          Empleado
+                          Capturista
                         </span>
                       </>
                       :
                       <>
                         <i className="ni ni-money-coins" />
                         <span className="mb-0 text-sm font-weight-bold">
-                          Usuario
+                          Etiquetador
                         </span>
                       </>
                   }

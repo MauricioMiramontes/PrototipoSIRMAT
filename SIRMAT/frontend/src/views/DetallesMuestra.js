@@ -277,6 +277,21 @@ class DetallesMuestra extends Component {
                   />
                 </InputGroup>
               </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="ni ni-calendar-grid-58" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    placeholder="Hora"
+                    type="text"
+                    name="horaFechaCaptura"
+                    onChange={this.handleDetailInputChange}
+                  />
+                </InputGroup>
+              </FormGroup>
               {this.state.detail_form_data.Especies.map((especie, index) =>
                 <Row key={index}>
                   <Col md={6}>
@@ -392,7 +407,8 @@ class DetallesMuestra extends Component {
                   <CardBody className="pt-0 pt-md-1">
                     <div className="text-center">
                       <p>Estado del etiquetado: {this.state.estado_etiquetado}</p>
-                      <p>Fecha/Hora de captura: {this.format_date(this.state.data.horaFecha)}</p>
+                      <p>Fecha/Hora de registro: {this.format_date(this.state.data.horaFechaRegistro)}</p>
+                      <p>Fecha/Hora de captura: {this.format_date(this.state.data.horaFechaCaptura)}</p>
                       <p>
                         {this.state.data.observaciones}
                       </p>

@@ -775,7 +775,7 @@ class TablaMuestras extends Component {
                   <Input
                     placeholder="Hora"
                     type="text"
-                    name="horaFecha"
+                    name="horaFechaCaptura"
                     onChange={this.handleDetailInputChange}
                   />
                 </InputGroup>

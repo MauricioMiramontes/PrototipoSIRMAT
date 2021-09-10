@@ -284,7 +284,7 @@ class Register extends Component {
           fetch(urlDetalles, {
             method: 'GET',
             headers: {
-              'Authorization': 'Token ' + respuesta_login.token,
+              'Authorization': 'Token ' + respuesta_register.token,
               'Content-Type': 'application/json'
             },
             // Se toman los datos de la variable form_data del estado 

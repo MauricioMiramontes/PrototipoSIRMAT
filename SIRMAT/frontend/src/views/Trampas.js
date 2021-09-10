@@ -110,6 +110,7 @@ class TablaTrampas extends Component {
 
     // Se actualiza el valor de la variable vieja con el de la copia actualizada
     this.setState({ form_data: updated_form_data });
+    console.log(this.state.form_data)
   }
 
   // Limpia el state de form_data
@@ -346,6 +347,7 @@ class TablaTrampas extends Component {
       return (
         <tr key={trampa.idcTrampas}>
           <th scope="row">{trampa.nombre}</th>
+          <td>{trampa.clave}</td>
           <td>{trampa.direccion}</td>
           <td>{trampa.coordenadas}</td>
           <td>{print_is_active(trampa.is_active)}</td>
@@ -377,6 +379,7 @@ class TablaTrampas extends Component {
                           nombre: trampa.nombre,
                           direccion: trampa.direccion,
                           coordenadas: trampa.coordenadas,
+                          clave: trampa.clave
                         },
                       });
                     }}
@@ -438,6 +441,21 @@ class TablaTrampas extends Component {
                     placeholder="Nombre"
                     type="text"
                     name="nombre"
+                    onChange={this.handleInputChange}
+                  />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="ni ni-tag" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    placeholder="Clave"
+                    type="text"
+                    name="clave"
                     onChange={this.handleInputChange}
                   />
                 </InputGroup>
@@ -523,6 +541,21 @@ class TablaTrampas extends Component {
                 <InputGroup className="input-group-alternative mb-3">
                   <InputGroupAddon addonType="prepend">
                     <InputGroupText>
+                      <i className="ni ni-tag" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    value={this.state.form_data.clave}
+                    type="text"
+                    name="clave"
+                    onChange={this.handleInputChange}
+                  />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
                       <i className="ni ni-square-pin" />
                     </InputGroupText>
                   </InputGroupAddon>
@@ -598,6 +631,7 @@ class TablaTrampas extends Component {
                     <thead className="thead-light">
                       <tr>
                         <th scope="col">Nombre</th>
+                        <th scope="col">Clave</th>
                         <th scope="col">Direccion</th>
                         <th scope="col">Coordenadas</th>
                         <th scope="col">Estado</th>

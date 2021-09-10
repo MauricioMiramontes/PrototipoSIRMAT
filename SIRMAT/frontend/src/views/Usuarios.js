@@ -411,7 +411,7 @@ class TablaUsuarios extends Component {
         return (
           <Badge color="" className="badge-dot">
             {is_active ? <i className="bg-success" /> : <i className="bg-danger" />}
-            Empleado
+            Capturista
           </Badge>
         )
       }
@@ -419,7 +419,7 @@ class TablaUsuarios extends Component {
         return (
           <Badge color="" className="badge-dot">
             {is_active ? <i className="bg-success" /> : <i className="bg-danger" />}
-            Usuario
+            Etiquetador
           </Badge>
         )
       }
@@ -600,8 +600,8 @@ class TablaUsuarios extends Component {
                     onChange={this.handleInputChange}>
                     <option>Selecciona una opcion</option>
                     <option>Administrador</option>
-                    <option>Empleado</option>
-                    <option>Normal</option>
+                    <option>Capturista</option>
+                    <option>Etiquetador</option>
                   </Input>
                 </InputGroup>
               </FormGroup>
