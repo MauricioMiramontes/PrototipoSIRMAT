@@ -301,7 +301,7 @@ class Register extends Component {
                 var listaDetalles = []
 
                 for (let i = 0; i < detallesJson.length; i++) {
-                  const horaFecha = detallesJson[i].horaFecha;
+                  const horaFecha = detallesJson[i].horaFechaCaptura;
                   const especies = detallesJson[i].Especies
 
                   var elemento = {

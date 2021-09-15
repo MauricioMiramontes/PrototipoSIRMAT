@@ -319,7 +319,7 @@ let chartExample1 = {
           ticks: {
             callback: function (value) {
               if (!(value % 10)) {
-                return "$" + value + "k";
+                return value;
               }
             },
           },
@@ -337,7 +337,7 @@ let chartExample1 = {
             content += label;
           }
 
-          content += "$" + yLabel + "k";
+          content += yLabel + " Muestras";
           return content;
         },
       },
@@ -402,6 +402,11 @@ let chartExample2 = {
   data: {
     labels: ["orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "Sorden-familia-genero-nombre_comunep", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "bicorden-familia-genero-nombre_comunho", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun", "orden-familia-genero-nombre_comun"],
     datasets: [
+      {
+        label: "Sales",
+        data: [0, 20, 30, 22, 17, 29, 10, 15, 19, 20,25, 20, 30, 70, 17, 29, 10, 15, 19, 20,25, 20, 30, 22, 17, 29, 10, 15, 19, 20,],
+        maxBarThickness: 11,
+      },
       {
         label: "Sales",
         data: [0, 20, 30, 22, 17, 29, 10, 15, 19, 20,25, 20, 30, 70, 17, 29, 10, 15, 19, 20,25, 20, 30, 22, 17, 29, 10, 15, 19, 20,],
