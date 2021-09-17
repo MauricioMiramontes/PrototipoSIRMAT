@@ -629,7 +629,7 @@ class TablaFotografias extends Component {
                 >
                   <img
                     alt={this.format_image(foto.fileFoto)}
-                    src={require(`../../Label_Studio_Data/media/upload/${this.format_image(foto.fileFoto)}`).default}
+                    src={"/static/fotografias/" + this.format_image(foto.fileFoto)}
                   />
                 </a>
               </Media>

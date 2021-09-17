@@ -16,7 +16,9 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 # Direccion de la carpeta de Label Studio
 LS_FILES_DIR = 'frontend/src/Label_Studio_Data/'
+LS_STATIC_FILES = 'frontend/build/static/fotografias/'
 os.makedirs(LS_FILES_DIR, exist_ok=True)
+os.makedirs(LS_STATIC_FILES, exist_ok=True)
 print('=> Directorio para label-studio y media:', LS_FILES_DIR)
 
 

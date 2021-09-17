@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.parsers import MultiPartParser
 import os
 from pathlib import Path
+import shutil
 # Importamos el serializador del modelo Fotografia
 from .serializers import FotografiaSerializer
 from .Label_Studio_db import eliminar_foto_ls, agregar_foto_ls
@@ -126,6 +127,9 @@ class FotografiaAPI(APIView):
                     str(fotografia_guardada.idMuestra)
                 )
 
+                # Creamos una copia de la imagen en la carpeta del frontend
+                shutil.copy(str(DIR) + "/" + str(fotografia_guardada.fileFoto), str(DIR) + "/" + str(fotografia_guardada.fileFoto).replace("src/Label_Studio_Data/media/upload/", "build/static/fotografias/"))
+                
                 # Y respondemos con los datos del nuevo objeto creado
                 return Response(serializer.data)
             else:  # Si la peticion no es valida respondemos con un error y un mensaje con los detalles del error
