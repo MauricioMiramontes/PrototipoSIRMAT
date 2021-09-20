@@ -316,31 +316,8 @@ let chartExample1 = {
             color: colors.gray[900],
             zeroLineColor: colors.gray[900],
           },
-          ticks: {
-            callback: function (value) {
-              if (!(value % 10)) {
-                return value;
-              }
-            },
-          },
         },
       ],
-    },
-    tooltips: {
-      callbacks: {
-        label: function (item, data) {
-          var label = data.datasets[item.datasetIndex].label || "";
-          var yLabel = item.yLabel;
-          var content = "";
-
-          if (data.datasets.length > 1) {
-            content += label;
-          }
-
-          content += yLabel + " Muestras";
-          return content;
-        },
-      },
     },
   },
   data1: (canvas) => {
@@ -404,12 +381,12 @@ let chartExample2 = {
     datasets: [
       {
         label: "Sales",
-        data: [0, 20, 30, 22, 17, 29, 10, 15, 19, 20,25, 20, 30, 70, 17, 29, 10, 15, 19, 20,25, 20, 30, 22, 17, 29, 10, 15, 19, 20,],
+        data: [0, 20, 30, 22, 17, 29, 10, 15, 19, 20, 25, 20, 30, 70, 17, 29, 10, 15, 19, 20, 25, 20, 30, 22, 17, 29, 10, 15, 19, 20,],
         maxBarThickness: 11,
       },
       {
         label: "Sales",
-        data: [0, 20, 30, 22, 17, 29, 10, 15, 19, 20,25, 20, 30, 70, 17, 29, 10, 15, 19, 20,25, 20, 30, 22, 17, 29, 10, 15, 19, 20,],
+        data: [0, 20, 30, 22, 17, 29, 10, 15, 19, 20, 25, 20, 30, 70, 17, 29, 10, 15, 19, 20, 25, 20, 30, 22, 17, 29, 10, 15, 19, 20,],
         maxBarThickness: 11,
       },
     ],

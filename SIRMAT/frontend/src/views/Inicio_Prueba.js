@@ -71,21 +71,21 @@ class InicioPrueba extends Component {
           }
         ],
       },
-      line_table_data_muestra: {
+      line_table_data_muestra_mes: {
         labels: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
         datasets: [
           {
-            label: "Muestras",
+            label: "Muestras en el mes ",
             data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           },
         ],
       },
-      line_table_data_fotografias: {
-        labels: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      line_table_data_muestra_semanas: {
+        labels: [],
         datasets: [
           {
-            label: "Fotografias",
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            label: "Muestras en la semana ",
+            data: [],
           },
         ],
       },
@@ -99,6 +99,7 @@ class InicioPrueba extends Component {
     this.GET_nombres_especies = this.GET_nombres_especies.bind(this)
     this.GET_detalles_muestras = this.GET_detalles_muestras.bind(this)
     this.toggle_elegir_data_linea = this.toggle_elegir_data_linea.bind(this)
+    this.calcular_numero_semanas = this.calcular_numero_semanas.bind(this)
   }
 
   componentDidMount() {
@@ -106,10 +107,49 @@ class InicioPrueba extends Component {
     this.GET_detalles_muestras()
   }
 
-  toggle_elegir_data_linea(e) {
+  toggle_elegir_data_linea(e, boton) {
     e.preventDefault()
     var value = this.state.mostrar_data_muestras;
-    this.setState({ mostrar_data_muestras: !value });
+
+    if (this.state.mostrar_data_muestras !== boton) {
+      this.setState({ mostrar_data_muestras: !value });
+      console.log(this.state.mostrar_data_muestras)
+    }
+  }
+
+  calcular_numero_semanas(fecha) {
+
+    var primera_fecha_mes = new Date(fecha.getFullYear(), fecha.getMonth(), 1)
+    var primer_dia_mes = primera_fecha_mes.getDay()
+    var ultima_fecha_mes = new Date(fecha.getFullYear(), fecha.getMonth() + 1, 0)
+    var semanas = {
+      labels: [],
+      fechas: []
+    }
+
+    var dias_de_la_primera_semana = (6 - primer_dia_mes)
+
+    semanas.labels.push("Sem1")
+    semanas.fechas.push([primera_fecha_mes.getDate(), primera_fecha_mes.getDate() + dias_de_la_primera_semana])
+
+    var numero_semana = 1
+
+    for (let dia_mes = semanas.fechas[0][1]; dia_mes <= ultima_fecha_mes.getDate(); dia_mes++) {
+      var fecha_mes = new Date(fecha.getFullYear(), fecha.getMonth(), dia_mes)
+
+      if (fecha_mes.getDay() === 0) {
+        semanas.labels.push("Sem" + (numero_semana + 1))
+        if ((ultima_fecha_mes.getDate() - dia_mes) <= 7) {
+          semanas.fechas.push([fecha_mes.getDate(), (ultima_fecha_mes.getDate() - dia_mes) + fecha_mes.getDate()])
+        }
+        else {
+          semanas.fechas.push([fecha_mes.getDate(), fecha_mes.getDate() + 6])
+        }
+        numero_semana = numero_semana + 1
+      }
+    }
+
+    return semanas
   }
 
   GET_nombres_especies() {
@@ -375,26 +415,64 @@ class InicioPrueba extends Component {
         if (status_response === 200) {
 
           var fecha_actual = new Date()
-          var numero_muestras_por_mes = this.state.line_table_data_muestra.datasets[0].data
+          var numero_muestras_por_mes = this.state.line_table_data_muestra_mes.datasets[0].data
+          var semanas_mes = this.calcular_numero_semanas(fecha_actual)
+
+          var muestras_semanas = {
+            labels: semanas_mes.labels,
+            datasets: [
+              {
+                label: "Muestras en la semana ",
+                data: [],
+              },
+            ],
+          }
+
+          for (let i = 0; i < muestras_semanas.labels.length; i++) {
+            muestras_semanas.datasets[0].data.push(0)
+          }
+
           for (let i = 0; i < detallesmuestrasJson.length; i++) {
             var fecha_muestra = new Date(detallesmuestrasJson[i].horaFechaCaptura)
-
             if (fecha_muestra.getYear() === fecha_actual.getYear()) {
               numero_muestras_por_mes[fecha_muestra.getMonth()] = numero_muestras_por_mes[fecha_muestra.getMonth()] + 1
             }
+
+            if (fecha_muestra.getMonth() === fecha_actual.getMonth()) {
+              // Aqui ordenamos las muestras por semana de este mes
+              console.log(fecha_muestra.getDate())
+              for (let j = 0; j < semanas_mes.fechas.length; j++) {
+                if (fecha_muestra.getDate() >= semanas_mes.fechas[j][0] && fecha_muestra.getDate() <= semanas_mes.fechas[j][1]) {
+                  muestras_semanas.datasets[0].data[j] = muestras_semanas.datasets[0].data[j] + 1
+                }
+              }
+              
+            }
           }
           this.setState({
-            line_table_data_muestra: {
-              labels: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-              datasets: [
-                {
-                  label: "Muestras",
-                  data: numero_muestras_por_mes,
-                },
-              ],
+            line_table_data_muestra_mes: (canvas) => {
+              return {
+                labels: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                datasets: [
+                  {
+                    label: "Muestras en el mes",
+                    data: numero_muestras_por_mes,
+                  },
+                ],
+              }
+            }, 
+            line_table_data_muestra_semanas: (canvas) => {
+              return {
+                labels: muestras_semanas.labels,
+                datasets: [
+                  {
+                    label: "Muestras a la seamana",
+                    data: muestras_semanas.datasets[0].data
+                  }
+                ]
+              }
             }
           })
-
         }
       });
   }
@@ -409,7 +487,6 @@ class InicioPrueba extends Component {
   }
 
   render() {
-
     return (
       <>
 
@@ -427,33 +504,35 @@ class InicioPrueba extends Component {
                       <h2 className="text-white mb-0">Numero de muestras</h2>
                     </div>
                     <div className="col">
-                    <Nav className="justify-content-end" pills>
-                      <NavItem>
-                        <NavLink
-                          className={classnames("py-2 px-3", {
-                            active: this.state.mostrar_data_muestras,
-                          })}
-                          href="#pablo"
-                          onClick={(e) => this.toggle_elegir_data_linea(e)}
-                        >
-                          <span className="d-none d-md-block">Mes</span>
-                          <span className="d-md-none">SA</span>
-                        </NavLink>
-                      </NavItem>
-                      <NavItem>
-                        <NavLink
-                          className={classnames("py-2 px-3", {
-                            active: !this.state.mostrar_data_muestras,
-                          })}
-                          data-toggle="tab"
-                          href="#pablo"
-                          onClick={(e) => this.toggle_elegir_data_linea(e)}
-                        >
-                          <span className="d-none d-md-block">Semana</span>
-                          <span className="d-md-none">W</span>
-                        </NavLink>
-                      </NavItem>
-                    </Nav>
+                      <Nav className="justify-content-end" pills>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", {
+                              active: this.state.mostrar_data_muestras,
+                            })}
+                            href="#meses"
+                            onClick={(e) => {
+                              this.toggle_elegir_data_linea(e, true)
+                            }}
+                          >
+                            <span className="d-none d-md-block">Mes</span>
+                          </NavLink>
+                        </NavItem>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", {
+                              active: !this.state.mostrar_data_muestras,
+                            })}
+                            data-toggle="tab"
+                            href="#semanas"
+                            onClick={(e) => {
+                              this.toggle_elegir_data_linea(e, false)
+                            }}
+                          >
+                            <span className="d-none d-md-block">Semana</span>
+                          </NavLink>
+                        </NavItem>
+                      </Nav>
                     </div>
                   </Row>
                 </CardHeader>
@@ -462,9 +541,9 @@ class InicioPrueba extends Component {
                   <div className="chart">
                     <Line
                       data={this.state.mostrar_data_muestras ?
-                        this.state.line_table_data_muestra 
+                        this.state.line_table_data_muestra_mes
                         :
-                        this.state.line_table_data_fotografias
+                        this.state.line_table_data_muestra_semanas
                       }
                       options={chartExample1.options}
                       redraw
